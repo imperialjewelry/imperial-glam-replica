@@ -42,7 +42,7 @@ const Header = () => {
                 <MessageCircle className="w-4 h-4 text-green-500" />
               </div>
               <div className="text-gray-600">
-                <Truck className="w-4 h-4 inline mr-1" />
+                <suck className="w-4 h-4 inline mr-1" />
                 READY TO SHIP | View all →
               </div>
             </div>
