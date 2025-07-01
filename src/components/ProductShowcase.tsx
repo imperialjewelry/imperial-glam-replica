@@ -3,9 +3,11 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star } from 'lucide-react';
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const ProductShowcase = () => {
   const [activeTab, setActiveTab] = useState('BEST SELLERS');
+  const isMobile = useIsMobile();
 
   const products = [
     {
@@ -112,83 +114,164 @@ const ProductShowcase = () => {
           </div>
         </div>
 
-        {/* Product grid - stretched to edges */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-0 mb-8">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="group relative bg-white overflow-hidden hover:shadow-lg transition-shadow border-r border-gray-200 last:border-r-0"
-            >
-              {/* Product image */}
-              <div className="relative aspect-square overflow-hidden bg-gray-100">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                
-                {/* Discount badge - positioned on left side */}
-                <div className="absolute top-3 left-3">
-                  <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
-                    {product.discount}
-                  </Badge>
-                </div>
-
-                {/* Ships Today badge - positioned on right side */}
-                {product.shipsToday && (
-                  <div className="absolute top-3 right-3">
-                    <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">
-                      SHIPS TODAY
-                    </Badge>
-                  </div>
-                )}
-
-                {/* Size options - positioned at bottom */}
-                {product.sizes && (
-                  <div className="absolute bottom-3 left-3 flex flex-wrap gap-1">
-                    {product.sizes.slice(0, 3).map((size, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs bg-white/90 text-gray-800">
-                        {size}
+        {/* Product grid - mobile horizontal scroll, desktop grid */}
+        {isMobile ? (
+          <div className="overflow-x-auto mb-8">
+            <div className="flex space-x-4 px-4 pb-4">
+              {products.map((product) => (
+                <div
+                  key={product.id}
+                  className="flex-shrink-0 w-64 group relative bg-white overflow-hidden hover:shadow-lg transition-shadow rounded-lg"
+                >
+                  {/* Product image */}
+                  <div className="relative aspect-square overflow-hidden bg-gray-100">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    
+                    {/* Discount badge - positioned on left side */}
+                    <div className="absolute top-3 left-3">
+                      <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                        {product.discount}
                       </Badge>
-                    ))}
-                    {product.sizes.length > 3 && (
-                      <Badge variant="secondary" className="text-xs bg-white/90 text-gray-800">
-                        +{product.sizes.length - 3}
-                      </Badge>
+                    </div>
+
+                    {/* Ships Today badge - positioned on right side */}
+                    {product.shipsToday && (
+                      <div className="absolute top-3 right-3">
+                        <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">
+                          SHIPS TODAY
+                        </Badge>
+                      </div>
+                    )}
+
+                    {/* Size options - positioned at bottom */}
+                    {product.sizes && (
+                      <div className="absolute bottom-3 left-3 flex flex-wrap gap-1">
+                        {product.sizes.slice(0, 3).map((size, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs bg-white/90 text-gray-800">
+                            {size}
+                          </Badge>
+                        ))}
+                        {product.sizes.length > 3 && (
+                          <Badge variant="secondary" className="text-xs bg-white/90 text-gray-800">
+                            +{product.sizes.length - 3}
+                          </Badge>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
 
-              {/* Product info */}
-              <div className="p-4">
-                <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
-                  {product.category}
-                </div>
-                
-                <h3 className="font-medium text-gray-900 mb-2 text-sm leading-tight line-clamp-2">
-                  {product.name}
-                </h3>
-                
-                <div className="flex items-center space-x-1 mb-2">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                    ))}
+                  {/* Product info */}
+                  <div className="p-4">
+                    <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
+                      {product.category}
+                    </div>
+                    
+                    <h3 className="font-medium text-gray-900 mb-2 text-sm leading-tight line-clamp-2">
+                      {product.name}
+                    </h3>
+                    
+                    <div className="flex items-center space-x-1 mb-2">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        ))}
+                      </div>
+                      <span className="text-xs text-gray-500">({product.reviews})</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg font-bold text-blue-600">${product.price}</span>
+                      <span className="text-sm text-gray-400 line-through">
+                        ${product.originalPrice}
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-xs text-gray-500">({product.reviews})</span>
                 </div>
-                
-                <div className="flex items-center space-x-2">
-                  <span className="text-lg font-bold text-blue-600">${product.price}</span>
-                  <span className="text-sm text-gray-400 line-through">
-                    ${product.originalPrice}
-                  </span>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-0 mb-8">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                className="group relative bg-white overflow-hidden hover:shadow-lg transition-shadow border-r border-gray-200 last:border-r-0"
+              >
+                {/* Product image */}
+                <div className="relative aspect-square overflow-hidden bg-gray-100">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  
+                  {/* Discount badge - positioned on left side */}
+                  <div className="absolute top-3 left-3">
+                    <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                      {product.discount}
+                    </Badge>
+                  </div>
+
+                  {/* Ships Today badge - positioned on right side */}
+                  {product.shipsToday && (
+                    <div className="absolute top-3 right-3">
+                      <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">
+                        SHIPS TODAY
+                      </Badge>
+                    </div>
+                  )}
+
+                  {/* Size options - positioned at bottom */}
+                  {product.sizes && (
+                    <div className="absolute bottom-3 left-3 flex flex-wrap gap-1">
+                      {product.sizes.slice(0, 3).map((size, index) => (
+                        <Badge key={index} variant="secondary" className="text-xs bg-white/90 text-gray-800">
+                          {size}
+                        </Badge>
+                      ))}
+                      {product.sizes.length > 3 && (
+                        <Badge variant="secondary" className="text-xs bg-white/90 text-gray-800">
+                          +{product.sizes.length - 3}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Product info */}
+                <div className="p-4">
+                  <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
+                    {product.category}
+                  </div>
+                  
+                  <h3 className="font-medium text-gray-900 mb-2 text-sm leading-tight line-clamp-2">
+                    {product.name}
+                  </h3>
+                  
+                  <div className="flex items-center space-x-1 mb-2">
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
+                    <span className="text-xs text-gray-500">({product.reviews})</span>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg font-bold text-blue-600">${product.price}</span>
+                    <span className="text-sm text-gray-400 line-through">
+                      ${product.originalPrice}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Shop Best Sellers Button */}
         <div className="text-center px-4">
