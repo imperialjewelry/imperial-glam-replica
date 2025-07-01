@@ -1,191 +1,121 @@
 
 import { useState } from 'react';
-import { Search, ShoppingCart, Menu, X, Instagram, MessageCircle, Star, Truck } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigation = ['BEST DEALS', 'CHAINS', 'BRACELETS', 'CUSTOM', 'GRILLZ', 'WATCHES', 'PENDANTS', 'RINGS', 'EARRINGS', 'GLASSES', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
-  const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const categories = [
+    { name: 'WATCHES', hasDropdown: false },
+    { name: 'PENDANTS', hasDropdown: false },
+    { name: 'RINGS', hasDropdown: true },
+    { name: 'EARRINGS', hasDropdown: false },
+    { name: 'GLASSES', hasDropdown: false },
+    { name: 'DIAMOND', hasDropdown: true },
+    { name: 'VVS DIAMOND SIMULANTS', hasDropdown: false },
+  ];
+
   return (
-    <>
-      {/* Desktop Header */}
-      <header className="bg-white shadow-sm hidden lg:block">
-        {/* Top bar with social and shipping info */}
-        <div className="border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center text-sm">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-1">
-                {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />)}
-                <span className="text-gray-600 ml-2">30,000+ Reviews</span>
-              </div>
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      {/* Main Header */}
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div className="flex items-center">
+            <div className="text-2xl font-bold text-black">💎 IMPERIAL JEWELRY</div>
+          </div>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex space-x-8">
+            <a href="#" className="text-gray-700 hover:text-black font-medium">CHAINS</a>
+            <a href="#" className="text-gray-700 hover:text-black font-medium">BRACELETS</a>
+            <a href="#" className="text-gray-700 hover:text-black font-medium">PENDANTS</a>
+            <a href="#" className="text-gray-700 hover:text-black font-medium">RINGS</a>
+            <a href="#" className="text-gray-700 hover:text-black font-medium">EARRINGS</a>
+            <a href="#" className="text-gray-700 hover:text-black font-medium">WATCHES</a>
+            <a href="#" className="text-gray-700 hover:text-black font-medium">CUSTOM</a>
+            <a href="#" className="text-red-600 hover:text-red-700 font-medium">SALE</a>
+          </nav>
+
+          {/* Right Side Icons */}
+          <div className="flex items-center space-x-4">
+            <Search className="w-6 h-6 text-gray-600 hover:text-black cursor-pointer" />
+            <div className="relative">
+              <ShoppingCart className="w-6 h-6 text-gray-600 hover:text-black cursor-pointer" />
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
             </div>
+            <User className="w-6 h-6 text-gray-600 hover:text-black cursor-pointer" />
             
-            <div className="flex items-center space-x-6">
-              <div className="text-gray-600 flex items-center">
-                <Truck className="w-4 h-4 inline mr-1" />
-                READY TO SHIP | View all →
-              </div>
-              <div className="flex items-center space-x-2">
-                <Instagram className="w-4 h-4 text-pink-500" />
-                <MessageCircle className="w-4 h-4 text-green-500" />
-              </div>
-            </div>
+            {/* Mobile Menu Button */}
+            <button
+              className="lg:hidden"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6 text-gray-600" />
+              ) : (
+                <Menu className="w-6 h-6 text-gray-600" />
+              )}
+            </button>
           </div>
-        </div>
-
-        {/* Main header */}
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="w-1/3"></div>
-            <div className="flex-1 flex justify-center">
-              <Link to="/" className="text-2xl font-bold text-black tracking-wide hover:text-gray-800 transition-colors">
-                IMPERIAL JEWELRY
-              </Link>
-            </div>
-            <div className="w-1/3 flex items-center justify-end space-x-4">
-              <Button variant="ghost" size="sm">
-                <Search className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="sm">
-                <ShoppingCart className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Main navigation */}
-        <div className="border-t border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 py-3">
-            <div className="flex items-center justify-center space-x-8 text-sm font-medium">
-              {navigation.map(item => (
-                <Link key={item} to={item === 'CHAINS' ? '/chains' : '/'} className="text-gray-700 hover:text-black transition-colors">
-                  {item}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Header */}
-      <header className="lg:hidden bg-white shadow-sm">
-        {/* Top reviews bar */}
-        <div className="bg-gray-100 px-4 py-2 text-center">
-          <div className="flex items-center justify-center space-x-1 text-sm">
-            {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}
-            <span className="text-gray-600 ml-2">30,000+ Reviews</span>
-          </div>
-        </div>
-
-        {/* Main mobile header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-          <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(true)} className="p-2">
-            <Menu className="w-6 h-6" />
-          </Button>
-          
-          <Link to="/" className="text-lg font-bold text-black tracking-wide">
-            IMPERIAL JEWELRY
-          </Link>
-          
-          <div className="flex items-center space-x-1">
-            <Button variant="ghost" size="sm" className="p-2">
-              <Search className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="sm" className="p-2">
-              <ShoppingCart className="w-5 h-5" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Mobile social icons bar */}
-        <div className="flex items-center justify-center space-x-4 py-2 bg-gray-50">
-          <Instagram className="w-5 h-5 text-pink-500" />
-          <MessageCircle className="w-5 h-5 text-green-500" />
-        </div>
-      </header>
-
-      {/* Feature bar - continuous carousel */}
-      <div className="bg-black text-white py-3 overflow-hidden">
-        <div className="flex animate-scroll whitespace-nowrap">
-          {/* Duplicate the features array multiple times for seamless loop */}
-          {[...Array(4)].map((_, groupIndex) => (
-            <div key={groupIndex} className="flex">
-              {features.map((feature, index) => (
-                <div key={`${groupIndex}-${index}`} className="flex items-center mx-8">
-                  <Star className="w-4 h-4 text-yellow-400 mr-2 flex-shrink-0" />
-                  <span className="text-sm font-medium">{feature}</span>
-                </div>
-              ))}
-            </div>
-          ))}
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setIsMenuOpen(false)} />
-          <div className="fixed left-0 top-0 h-full w-80 bg-white shadow-xl overflow-y-auto">
-            {/* Header with close button */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <Link to="/" className="text-lg font-bold text-black" onClick={() => setIsMenuOpen(false)}>
-                IMPERIAL JEWELRY
-              </Link>
-              <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(false)}>
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
-
-            {/* Banner sections */}
-            <div className="p-4 space-y-6">
-              <div className="space-y-4">
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <h3 className="font-semibold text-sm mb-2">BEST DEALS</h3>
-                  <p className="text-xs text-gray-600">Up to 70% off selected items</p>
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden bg-white border-t border-gray-200">
+          <div className="px-4 py-6 space-y-1">
+            {categories.map((category) => (
+              <div key={category.name} className="border-b border-gray-100 py-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-900 font-medium text-lg">{category.name}</span>
+                  {category.hasDropdown && (
+                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                  )}
                 </div>
-                
-                <div className="bg-gray-100 p-4 rounded-lg">
-                  <h3 className="font-semibold text-sm mb-2">NEW ARRIVALS</h3>
-                  <p className="text-xs text-gray-600">Check out our latest collection</p>
+                {/* Product images would go here - placeholder for now */}
+                <div className="mt-3 flex space-x-2">
+                  <div className="w-16 h-16 bg-gray-200 rounded"></div>
+                  <div className="w-16 h-16 bg-gray-200 rounded"></div>
+                  <div className="w-16 h-16 bg-gray-200 rounded"></div>
                 </div>
               </div>
-
-              {/* Categories with images */}
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg border-b border-gray-200 pb-2">CATEGORIES</h3>
-                
-                {navigation.map(item => (
-                  <div key={item} className="flex items-center space-x-3 py-2">
-                    <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
-                    <Link 
-                      to={item === 'CHAINS' ? '/chains' : '/'}
-                      className="text-sm font-medium text-gray-700 hover:text-black"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {item}
-                    </Link>
-                  </div>
-                ))}
+            ))}
+            
+            {/* Bottom section */}
+            <div className="pt-6 space-y-4">
+              <div className="flex justify-center space-x-8">
+                <Button variant="outline" className="flex-1">BLOG</Button>
+                <Button variant="outline" className="flex-1">FAQ</Button>
               </div>
-
-              {/* Bottom section */}
-              <div className="border-t border-gray-200 pt-4 space-y-3">
+              
+              <div className="text-center text-sm text-gray-600">
+                <p className="font-medium">Open Mon - Fri 10AM - 5PM</p>
+              </div>
+              
+              {/* Payment methods */}
+              <div className="flex justify-center space-x-3 pt-4">
                 <div className="flex items-center space-x-2">
-                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm text-gray-600">30,000+ Reviews</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Truck className="w-4 h-4 text-gray-600" />
-                  <span className="text-sm text-gray-600">4-Day Shipping</span>
+                  <div className="w-8 h-5 bg-blue-600 rounded text-white text-xs flex items-center justify-center">💳</div>
+                  <div className="w-8 h-5 bg-red-600 rounded text-white text-xs flex items-center justify-center">💳</div>
+                  <div className="w-8 h-5 bg-gray-800 rounded text-white text-xs flex items-center justify-center">💳</div>
+                  <div className="w-8 h-5 bg-blue-800 rounded text-white text-xs flex items-center justify-center">💳</div>
+                  <div className="w-8 h-5 bg-gray-600 rounded text-white text-xs flex items-center justify-center">💳</div>
+                  <div className="w-8 h-5 bg-black rounded text-white text-xs flex items-center justify-center">💳</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       )}
-    </>
+    </header>
   );
 };
 
