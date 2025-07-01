@@ -8,6 +8,7 @@ import BestDeals from '../components/BestDeals';
 import ChainsSection from '../components/ChainsSection';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
+import CategoryNavigation from '../components/CategoryNavigation';
 
 const Index = () => {
   return (
@@ -15,6 +16,7 @@ const Index = () => {
       <PromoBar />
       <Header />
       <Hero />
+      <CategoryNavigation />
       <ProductShowcase />
       <CategorySection />
       <CustomerReviews />
