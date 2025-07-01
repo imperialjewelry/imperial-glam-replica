@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
-import { Search, ShoppingCart, Menu, X, Instagram, MessageCircle, Star, Truck } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X, Star, Truck } from 'lucide-react';
+import { FaWhatsappSquare, FaInstagramSquare } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
@@ -30,11 +31,9 @@ const Header = () => {
         <div className="border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center text-sm">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                ))}
-                <span className="text-gray-600 ml-2">30,000+ Reviews</span>
+              <div className="flex items-center space-x-2">
+                <FaInstagramSquare className="w-5 h-5 text-pink-500" />
+                <FaWhatsappSquare className="w-5 h-5 text-green-500" />
               </div>
             </div>
             
@@ -43,9 +42,11 @@ const Header = () => {
                 <Truck className="w-4 h-4 inline mr-1" />
                 READY TO SHIP | View all →
               </div>
-              <div className="flex items-center space-x-2">
-                <Instagram className="w-4 h-4 text-pink-500" />
-                <MessageCircle className="w-4 h-4 text-green-500" />
+              <div className="flex items-center space-x-1">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                ))}
+                <span className="text-gray-600 ml-2">30,000+ Reviews</span>
               </div>
             </div>
           </div>
@@ -54,7 +55,10 @@ const Header = () => {
         {/* Main header */}
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="w-1/3"></div>
+            <div className="w-1/3 flex items-center space-x-3">
+              <FaInstagramSquare className="w-6 h-6 text-pink-500" />
+              <FaWhatsappSquare className="w-6 h-6 text-green-500" />
+            </div>
             <div className="flex-1 flex justify-center">
               <h1 className="text-2xl font-bold text-black tracking-wide">
                 IMPERIAL JEWELRY
