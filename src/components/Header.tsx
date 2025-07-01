@@ -52,28 +52,18 @@ const Header = () => {
         {/* Main header */}
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-8">
+            {/* Left side - empty for balance */}
+            <div className="w-1/3"></div>
+
+            {/* Center - Imperial Jewelry name */}
+            <div className="flex-1 flex justify-center">
               <h1 className="text-3xl font-bold text-black tracking-wide">
                 IMPERIAL JEWELRY
               </h1>
             </div>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:block">
-              <div className="flex items-center space-x-6">
-                {navigation.slice(0, 8).map((item) => (
-                  <a
-                    key={item}
-                    href="#"
-                    className="text-sm font-medium text-black hover:text-gray-600 transition-colors"
-                  >
-                    {item}
-                  </a>
-                ))}
-              </div>
-            </nav>
-
-            <div className="flex items-center space-x-4">
+            {/* Right side - icons */}
+            <div className="w-1/3 flex items-center justify-end space-x-4">
               <Button variant="ghost" size="sm">
                 <Search className="w-5 h-5" />
               </Button>
@@ -92,15 +82,15 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Secondary navigation */}
-        <div className="border-t border-gray-100 hidden lg:block">
+        {/* Main navigation */}
+        <div className="border-t border-gray-100">
           <div className="max-w-7xl mx-auto px-4 py-2">
             <div className="flex items-center justify-center space-x-8 text-sm">
-              {navigation.slice(8).map((item) => (
+              {navigation.map((item) => (
                 <a
                   key={item}
                   href="#"
-                  className="text-gray-600 hover:text-black transition-colors"
+                  className="text-gray-600 hover:text-black transition-colors font-medium"
                 >
                   {item}
                 </a>
