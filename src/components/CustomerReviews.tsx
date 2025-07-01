@@ -1,7 +1,9 @@
-
 import { Star } from 'lucide-react';
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const CustomerReviews = () => {
+  const isMobile = useIsMobile();
+
   const reviews = [
     {
       id: 1,
@@ -66,26 +68,52 @@ const CustomerReviews = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-12">
-          {reviews.map((review) => (
-            <div
-              key={review.id}
-              className="bg-white text-black rounded-lg overflow-hidden shadow-lg"
-            >
-              <div className="aspect-square overflow-hidden">
-                <img
-                  src={review.image}
-                  alt={review.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="font-bold text-lg mb-2">{review.title}</h3>
-                <p className="text-gray-600 text-sm">{review.content}</p>
-              </div>
+        {/* Mobile: Horizontal scroll, Desktop: Grid */}
+        {isMobile ? (
+          <div className="overflow-x-auto mb-12">
+            <div className="flex space-x-4 px-4 pb-4">
+              {reviews.map((review) => (
+                <div
+                  key={review.id}
+                  className="flex-shrink-0 w-64 bg-white text-black rounded-lg overflow-hidden shadow-lg"
+                >
+                  <div className="aspect-square overflow-hidden">
+                    <img
+                      src={review.image}
+                      alt={review.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-bold text-lg mb-2">{review.title}</h3>
+                    <p className="text-gray-600 text-sm">{review.content}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-12">
+            {reviews.map((review) => (
+              <div
+                key={review.id}
+                className="bg-white text-black rounded-lg overflow-hidden shadow-lg"
+              >
+                <div className="aspect-square overflow-hidden">
+                  <img
+                    src={review.image}
+                    alt={review.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-bold text-lg mb-2">{review.title}</h3>
+                  <p className="text-gray-600 text-sm">{review.content}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Payment Options Strip */}
