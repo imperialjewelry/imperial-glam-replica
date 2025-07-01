@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Search, ShoppingCart, Menu, X, Instagram, MessageCircle, Star } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X, Instagram, MessageCircle, Star, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
@@ -41,8 +41,8 @@ const Header = () => {
                 <Instagram className="w-4 h-4 text-pink-500" />
                 <MessageCircle className="w-4 h-4 text-green-500" />
               </div>
-              <div className="text-gray-600">
-                <suck className="w-4 h-4 inline mr-1" />
+              <div className="text-gray-600 flex items-center">
+                <Truck className="w-4 h-4 inline mr-1" />
                 READY TO SHIP | View all →
               </div>
             </div>
@@ -53,7 +53,7 @@ const Header = () => {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-8">
-              <h1 className="text-3xl font-bold text-gray-800 tracking-wide">
+              <h1 className="text-3xl font-bold text-black tracking-wide">
                 IMPERIAL JEWELRY
               </h1>
             </div>
@@ -65,7 +65,7 @@ const Header = () => {
                   <a
                     key={item}
                     href="#"
-                    className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                    className="text-sm font-medium text-black hover:text-gray-600 transition-colors"
                   >
                     {item}
                   </a>
@@ -100,7 +100,7 @@ const Header = () => {
                 <a
                   key={item}
                   href="#"
-                  className="text-gray-600 hover:text-blue-600 transition-colors"
+                  className="text-gray-600 hover:text-black transition-colors"
                 >
                   {item}
                 </a>
@@ -111,7 +111,7 @@ const Header = () => {
       </header>
 
       {/* Feature bar */}
-      <div className="bg-gray-900 text-white py-3 overflow-hidden">
+      <div className="bg-black text-white py-3 overflow-hidden">
         <div className="flex animate-scroll">
           {features.map((feature, index) => (
             <div key={index} className="flex items-center whitespace-nowrap mx-8">
@@ -141,7 +141,7 @@ const Header = () => {
                   <a
                     key={item}
                     href="#"
-                    className="block text-sm font-medium text-gray-700 hover:text-blue-600"
+                    className="block text-sm font-medium text-gray-700 hover:text-black"
                   >
                     {item}
                   </a>
