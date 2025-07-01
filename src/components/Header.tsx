@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Search, ShoppingCart, Menu, X, Instagram, MessageCircle, Star, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,8 @@ const Header = () => {
   const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
   return (
     <>
-      <header className="bg-white shadow-sm">
+      {/* Desktop Header */}
+      <header className="bg-white shadow-sm hidden lg:block">
         {/* Top bar with social and shipping info */}
         <div className="border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center text-sm">
@@ -49,9 +51,6 @@ const Header = () => {
               <Button variant="ghost" size="sm">
                 <ShoppingCart className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setIsMenuOpen(true)}>
-                <Menu className="w-5 h-5" />
-              </Button>
             </div>
           </div>
         </div>
@@ -68,23 +67,42 @@ const Header = () => {
             </div>
           </div>
         </div>
+      </header>
 
-        {/* Mobile header */}
-        <div className="lg:hidden bg-white border-b border-gray-200">
-          <div className="flex items-center justify-between px-4 py-3">
-            <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(true)}>
-              <Menu className="w-6 h-6" />
-            </Button>
-            
-            <Link to="/" className="text-xl font-bold text-black tracking-wide">
-              IMPERIAL JEWELRY
-            </Link>
-            
-            <div className="flex items-center space-x-2">
-              <Instagram className="w-5 h-5 text-pink-500" />
-              <MessageCircle className="w-5 h-5 text-green-500" />
-            </div>
+      {/* Mobile Header */}
+      <header className="lg:hidden bg-white shadow-sm">
+        {/* Top reviews bar */}
+        <div className="bg-gray-100 px-4 py-2 text-center">
+          <div className="flex items-center justify-center space-x-1 text-sm">
+            {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}
+            <span className="text-gray-600 ml-2">30,000+ Reviews</span>
           </div>
+        </div>
+
+        {/* Main mobile header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+          <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(true)} className="p-2">
+            <Menu className="w-6 h-6" />
+          </Button>
+          
+          <Link to="/" className="text-lg font-bold text-black tracking-wide">
+            IMPERIAL JEWELRY
+          </Link>
+          
+          <div className="flex items-center space-x-1">
+            <Button variant="ghost" size="sm" className="p-2">
+              <Search className="w-5 h-5" />
+            </Button>
+            <Button variant="ghost" size="sm" className="p-2">
+              <ShoppingCart className="w-5 h-5" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile social icons bar */}
+        <div className="flex items-center justify-center space-x-4 py-2 bg-gray-50">
+          <Instagram className="w-5 h-5 text-pink-500" />
+          <MessageCircle className="w-5 h-5 text-green-500" />
         </div>
       </header>
 
@@ -112,7 +130,9 @@ const Header = () => {
           <div className="fixed left-0 top-0 h-full w-80 bg-white shadow-xl overflow-y-auto">
             {/* Header with close button */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <Link to="/" className="text-lg font-bold text-black">IMPERIAL JEWELRY</Link>
+              <Link to="/" className="text-lg font-bold text-black" onClick={() => setIsMenuOpen(false)}>
+                IMPERIAL JEWELRY
+              </Link>
               <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(false)}>
                 <X className="w-5 h-5" />
               </Button>
