@@ -1,0 +1,76 @@
+
+import { Button } from '@/components/ui/button';
+
+const CategorySection = () => {
+  const categories = [
+    {
+      name: "CHAINS",
+      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      name: "BRACELETS", 
+      image: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      name: "CUSTOM",
+      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      name: "EARRINGS",
+      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      name: "WATCHES",
+      image: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      name: "GRILLZ",
+      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      name: "RINGS",
+      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      name: "PENDANTS",
+      image: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      name: "GLASSES",
+      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=400&q=80"
+    }
+  ];
+
+  return (
+    <section className="py-16 bg-gray-100">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center mb-12">
+          <p className="text-gray-600 text-sm font-medium mb-2">SHOP BY</p>
+          <h2 className="text-4xl font-bold text-gray-900">CATEGORY</h2>
+        </div>
+
+        <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-4 mb-8">
+          {categories.map((category) => (
+            <div
+              key={category.name}
+              className="group cursor-pointer text-center"
+            >
+              <div className="relative aspect-square mb-3 overflow-hidden rounded-lg bg-white shadow-sm group-hover:shadow-md transition-shadow">
+                <img
+                  src={category.image}
+                  alt={category.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <p className="text-sm font-semibold text-gray-900 uppercase">
+                {category.name}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default CategorySection;
