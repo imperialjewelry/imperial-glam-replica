@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { Search, ShoppingCart, Menu, X, Instagram, MessageCircle, Star, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigation = ['BEST DEALS', 'CHAINS', 'BRACELETS', 'CUSTOM', 'GRILLZ', 'WATCHES', 'PENDANTS', 'RINGS', 'EARRINGS', 'GLASSES', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
   const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
-  return <>
+  return (
+    <>
       <header className="bg-white shadow-sm">
         {/* Top bar with social and shipping info */}
         <div className="border-b border-gray-200">
@@ -35,9 +38,9 @@ const Header = () => {
           <div className="flex items-center justify-between">
             <div className="w-1/3"></div>
             <div className="flex-1 flex justify-center">
-              <h1 className="text-2xl font-bold text-black tracking-wide">
+              <Link to="/" className="text-2xl font-bold text-black tracking-wide hover:text-gray-800 transition-colors">
                 IMPERIAL JEWELRY
-              </h1>
+              </Link>
             </div>
             <div className="w-1/3 flex items-center justify-end space-x-4">
               <Button variant="ghost" size="sm">
@@ -58,10 +61,28 @@ const Header = () => {
           <div className="max-w-7xl mx-auto px-4 py-3">
             <div className="flex items-center justify-center space-x-8 text-sm font-medium">
               {navigation.map(item => (
-                <a key={item} href={item === 'CHAINS' ? '/chains' : '#'} className="text-gray-700 hover:text-black transition-colors">
+                <Link key={item} to={item === 'CHAINS' ? '/chains' : '/'} className="text-gray-700 hover:text-black transition-colors">
                   {item}
-                </a>
+                </Link>
               ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile header */}
+        <div className="lg:hidden bg-white border-b border-gray-200">
+          <div className="flex items-center justify-between px-4 py-3">
+            <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(true)}>
+              <Menu className="w-6 h-6" />
+            </Button>
+            
+            <Link to="/" className="text-xl font-bold text-black tracking-wide">
+              IMPERIAL JEWELRY
+            </Link>
+            
+            <div className="flex items-center space-x-2">
+              <Instagram className="w-5 h-5 text-pink-500" />
+              <MessageCircle className="w-5 h-5 text-green-500" />
             </div>
           </div>
         </div>
@@ -71,31 +92,81 @@ const Header = () => {
       <div className="bg-black text-white py-3 overflow-hidden">
         <div className="flex animate-scroll whitespace-nowrap">
           {/* Duplicate the features array multiple times for seamless loop */}
-          {[...Array(4)].map((_, groupIndex) => <div key={groupIndex} className="flex">
-              {features.map((feature, index) => <div key={`${groupIndex}-${index}`} className="flex items-center mx-8">
+          {[...Array(4)].map((_, groupIndex) => (
+            <div key={groupIndex} className="flex">
+              {features.map((feature, index) => (
+                <div key={`${groupIndex}-${index}`} className="flex items-center mx-8">
                   <Star className="w-4 h-4 text-yellow-400 mr-2 flex-shrink-0" />
                   <span className="text-sm font-medium">{feature}</span>
-                </div>)}
-            </div>)}
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Mobile menu */}
-      {isMenuOpen && <div className="fixed inset-0 z-50 lg:hidden">
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
           <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setIsMenuOpen(false)} />
-          <div className="fixed right-0 top-0 h-full w-64 bg-white shadow-xl">
-            <div className="p-4">
-              <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(false)} className="mb-4">
+          <div className="fixed left-0 top-0 h-full w-80 bg-white shadow-xl overflow-y-auto">
+            {/* Header with close button */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <Link to="/" className="text-lg font-bold text-black">IMPERIAL JEWELRY</Link>
+              <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(false)}>
                 <X className="w-5 h-5" />
               </Button>
-              <nav className="space-y-4">
-                {navigation.map(item => <a key={item} href="#" className="block text-sm font-medium text-gray-700 hover:text-black">
-                    {item}
-                  </a>)}
-              </nav>
+            </div>
+
+            {/* Banner sections */}
+            <div className="p-4 space-y-6">
+              <div className="space-y-4">
+                <div className="bg-gray-100 p-4 rounded-lg">
+                  <h3 className="font-semibold text-sm mb-2">BEST DEALS</h3>
+                  <p className="text-xs text-gray-600">Up to 70% off selected items</p>
+                </div>
+                
+                <div className="bg-gray-100 p-4 rounded-lg">
+                  <h3 className="font-semibold text-sm mb-2">NEW ARRIVALS</h3>
+                  <p className="text-xs text-gray-600">Check out our latest collection</p>
+                </div>
+              </div>
+
+              {/* Categories with images */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg border-b border-gray-200 pb-2">CATEGORIES</h3>
+                
+                {navigation.map(item => (
+                  <div key={item} className="flex items-center space-x-3 py-2">
+                    <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                    <Link 
+                      to={item === 'CHAINS' ? '/chains' : '/'}
+                      className="text-sm font-medium text-gray-700 hover:text-black"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item}
+                    </Link>
+                  </div>
+                ))}
+              </div>
+
+              {/* Bottom section */}
+              <div className="border-t border-gray-200 pt-4 space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  <span className="text-sm text-gray-600">30,000+ Reviews</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Truck className="w-4 h-4 text-gray-600" />
+                  <span className="text-sm text-gray-600">4-Day Shipping</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>}
-    </>;
+        </div>
+      )}
+    </>
+  );
 };
+
 export default Header;
