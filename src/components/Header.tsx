@@ -57,7 +57,11 @@ const Header = () => {
         <div className="border-t border-gray-200">
           <div className="max-w-7xl mx-auto px-4 py-3">
             <div className="flex items-center justify-center space-x-8 text-sm font-medium">
-              {navigation.map(item => {})}
+              {navigation.map(item => (
+                <a key={item} href={item === 'CHAINS' ? '/chains' : '#'} className="text-gray-700 hover:text-black transition-colors">
+                  {item}
+                </a>
+              ))}
             </div>
           </div>
         </div>
