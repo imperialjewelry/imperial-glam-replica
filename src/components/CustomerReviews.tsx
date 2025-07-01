@@ -86,50 +86,6 @@ const CustomerReviews = () => {
             </div>
           ))}
         </div>
-
-        {/* Continuous Moving Carousel */}
-        <div className="relative overflow-hidden">
-          <div className="flex animate-scroll space-x-6">
-            {/* First set of reviews */}
-            {reviews.map((review) => (
-              <div
-                key={`carousel-1-${review.id}`}
-                className="bg-white text-black rounded-lg overflow-hidden shadow-lg min-w-[280px] flex-shrink-0"
-              >
-                <div className="aspect-square overflow-hidden">
-                  <img
-                    src={review.image}
-                    alt={review.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-lg mb-2">{review.title}</h3>
-                  <p className="text-gray-600 text-sm">{review.content}</p>
-                </div>
-              </div>
-            ))}
-            {/* Duplicate set for seamless loop */}
-            {reviews.map((review) => (
-              <div
-                key={`carousel-2-${review.id}`}
-                className="bg-white text-black rounded-lg overflow-hidden shadow-lg min-w-[280px] flex-shrink-0"
-              >
-                <div className="aspect-square overflow-hidden">
-                  <img
-                    src={review.image}
-                    alt={review.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-lg mb-2">{review.title}</h3>
-                  <p className="text-gray-600 text-sm">{review.content}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Payment Options Strip */}
