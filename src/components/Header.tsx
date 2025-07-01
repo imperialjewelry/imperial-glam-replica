@@ -13,37 +13,39 @@ const Header = () => {
   ];
 
   const features = [
-    "4-DAY SHIPPING",
-    "BUY NOW PAY LATER",
-    "4-DAY SHIPPING", 
     "BUY NOW PAY LATER",
     "4-DAY SHIPPING",
-    "BUY NOW PAY LATER"
+    "BUY NOW PAY LATER", 
+    "4-DAY SHIPPING",
+    "BUY NOW PAY LATER",
+    "4-DAY SHIPPING",
+    "BUY NOW PAY LATER",
+    "4-DAY SHIPPING"
   ];
 
   return (
     <>
       <header className="bg-white shadow-sm">
         {/* Top bar with social and shipping info */}
-        <div className="border-b border-gray-100">
+        <div className="border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center text-sm">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-1">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                 ))}
-                <span className="text-gray-600 ml-2">50,000+ Reviews</span>
+                <span className="text-gray-600 ml-2">30,000+ Reviews</span>
               </div>
             </div>
             
             <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <Instagram className="w-4 h-4 text-pink-500" />
-                <MessageCircle className="w-4 h-4 text-green-500" />
-              </div>
               <div className="text-gray-600 flex items-center">
                 <Truck className="w-4 h-4 inline mr-1" />
                 READY TO SHIP | View all →
+              </div>
+              <div className="flex items-center space-x-2">
+                <Instagram className="w-4 h-4 text-pink-500" />
+                <MessageCircle className="w-4 h-4 text-green-500" />
               </div>
             </div>
           </div>
@@ -52,17 +54,12 @@ const Header = () => {
         {/* Main header */}
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            {/* Left side - empty for balance */}
             <div className="w-1/3"></div>
-
-            {/* Center - Imperial Jewelry name */}
             <div className="flex-1 flex justify-center">
-              <h1 className="text-3xl font-bold text-black tracking-wide">
+              <h1 className="text-2xl font-bold text-black tracking-wide">
                 IMPERIAL JEWELRY
               </h1>
             </div>
-
-            {/* Right side - icons */}
             <div className="w-1/3 flex items-center justify-end space-x-4">
               <Button variant="ghost" size="sm">
                 <Search className="w-5 h-5" />
@@ -83,14 +80,14 @@ const Header = () => {
         </div>
 
         {/* Main navigation */}
-        <div className="border-t border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 py-2">
-            <div className="flex items-center justify-center space-x-8 text-sm">
+        <div className="border-t border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="flex items-center justify-center space-x-8 text-sm font-medium">
               {navigation.map((item) => (
                 <a
                   key={item}
                   href="#"
-                  className="text-gray-600 hover:text-black transition-colors font-medium"
+                  className="text-gray-700 hover:text-black transition-colors"
                 >
                   {item}
                 </a>
@@ -100,13 +97,18 @@ const Header = () => {
         </div>
       </header>
 
-      {/* Feature bar */}
+      {/* Feature bar - continuous carousel */}
       <div className="bg-black text-white py-3 overflow-hidden">
-        <div className="flex animate-scroll">
-          {features.map((feature, index) => (
-            <div key={index} className="flex items-center whitespace-nowrap mx-8">
-              <Star className="w-4 h-4 text-yellow-400 mr-2" />
-              <span className="text-sm font-medium">{feature}</span>
+        <div className="flex animate-scroll whitespace-nowrap">
+          {/* Duplicate the features array multiple times for seamless loop */}
+          {[...Array(4)].map((_, groupIndex) => (
+            <div key={groupIndex} className="flex">
+              {features.map((feature, index) => (
+                <div key={`${groupIndex}-${index}`} className="flex items-center mx-8">
+                  <Star className="w-4 h-4 text-yellow-400 mr-2 flex-shrink-0" />
+                  <span className="text-sm font-medium">{feature}</span>
+                </div>
+              ))}
             </div>
           ))}
         </div>
