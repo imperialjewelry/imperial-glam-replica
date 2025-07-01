@@ -138,7 +138,7 @@ const Header = () => {
             {/* Logo - centered on mobile, centered on desktop */}
             <div className="flex-1 md:flex-none flex justify-center">
               <h1 className="text-xl md:text-2xl font-bold text-black tracking-wide">
-                ICECARTEL
+                IMPERIAL JEWELRY
               </h1>
             </div>
 
@@ -208,7 +208,7 @@ const Header = () => {
             <div className="p-4">
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-bold">ICECARTEL</h2>
+                <h2 className="text-lg font-bold">IMPERIAL JEWELRY</h2>
                 <Button
                   variant="ghost"
                   size="sm"

@@ -135,8 +135,8 @@ const Footer = () => {
         {/* Contact Info */}
         <div className="mb-8">
           <div className="flex items-center mb-4">
-            <div className="text-2xl font-bold mr-4">❄️ ICECARTEL</div>
-            <div className="text-sm text-gray-400">ICECARTEL - World renowned, bespoke custom jewelers.</div>
+            <div className="text-2xl font-bold mr-4">💎 IMPERIAL JEWELRY</div>
+            <div className="text-sm text-gray-400">Imperial Jewelry - World renowned, bespoke custom jewelers.</div>
           </div>
         </div>
 
@@ -147,7 +147,7 @@ const Footer = () => {
             <div>
               <h3 className="text-sm font-semibold mb-4">CONTACT US</h3>
               <div className="space-y-2 text-sm text-gray-300">
-                <p>support@icecartel.com</p>
+                <p>support@imperialjewelry.com</p>
                 <p>Whatsapp: +1 212 203 0584</p>
                 <p>Monday - Friday</p>
                 <p>11AM - 6:30 PM EST</p>
@@ -194,7 +194,7 @@ const Footer = () => {
           <div className="border-b border-gray-700 pb-4">
             <h3 className="text-sm font-semibold mb-4">CONTACT US</h3>
             <div className="space-y-2 text-sm text-gray-300">
-              <p>support@icecartel.com</p>
+              <p>support@imperialjewelry.com</p>
               <p>Whatsapp: +1 212 203 0584</p>
               <p>Monday - Friday</p>
               <p>11AM - 6:30 PM EST</p>
