@@ -132,6 +132,52 @@ const CustomerReviews = () => {
         </div>
       </div>
 
+      {/* Payment Options Strip */}
+      <div className="bg-white border-t border-b border-gray-200 py-4 mt-16">
+        <div className="relative overflow-hidden">
+          <div className="flex animate-marquee items-center space-x-8 whitespace-nowrap">
+            {/* First set */}
+            <div className="flex items-center space-x-8">
+              <span className="text-lg font-bold text-black">✨</span>
+              <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
+                afterpay
+              </div>
+              <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+                affirm
+              </div>
+              <div className="bg-purple-100 text-purple-800 px-4 py-2 rounded-full text-sm font-medium">
+                Pay Later
+              </div>
+              <span className="text-lg font-bold text-black">⭐</span>
+              <span className="text-sm text-gray-600">📅 Payment plans for 12-36 months</span>
+              <span className="text-sm text-gray-600">🛡️ Doesn't affect credit score</span>
+              <span className="text-lg font-bold text-black">✨</span>
+              <span className="text-xl font-bold text-black">BUY NOW, PAY LATER</span>
+              <span className="text-lg font-bold text-black">⭐</span>
+            </div>
+            {/* Duplicate set for seamless loop */}
+            <div className="flex items-center space-x-8">
+              <span className="text-lg font-bold text-black">✨</span>
+              <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
+                afterpay
+              </div>
+              <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium">
+                affirm
+              </div>
+              <div className="bg-purple-100 text-purple-800 px-4 py-2 rounded-full text-sm font-medium">
+                Pay Later
+              </div>
+              <span className="text-lg font-bold text-black">⭐</span>
+              <span className="text-sm text-gray-600">📅 Payment plans for 12-36 months</span>
+              <span className="text-sm text-gray-600">🛡️ Doesn't affect credit score</span>
+              <span className="text-lg font-bold text-black">✨</span>
+              <span className="text-xl font-bold text-black">BUY NOW, PAY LATER</span>
+              <span className="text-lg font-bold text-black">⭐</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Chat Now button */}
       <div className="fixed bottom-6 right-6 z-50">
         <button className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full font-semibold flex items-center space-x-2 shadow-lg transition-colors">
