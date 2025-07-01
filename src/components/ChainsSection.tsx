@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -77,19 +76,19 @@ const ChainsSection = () => {
 
   return (
     <section className="py-16 bg-gray-50">
-      <div className="flex">
-        {/* Title section with background image */}
-        <div className="w-64 bg-gradient-to-br from-gray-800 to-black relative overflow-hidden flex items-center justify-center">
+      <div className="flex flex-col md:flex-row">
+        {/* Title section with background image - smaller on mobile */}
+        <div className="w-full md:w-64 h-32 md:h-auto bg-gradient-to-br from-gray-800 to-black relative overflow-hidden flex items-center justify-center">
           <div 
             className="absolute inset-0 bg-cover bg-center opacity-30"
             style={{
               backgroundImage: `url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80')`
             }}
           />
-          <div className="relative z-10 text-center text-white p-8">
-            <h2 className="text-xl font-bold mb-2">MOISSANITE</h2>
-            <h2 className="text-2xl font-bold mb-4">CHAINS</h2>
-            <ArrowRight className="w-8 h-8 mx-auto text-white" />
+          <div className="relative z-10 text-center text-white p-4 md:p-8">
+            <h2 className="text-lg md:text-xl font-bold mb-1 md:mb-2">MOISSANITE</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-2 md:mb-4">CHAINS</h2>
+            <ArrowRight className="w-6 h-6 md:w-8 md:h-8 mx-auto text-white" />
           </div>
         </div>
 
