@@ -87,9 +87,9 @@ const ProductShowcase = () => {
 
   return (
     <section className="py-16 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-full px-0">
         {/* Section header */}
-        <div className="flex items-center justify-between mb-12">
+        <div className="flex items-center justify-between mb-12 px-4 max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-gray-900">
             MEN'S MOISSANITE JEWELRY
           </h2>
@@ -112,12 +112,12 @@ const ProductShowcase = () => {
           </div>
         </div>
 
-        {/* Product grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
+        {/* Product grid - stretched to edges */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-0 mb-8">
           {products.map((product) => (
             <div
               key={product.id}
-              className="group relative bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+              className="group relative bg-white overflow-hidden hover:shadow-lg transition-shadow border-r border-gray-200 last:border-r-0"
             >
               {/* Product image */}
               <div className="relative aspect-square overflow-hidden bg-gray-100">
@@ -127,19 +127,23 @@ const ProductShowcase = () => {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 
-                {/* Badges */}
-                <div className="absolute top-3 left-3 flex flex-col space-y-1">
+                {/* Discount badge - positioned on left side */}
+                <div className="absolute top-3 left-3">
                   <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
                     {product.discount}
                   </Badge>
-                  {product.shipsToday && (
+                </div>
+
+                {/* Ships Today badge - positioned on right side */}
+                {product.shipsToday && (
+                  <div className="absolute top-3 right-3">
                     <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">
                       SHIPS TODAY
                     </Badge>
-                  )}
-                </div>
+                  </div>
+                )}
 
-                {/* Size options */}
+                {/* Size options - positioned at bottom */}
                 {product.sizes && (
                   <div className="absolute bottom-3 left-3 flex flex-wrap gap-1">
                     {product.sizes.slice(0, 3).map((size, index) => (
@@ -187,7 +191,7 @@ const ProductShowcase = () => {
         </div>
 
         {/* Shop Best Sellers Button */}
-        <div className="text-center">
+        <div className="text-center px-4">
           <Button className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 font-medium">
             SHOP BEST SELLERS →
           </Button>
