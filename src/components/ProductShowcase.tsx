@@ -62,7 +62,7 @@ const ProductShowcase = () => {
       <div className="max-w-7xl mx-auto px-4">
         {/* Section header */}
         <div className="flex items-center justify-between mb-12">
-          <h2 className="text-lg font-normal text-gray-900">
+          <h2 className="text-3xl font-bold text-gray-900">
             MEN'S MOISSANITE JEWELRY
           </h2>
           
