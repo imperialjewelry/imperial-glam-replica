@@ -357,20 +357,6 @@ const Chains = () => {
       {!isMobile && (
         <section className="bg-gray-50 py-12 px-8">
           <div className="max-w-7xl mx-auto">
-            {/* Hero Images */}
-            <div className="grid grid-cols-8 gap-4 mb-8">
-              {chainTypes.map((type, index) => (
-                <div key={index} className="text-center">
-                  <img 
-                    src={`https://images.unsplash.com/photo-${index % 2 === 0 ? '1515562141207-7a88fb7ce338' : '1602173574767-37ac01994b2a'}?auto=format&fit=crop&w=200&q=80`}
-                    alt={type}
-                    className="w-full aspect-square rounded-lg object-cover mb-2"
-                  />
-                  <span className="text-xs text-gray-500 font-medium">{type}</span>
-                </div>
-              ))}
-            </div>
-            
             <div className="text-center">
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 MOISSANITE DIAMOND CHAINS
