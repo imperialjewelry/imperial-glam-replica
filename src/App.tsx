@@ -15,6 +15,7 @@ import Grillz from "./pages/Grillz";
 import Glasses from "./pages/Glasses";
 import HipHopRings from "./pages/HipHopRings";
 import EngagementRings from "./pages/EngagementRings";
+import VvsDiamondSimulants from "./pages/VvsDiamondSimulants";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/glasses" element={<Glasses />} />
           <Route path="/rings/hip-hop" element={<HipHopRings />} />
           <Route path="/rings/engagement" element={<EngagementRings />} />
+          <Route path="/vvs-diamond-simulants" element={<VvsDiamondSimulants />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

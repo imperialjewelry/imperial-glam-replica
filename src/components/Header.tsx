@@ -12,7 +12,7 @@ import {
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigation = ['BEST DEALS', 'CHAINS', 'BRACELETS', 'CUSTOM', 'GRILLZ', 'WATCHES', 'PENDANTS', 'RINGS', 'EARRINGS', 'GLASSES', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
+  const navigation = ['BEST DEALS', 'CHAINS', 'BRACELETS', 'CUSTOM', 'GRILLZ', 'WATCHES', 'PENDANTS', 'RINGS', 'EARRINGS', 'GLASSES', 'VVS DIAMOND SIMULANTS'];
   const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
   
   return (
@@ -92,7 +92,15 @@ const Header = () => {
                 return (
                   <Link 
                     key={item} 
-                    to={item === 'CHAINS' ? '/chains' : item === 'BRACELETS' ? '/bracelets' : item === 'CUSTOM' ? '/custom' : item === 'GRILLZ' ? '/grillz' : item === 'GLASSES' ? '/glasses' : '/'} 
+                    to={
+                      item === 'CHAINS' ? '/chains' : 
+                      item === 'BRACELETS' ? '/bracelets' : 
+                      item === 'CUSTOM' ? '/custom' : 
+                      item === 'GRILLZ' ? '/grillz' : 
+                      item === 'GLASSES' ? '/glasses' :
+                      item === 'VVS DIAMOND SIMULANTS' ? '/vvs-diamond-simulants' :
+                      '/'
+                    } 
                     className="text-gray-700 hover:text-black transition-colors"
                   >
                     {item}
@@ -222,7 +230,15 @@ const Header = () => {
                     <div key={item} className="flex items-center space-x-3 py-2">
                       <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
                       <Link 
-                        to={item === 'CHAINS' ? '/chains' : item === 'BRACELETS' ? '/bracelets' : item === 'CUSTOM' ? '/custom' : item === 'GRILLZ' ? '/grillz' : item === 'GLASSES' ? '/glasses' : '/'}
+                        to={
+                          item === 'CHAINS' ? '/chains' : 
+                          item === 'BRACELETS' ? '/bracelets' : 
+                          item === 'CUSTOM' ? '/custom' : 
+                          item === 'GRILLZ' ? '/grillz' : 
+                          item === 'GLASSES' ? '/glasses' :
+                          item === 'VVS DIAMOND SIMULANTS' ? '/vvs-diamond-simulants' :
+                          '/'
+                        }
                         className="text-sm font-medium text-gray-700 hover:text-black"
                         onClick={() => setIsMenuOpen(false)}
                       >
