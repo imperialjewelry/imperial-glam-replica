@@ -1,4 +1,3 @@
-
 import { Star } from 'lucide-react';
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -48,11 +47,12 @@ const CustomerReviews = () => {
     <section className="py-16 bg-black text-white relative overflow-hidden">
       {/* Background pattern overlay */}
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0 bg-repeat bg-center" 
-             style={{
-               backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-             }}>
-        </div>
+        <div
+          className="absolute inset-0 bg-repeat bg-center"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}
+        ></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 relative z-10">
@@ -120,27 +120,31 @@ const CustomerReviews = () => {
       {/* Payment Options Strip */}
       <div className="bg-white border-t border-b border-gray-200 py-6 mt-16">
         <div className="relative overflow-hidden">
-          <div 
+          <div
             className="flex items-center whitespace-nowrap"
             style={{
               animation: 'scroll 45s linear infinite'
             }}
           >
-            {/* Continuous scrolling content - multiple copies for seamless loop */}
             {[...Array(4)].map((_, setIndex) => (
-              <div key={setIndex} className="flex items-center space-x-16 mx-12">
-                <img 
-                  src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images//afterpaylogo.webp" 
-                  alt="Afterpay" 
+              <div key={setIndex} className="flex items-center gap-8 mx-12 min-w-max">
+                <img
+                  src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images//afterpaylogo.webp"
+                  alt="Afterpay"
                   className="h-8"
                 />
-                <img 
-                  src="https://cdn-assets.affirm.com/images/black_logo-white_bg.svg" 
-                  alt="Affirm" 
+                <img
+                  src="https://cdn-assets.affirm.com/images/black_logo-white_bg.svg"
+                  alt="Affirm"
                   className="h-8"
                 />
-                <span className="text-sm text-gray-600">Payment plans for 12-36 months</span>
-                <span className="text-xl font-bold text-black">BUY NOW PAY LATER</span>
+                <img
+                  src="https://www.paypalobjects.com/webstatic/icon/pp258.png"
+                  alt="PayPal Pay Later"
+                  className="h-8"
+                />
+                <span className="text-sm text-gray-600 whitespace-nowrap">Payment plans for 12–36 months</span>
+                <span className="text-xl font-bold text-black whitespace-nowrap">BUY NOW PAY LATER</span>
               </div>
             ))}
           </div>
