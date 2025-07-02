@@ -12,7 +12,7 @@ import {
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigation = ['BEST DEALS', 'CHAINS', 'BRACELETS', 'CUSTOM', 'GRILLZ', 'WATCHES', 'PENDANTS', 'RINGS', 'EARRINGS', 'GLASSES', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
+  const navigation = ['BEST DEALS', 'CHAINS', 'BRACELETS', 'WATCHES', 'PENDANTS', 'EARRINGS', 'CUSTOM', 'GRILLZ', 'GLASSES', 'RINGS', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
   const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
   
   return (
@@ -93,8 +93,12 @@ const Header = () => {
                   <Link 
                     key={item} 
                     to={
+                      item === 'BEST DEALS' ? '/' :
                       item === 'CHAINS' ? '/chains' : 
                       item === 'BRACELETS' ? '/bracelets' : 
+                      item === 'WATCHES' ? '/watches' :
+                      item === 'PENDANTS' ? '/pendants' :
+                      item === 'EARRINGS' ? '/earrings' :
                       item === 'CUSTOM' ? '/custom' : 
                       item === 'GRILLZ' ? '/grillz' : 
                       item === 'GLASSES' ? '/glasses' :
@@ -186,8 +190,10 @@ const Header = () => {
             <div className="p-4 space-y-6">
               <div className="space-y-4">
                 <div className="bg-gray-100 p-4 rounded-lg">
-                  <h3 className="font-semibold text-sm mb-2">BEST DEALS</h3>
-                  <p className="text-xs text-gray-600">Up to 70% off selected items</p>
+                  <Link to="/" onClick={() => setIsMenuOpen(false)}>
+                    <h3 className="font-semibold text-sm mb-2">BEST DEALS</h3>
+                    <p className="text-xs text-gray-600">Up to 70% off selected items</p>
+                  </Link>
                 </div>
                 
                 <div className="bg-gray-100 p-4 rounded-lg">
@@ -200,55 +206,149 @@ const Header = () => {
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg border-b border-gray-200 pb-2">CATEGORIES</h3>
                 
-                {navigation.map(item => {
-                  if (item === 'RINGS') {
-                    return (
-                      <div key={item} className="space-y-2">
-                        <div className="flex items-center space-x-3 py-2">
-                          <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
-                          <span className="text-sm font-medium text-gray-700">RINGS</span>
-                        </div>
-                        <div className="ml-15 space-y-2">
-                          <Link 
-                            to="/rings/hip-hop"
-                            className="block text-sm text-gray-600 hover:text-black pl-4"
-                            onClick={() => setIsMenuOpen(false)}
-                          >
-                            Hip Hop Rings
-                          </Link>
-                          <Link 
-                            to="/rings/engagement"
-                            className="block text-sm text-gray-600 hover:text-black pl-4"
-                            onClick={() => setIsMenuOpen(false)}
-                          >
-                            Engagement Rings
-                          </Link>
-                        </div>
-                      </div>
-                    );
-                  }
-                  return (
-                    <div key={item} className="flex items-center space-x-3 py-2">
-                      <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
-                      <Link 
-                        to={
-                          item === 'CHAINS' ? '/chains' : 
-                          item === 'BRACELETS' ? '/bracelets' : 
-                          item === 'CUSTOM' ? '/custom' : 
-                          item === 'GRILLZ' ? '/grillz' : 
-                          item === 'GLASSES' ? '/glasses' :
-                          item === 'DIAMOND' ? '/diamond' :
-                          item === 'VVS DIAMOND SIMULANTS' ? '/vvs-diamond-simulants' :
-                          '/'
-                        }
-                        className="text-sm font-medium text-gray-700 hover:text-black"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        {item}
-                      </Link>
-                    </div>
-                  );
-                })}
+                {/* CHAINS */}
+                <div className="flex items-center space-x-3 py-2">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <Link 
+                    to="/chains"
+                    className="text-sm font-medium text-gray-700 hover:text-black"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    CHAINS
+                  </Link>
+                </div>
+
+                {/* BRACELETS */}
+                <div className="flex items-center space-x-3 py-2">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <Link 
+                    to="/bracelets"
+                    className="text-sm font-medium text-gray-700 hover:text-black"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    BRACELETS
+                  </Link>
+                </div>
+
+                {/* WATCHES */}
+                <div className="flex items-center space-x-3 py-2">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <Link 
+                    to="/watches"
+                    className="text-sm font-medium text-gray-700 hover:text-black"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    WATCHES
+                  </Link>
+                </div>
+
+                {/* PENDANTS */}
+                <div className="flex items-center space-x-3 py-2">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <Link 
+                    to="/pendants"
+                    className="text-sm font-medium text-gray-700 hover:text-black"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    PENDANTS
+                  </Link>
+                </div>
+
+                {/* EARRINGS */}
+                <div className="flex items-center space-x-3 py-2">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <Link 
+                    to="/earrings"
+                    className="text-sm font-medium text-gray-700 hover:text-black"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    EARRINGS
+                  </Link>
+                </div>
+
+                {/* CUSTOM */}
+                <div className="flex items-center space-x-3 py-2">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <Link 
+                    to="/custom"
+                    className="text-sm font-medium text-gray-700 hover:text-black"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    CUSTOM
+                  </Link>
+                </div>
+
+                {/* GRILLZ */}
+                <div className="flex items-center space-x-3 py-2">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <Link 
+                    to="/grillz"
+                    className="text-sm font-medium text-gray-700 hover:text-black"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    GRILLZ
+                  </Link>
+                </div>
+
+                {/* GLASSES */}
+                <div className="flex items-center space-x-3 py-2">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <Link 
+                    to="/glasses"
+                    className="text-sm font-medium text-gray-700 hover:text-black"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    GLASSES
+                  </Link>
+                </div>
+
+                {/* RINGS */}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-3 py-2">
+                    <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                    <span className="text-sm font-medium text-gray-700">RINGS</span>
+                  </div>
+                  <div className="ml-15 space-y-2">
+                    <Link 
+                      to="/rings/hip-hop"
+                      className="block text-sm text-gray-600 hover:text-black pl-4"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Hip Hop Rings
+                    </Link>
+                    <Link 
+                      to="/rings/engagement"
+                      className="block text-sm text-gray-600 hover:text-black pl-4"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Engagement Rings
+                    </Link>
+                  </div>
+                </div>
+
+                {/* DIAMOND */}
+                <div className="flex items-center space-x-3 py-2">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <Link 
+                    to="/diamond"
+                    className="text-sm font-medium text-gray-700 hover:text-black"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    DIAMOND
+                  </Link>
+                </div>
+
+                {/* VVS DIAMOND SIMULANTS */}
+                <div className="flex items-center space-x-3 py-2">
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <Link 
+                    to="/vvs-diamond-simulants"
+                    className="text-sm font-medium text-gray-700 hover:text-black"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    VVS DIAMOND SIMULANTS
+                  </Link>
+                </div>
               </div>
 
               {/* Bottom section */}
