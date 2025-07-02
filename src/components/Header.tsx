@@ -12,7 +12,7 @@ import {
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigation = ['BEST DEALS', 'CHAINS', 'BRACELETS', 'CUSTOM', 'GRILLZ', 'WATCHES', 'PENDANTS', 'RINGS', 'EARRINGS', 'GLASSES', 'VVS DIAMOND SIMULANTS'];
+  const navigation = ['BEST DEALS', 'CHAINS', 'BRACELETS', 'CUSTOM', 'GRILLZ', 'WATCHES', 'PENDANTS', 'RINGS', 'EARRINGS', 'GLASSES', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
   const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
   
   return (
@@ -98,6 +98,7 @@ const Header = () => {
                       item === 'CUSTOM' ? '/custom' : 
                       item === 'GRILLZ' ? '/grillz' : 
                       item === 'GLASSES' ? '/glasses' :
+                      item === 'DIAMOND' ? '/diamond' :
                       item === 'VVS DIAMOND SIMULANTS' ? '/vvs-diamond-simulants' :
                       '/'
                     } 
@@ -236,6 +237,7 @@ const Header = () => {
                           item === 'CUSTOM' ? '/custom' : 
                           item === 'GRILLZ' ? '/grillz' : 
                           item === 'GLASSES' ? '/glasses' :
+                          item === 'DIAMOND' ? '/diamond' :
                           item === 'VVS DIAMOND SIMULANTS' ? '/vvs-diamond-simulants' :
                           '/'
                         }
