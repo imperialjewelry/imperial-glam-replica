@@ -123,12 +123,12 @@ const CustomerReviews = () => {
           <div 
             className="flex items-center whitespace-nowrap"
             style={{
-              animation: 'scroll 30s linear infinite'
+              animation: 'scroll 45s linear infinite'
             }}
           >
             {/* Continuous scrolling content - multiple copies for seamless loop */}
             {[...Array(4)].map((_, setIndex) => (
-              <div key={setIndex} className="flex items-center space-x-8 mx-8">
+              <div key={setIndex} className="flex items-center space-x-16 mx-12">
                 <img 
                   src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images//afterpaylogo.webp" 
                   alt="Afterpay" 
