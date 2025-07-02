@@ -120,7 +120,12 @@ const CustomerReviews = () => {
       {/* Payment Options Strip */}
       <div className="bg-white border-t border-b border-gray-200 py-6 mt-16">
         <div className="relative overflow-hidden">
-          <div className="flex animate-[scroll_30s_linear_infinite] items-center whitespace-nowrap">
+          <div 
+            className="flex items-center whitespace-nowrap"
+            style={{
+              animation: 'scroll 30s linear infinite'
+            }}
+          >
             {/* Continuous scrolling content - multiple copies for seamless loop */}
             {[...Array(4)].map((_, setIndex) => (
               <div key={setIndex} className="flex items-center space-x-12 mx-6">
@@ -146,16 +151,18 @@ const CustomerReviews = () => {
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes scroll {
-          0% {
-            transform: translateX(0);
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes scroll {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-25%);
+            }
           }
-          100% {
-            transform: translateX(-25%);
-          }
-        }
-      `}</style>
+        `
+      }} />
     </section>
   );
 };
