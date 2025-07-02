@@ -128,23 +128,19 @@ const CustomerReviews = () => {
           >
             {/* Continuous scrolling content - multiple copies for seamless loop */}
             {[...Array(4)].map((_, setIndex) => (
-              <div key={setIndex} className="flex items-center space-x-12 mx-6">
-                <span className="text-2xl">✨</span>
+              <div key={setIndex} className="flex items-center space-x-8 mx-8">
                 <img 
                   src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images//afterpaylogo.webp" 
                   alt="Afterpay" 
-                  className="h-10"
+                  className="h-8"
                 />
                 <img 
                   src="https://cdn-assets.affirm.com/images/black_logo-white_bg.svg" 
                   alt="Affirm" 
-                  className="h-10"
+                  className="h-8"
                 />
-                <span className="text-2xl">⭐</span>
-                <span className="text-lg text-gray-600">📅 Payment plans for 12-36 months</span>
+                <span className="text-sm text-gray-600">Payment plans for 12-36 months</span>
                 <span className="text-xl font-bold text-black">BUY NOW PAY LATER</span>
-                <span className="text-2xl">✨</span>
-                <span className="text-2xl">⭐</span>
               </div>
             ))}
           </div>
