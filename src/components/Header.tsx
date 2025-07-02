@@ -1,13 +1,20 @@
 
 import { useState } from 'react';
-import { Search, ShoppingCart, Menu, X, Instagram, MessageCircle, Star, Truck } from 'lucide-react';
+import { Search, ShoppingCart, Menu, X, Instagram, MessageCircle, Star, Truck, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigation = ['BEST DEALS', 'CHAINS', 'BRACELETS', 'CUSTOM', 'GRILLZ', 'WATCHES', 'PENDANTS', 'RINGS', 'EARRINGS', 'GLASSES', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
   const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
+  
   return (
     <>
       {/* Desktop Header */}
@@ -59,11 +66,39 @@ const Header = () => {
         <div className="border-t border-gray-200">
           <div className="max-w-7xl mx-auto px-4 py-3">
             <div className="flex items-center justify-center space-x-8 text-sm font-medium">
-              {navigation.map(item => (
-                <Link key={item} to={item === 'CHAINS' ? '/chains' : '/'} className="text-gray-700 hover:text-black transition-colors">
-                  {item}
-                </Link>
-              ))}
+              {navigation.map(item => {
+                if (item === 'RINGS') {
+                  return (
+                    <DropdownMenu key={item}>
+                      <DropdownMenuTrigger className="text-gray-700 hover:text-black transition-colors flex items-center space-x-1">
+                        <span>{item}</span>
+                        <ChevronDown className="w-3 h-3" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="bg-white border shadow-lg">
+                        <DropdownMenuItem asChild>
+                          <Link to="/rings/hip-hop" className="w-full px-3 py-2 text-sm hover:bg-gray-100">
+                            Hip Hop Rings
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/rings/engagement" className="w-full px-3 py-2 text-sm hover:bg-gray-100">
+                            Engagement Rings
+                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  );
+                }
+                return (
+                  <Link 
+                    key={item} 
+                    to={item === 'CHAINS' ? '/chains' : item === 'BRACELETS' ? '/bracelets' : item === 'CUSTOM' ? '/custom' : item === 'GRILLZ' ? '/grillz' : item === 'GLASSES' ? '/glasses' : '/'} 
+                    className="text-gray-700 hover:text-black transition-colors"
+                  >
+                    {item}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -156,18 +191,46 @@ const Header = () => {
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg border-b border-gray-200 pb-2">CATEGORIES</h3>
                 
-                {navigation.map(item => (
-                  <div key={item} className="flex items-center space-x-3 py-2">
-                    <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
-                    <Link 
-                      to={item === 'CHAINS' ? '/chains' : '/'}
-                      className="text-sm font-medium text-gray-700 hover:text-black"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {item}
-                    </Link>
-                  </div>
-                ))}
+                {navigation.map(item => {
+                  if (item === 'RINGS') {
+                    return (
+                      <div key={item} className="space-y-2">
+                        <div className="flex items-center space-x-3 py-2">
+                          <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                          <span className="text-sm font-medium text-gray-700">RINGS</span>
+                        </div>
+                        <div className="ml-15 space-y-2">
+                          <Link 
+                            to="/rings/hip-hop"
+                            className="block text-sm text-gray-600 hover:text-black pl-4"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            Hip Hop Rings
+                          </Link>
+                          <Link 
+                            to="/rings/engagement"
+                            className="block text-sm text-gray-600 hover:text-black pl-4"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            Engagement Rings
+                          </Link>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div key={item} className="flex items-center space-x-3 py-2">
+                      <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                      <Link 
+                        to={item === 'CHAINS' ? '/chains' : item === 'BRACELETS' ? '/bracelets' : item === 'CUSTOM' ? '/custom' : item === 'GRILLZ' ? '/grillz' : item === 'GLASSES' ? '/glasses' : '/'}
+                        className="text-sm font-medium text-gray-700 hover:text-black"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {item}
+                      </Link>
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Bottom section */}
