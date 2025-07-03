@@ -1,6 +1,11 @@
 
 import { Star } from 'lucide-react';
 import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
 
 const CustomerReviews = () => {
   const isMobile = useIsMobile();
@@ -70,30 +75,36 @@ const CustomerReviews = () => {
           </div>
         </div>
 
-        {/* Mobile: Continuous scroll, Desktop: Grid */}
+        {/* Mobile: Manual drag carousel, Desktop: Grid */}
         {isMobile ? (
-          <div className="overflow-hidden mb-12">
-            <div className="flex animate-scroll-mobile space-x-4">
-              {/* Duplicate reviews for seamless loop */}
-              {[...reviews, ...reviews].map((review, index) => (
-                <div
-                  key={`${review.id}-${index}`}
-                  className="flex-shrink-0 w-64 bg-white text-black rounded-lg overflow-hidden shadow-lg"
-                >
-                  <div className="aspect-square overflow-hidden">
-                    <img
-                      src={review.image}
-                      alt={review.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-bold text-lg mb-2">{review.title}</h3>
-                    <p className="text-gray-600 text-sm">{review.content}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="mb-12">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-2 md:-ml-4">
+                {reviews.map((review) => (
+                  <CarouselItem key={review.id} className="pl-2 md:pl-4 basis-4/5 sm:basis-3/4">
+                    <div className="bg-white text-black rounded-lg overflow-hidden shadow-lg">
+                      <div className="aspect-square overflow-hidden">
+                        <img
+                          src={review.image}
+                          alt={review.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-bold text-lg mb-2">{review.title}</h3>
+                        <p className="text-gray-600 text-sm">{review.content}</p>
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-12">
@@ -151,15 +162,6 @@ const CustomerReviews = () => {
 
       <style dangerouslySetInnerHTML={{
         __html: `
-          @keyframes scroll-mobile {
-            0% {
-              transform: translateX(0);
-            }
-            100% {
-              transform: translateX(-50%);
-            }
-          }
-          
           @keyframes scroll-payment {
             0% {
               transform: translateX(0);
@@ -167,10 +169,6 @@ const CustomerReviews = () => {
             100% {
               transform: translateX(-50%);
             }
-          }
-          
-          .animate-scroll-mobile {
-            animation: scroll-mobile 13s linear infinite;
           }
           
           .animate-scroll-payment {
