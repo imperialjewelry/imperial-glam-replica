@@ -1,10 +1,13 @@
 
-import { Card, CardContent } from '@/components/ui/card';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Star, ChevronRight } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Star, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const MoissaniteGrillzSection = () => {
+  const [activeTab, setActiveTab] = useState('GRILLZ');
+
   const grillzProducts = [
     {
       id: 1,
@@ -65,115 +68,106 @@ const MoissaniteGrillzSection = () => {
 
   return (
     <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Hero Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-          <div className="bg-gradient-to-r from-orange-400 to-red-500 rounded-lg p-8 text-white relative overflow-hidden">
-            <div className="relative z-10">
-              <h2 className="text-4xl font-bold mb-4">MOISSANITE</h2>
-              <h3 className="text-5xl font-bold mb-6">GRILLZ</h3>
-              <Button className="bg-white text-black hover:bg-gray-100 px-6 py-3 rounded-full font-semibold">
-                <ChevronRight className="w-5 h-5 ml-2" />
-              </Button>
-            </div>
-            <div className="absolute right-0 top-0 w-1/2 h-full opacity-20">
-              <img 
-                src="/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png" 
-                alt="Grillz" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            {grillzProducts.slice(0, 2).map((product) => (
-              <Card key={product.id} className="border border-gray-200">
-                <CardContent className="p-4">
-                  <div className="flex space-x-4">
-                    <div className="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
-                      <img 
-                        src={product.image} 
-                        alt={product.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-xs text-gray-500 uppercase mb-1">{product.material}</p>
-                      <h4 className="font-semibold text-sm mb-2 line-clamp-2">{product.title}</h4>
-                      <div className="flex items-center space-x-2 mb-2">
-                        <span className="text-lg font-bold text-blue-600">{product.currentPrice}</span>
-                        <span className="text-sm text-gray-500 line-through">{product.originalPrice}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star 
-                              key={i} 
-                              className={`w-3 h-3 ${i < product.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
-                            />
-                          ))}
-                        </div>
-                        <span className="text-xs text-gray-500">({product.reviews})</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+      <div className="flex flex-col md:flex-row">
+        {/* Title section with background image - smaller on mobile */}
+        <div className="w-full md:w-64 h-32 md:h-auto bg-gradient-to-br from-orange-400 to-red-500 relative overflow-hidden flex items-center justify-center">
+          <div 
+            className="absolute inset-0 bg-cover bg-center opacity-30"
+            style={{
+              backgroundImage: `url('/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png')`
+            }}
+          />
+          <div className="relative z-10 text-center text-white p-4 md:p-8">
+            <h2 className="text-lg md:text-xl font-bold mb-1 md:mb-2">MOISSANITE</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-2 md:mb-4">GRILLZ</h2>
+            <ArrowRight className="w-6 h-6 md:w-8 md:h-8 mx-auto text-white" />
           </div>
         </div>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-          {grillzProducts.map((product) => (
-            <Card key={product.id} className="border border-gray-200 hover:shadow-lg transition-shadow">
-              <CardContent className="p-4">
-                <div className="relative mb-4">
-                  <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-3">
-                    <img 
-                      src={product.image} 
+        {/* Products horizontal scroll */}
+        <div className="flex-1 overflow-hidden">
+          <div className="flex items-center justify-between mb-6 px-4">
+            <div className="flex space-x-4">
+              {['GRILLZ', 'CUSTOM'].map((tab) => (
+                <Button
+                  key={tab}
+                  variant={activeTab === tab ? "default" : "ghost"}
+                  onClick={() => setActiveTab(tab)}
+                  className={`${
+                    activeTab === tab 
+                      ? "text-blue-600 border-b-2 border-blue-600 bg-transparent hover:bg-transparent" 
+                      : "text-gray-400 hover:text-gray-600"
+                  } font-medium px-0 rounded-none`}
+                >
+                  {tab}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <div className="flex space-x-4 px-4 pb-4">
+              {grillzProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="flex-shrink-0 w-64 group relative bg-white overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg"
+                >
+                  {/* Product image */}
+                  <div className="relative aspect-square overflow-hidden bg-gray-100">
+                    <img
+                      src={product.image}
                       alt={product.title}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
+                    
+                    {/* Discount badge - positioned on left side */}
+                    <div className="absolute top-3 left-3">
+                      <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                        {product.discount}
+                      </Badge>
+                    </div>
                   </div>
-                  {product.discount && (
-                    <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
-                      {product.discount}
-                    </span>
-                  )}
-                </div>
-                
-                <p className="text-xs text-blue-500 uppercase mb-1">{product.material}</p>
-                <h4 className="font-semibold text-sm mb-2 line-clamp-2">{product.title}</h4>
-                
-                <div className="flex items-center space-x-2 mb-2">
-                  <span className="text-lg font-bold text-blue-600">{product.currentPrice}</span>
-                  <span className="text-sm text-gray-500 line-through">{product.originalPrice}</span>
-                </div>
-                
-                <div className="flex items-center space-x-1">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star 
-                        key={i} 
-                        className={`w-3 h-3 ${i < product.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
-                      />
-                    ))}
-                  </div>
-                  <span className="text-xs text-gray-500">({product.reviews})</span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
 
-        <div className="text-center mt-8">
-          <Link to="/grillz">
-            <Button variant="outline" className="px-8 py-3">
-              View All Grillz
-            </Button>
-          </Link>
+                  {/* Product info */}
+                  <div className="p-4">
+                    <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
+                      {product.material}
+                    </div>
+                    
+                    <h3 className="font-medium text-gray-900 mb-2 text-sm leading-tight line-clamp-2">
+                      {product.title}
+                    </h3>
+                    
+                    <div className="flex items-center space-x-1 mb-2">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`w-3 h-3 ${i < product.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                        ))}
+                      </div>
+                      <span className="text-xs text-gray-500">({product.reviews})</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg font-bold text-blue-600">{product.currentPrice}</span>
+                      <span className="text-sm text-gray-400 line-through">
+                        {product.originalPrice}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+      </div>
+
+      {/* Shop Grillz Button */}
+      <div className="text-center mt-8 px-4">
+        <Link to="/grillz">
+          <Button className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 font-medium">
+            SHOP GRILLZ →
+          </Button>
+        </Link>
       </div>
     </section>
   );
