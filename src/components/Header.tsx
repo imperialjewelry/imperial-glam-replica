@@ -379,7 +379,7 @@ const Header = () => {
           }
           
           .animate-scroll-header {
-            animation: scroll-header 40s linear infinite;
+            animation: scroll-header 27s linear infinite;
           }
         `
       }} />

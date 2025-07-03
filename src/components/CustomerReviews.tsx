@@ -170,11 +170,11 @@ const CustomerReviews = () => {
           }
           
           .animate-scroll-mobile {
-            animation: scroll-mobile 20s linear infinite;
+            animation: scroll-mobile 13s linear infinite;
           }
           
           .animate-scroll-payment {
-            animation: scroll-payment 25s linear infinite;
+            animation: scroll-payment 17s linear infinite;
           }
         `
       }} />
