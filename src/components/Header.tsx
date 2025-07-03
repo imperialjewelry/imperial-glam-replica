@@ -13,7 +13,7 @@ import {
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigation = ['BEST DEALS', 'CHAINS', 'BRACELETS', 'WATCHES', 'PENDANTS', 'EARRINGS', 'CUSTOM', 'GRILLZ', 'GLASSES', 'RINGS', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
-  const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
+  const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
   
   return (
     <>
@@ -156,12 +156,12 @@ const Header = () => {
 
       {/* Feature bar - continuous carousel */}
       <div className="bg-black text-white py-3 overflow-hidden">
-        <div className="flex animate-scroll whitespace-nowrap">
-          {/* Duplicate the features array multiple times for seamless loop */}
-          {[...Array(4)].map((_, groupIndex) => (
-            <div key={groupIndex} className="flex">
+        <div className="animate-scroll-header whitespace-nowrap">
+          {/* Create seamless infinite loop with enough repetitions */}
+          {[...Array(8)].map((_, groupIndex) => (
+            <div key={groupIndex} className="inline-flex">
               {features.map((feature, index) => (
-                <div key={`${groupIndex}-${index}`} className="flex items-center mx-8">
+                <div key={`${groupIndex}-${index}`} className="inline-flex items-center mx-12">
                   <Star className="w-4 h-4 text-yellow-400 mr-2 flex-shrink-0" />
                   <span className="text-sm font-medium">{feature}</span>
                 </div>
@@ -366,6 +366,23 @@ const Header = () => {
           </div>
         </div>
       )}
+
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes scroll-header {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+          
+          .animate-scroll-header {
+            animation: scroll-header 40s linear infinite;
+          }
+        `
+      }} />
     </>
   );
 };
