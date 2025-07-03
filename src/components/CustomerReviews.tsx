@@ -123,7 +123,7 @@ const CustomerReviews = () => {
           <div
             className="flex items-center whitespace-nowrap"
             style={{
-              animation: 'scroll 15s linear infinite'
+              animation: 'scroll 6s linear infinite'
             }}
           >
             {[...Array(4)].map((_, setIndex) => (
