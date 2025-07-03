@@ -1,3 +1,4 @@
+
 import { Star } from 'lucide-react';
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -69,13 +70,14 @@ const CustomerReviews = () => {
           </div>
         </div>
 
-        {/* Mobile: Horizontal scroll, Desktop: Grid */}
+        {/* Mobile: Continuous scroll, Desktop: Grid */}
         {isMobile ? (
-          <div className="overflow-x-auto mb-12">
-            <div className="flex space-x-4 px-4 pb-4">
-              {reviews.map((review) => (
+          <div className="overflow-hidden mb-12">
+            <div className="flex animate-scroll-mobile space-x-4">
+              {/* Duplicate reviews for seamless loop */}
+              {[...reviews, ...reviews].map((review, index) => (
                 <div
-                  key={review.id}
+                  key={`${review.id}-${index}`}
                   className="flex-shrink-0 w-64 bg-white text-black rounded-lg overflow-hidden shadow-lg"
                 >
                   <div className="aspect-square overflow-hidden">
@@ -119,15 +121,11 @@ const CustomerReviews = () => {
 
       {/* Payment Options Strip */}
       <div className="bg-white border-t border-b border-gray-200 py-6 mt-16">
-        <div className="relative overflow-hidden">
-          <div
-            className="flex items-center whitespace-nowrap"
-            style={{
-              animation: 'scroll 6s linear infinite'
-            }}
-          >
-            {[...Array(4)].map((_, setIndex) => (
-              <div key={setIndex} className="flex items-center gap-8 mx-12 min-w-max">
+        <div className="overflow-hidden">
+          <div className="flex items-center animate-scroll-payment space-x-16">
+            {/* Duplicate payment items for seamless loop */}
+            {[...Array(6)].map((_, setIndex) => (
+              <div key={setIndex} className="flex items-center gap-16 min-w-max">
                 <img
                   src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images//afterpaylogo.webp"
                   alt="Afterpay"
@@ -143,7 +141,7 @@ const CustomerReviews = () => {
                   alt="PayPal Pay Later"
                   className="h-8"
                 />
-                <span className="text-sm text-gray-600 whitespace-nowrap">Payment plans for 12–36 months</span>
+                <span className="text-xs text-gray-600 whitespace-nowrap">Payment plans for 12–36 months</span>
                 <span className="text-xl font-bold text-black whitespace-nowrap">BUY NOW PAY LATER</span>
               </div>
             ))}
@@ -153,13 +151,30 @@ const CustomerReviews = () => {
 
       <style dangerouslySetInnerHTML={{
         __html: `
-          @keyframes scroll {
+          @keyframes scroll-mobile {
             0% {
               transform: translateX(0);
             }
             100% {
-              transform: translateX(-25%);
+              transform: translateX(-50%);
             }
+          }
+          
+          @keyframes scroll-payment {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+          
+          .animate-scroll-mobile {
+            animation: scroll-mobile 20s linear infinite;
+          }
+          
+          .animate-scroll-payment {
+            animation: scroll-payment 25s linear infinite;
           }
         `
       }} />
