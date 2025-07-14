@@ -1,27 +1,86 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
+import ProductCheckout from '../components/ProductCheckout';
+
+interface Product {
+  id: string;
+  stripe_product_id: string;
+  name: string;
+  description: string;
+  price: number;
+  original_price: number;
+  category: string;
+  product_type: string;
+  color: string;
+  material: string;
+  sizes: string[];
+  image_url: string;
+  rating: number;
+  review_count: number;
+  discount_percentage: number;
+  in_stock: boolean;
+  ships_today: boolean;
+  featured: boolean;
+}
 
 const Chains = () => {
   const isMobile = useIsMobile();
+  const { toast } = useToast();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('featured');
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [openSections, setOpenSections] = useState({
     productType: false,
     price: false,
     color: false,
     material: false
   });
+
+  // Filter states
+  const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('chain_products')
+        .select('*')
+        .order('featured', { ascending: false });
+
+      if (error) throw error;
+      setProducts(data || []);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      toast({
+        title: "Error loading products",
+        description: "Please try refreshing the page.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
@@ -30,106 +89,41 @@ const Chains = () => {
     }));
   };
 
-  const products = [
-    {
-      id: 1,
-      name: "Moissanite Tennis Chain 14K Gold (ALL SIZES)",
-      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80",
-      category: "925 SILVER / UNISEX",
-      price: 476,
-      originalPrice: 501,
-      rating: 5,
-      reviews: 1082,
-      badges: ["IN STOCK", "5% OFF"],
-      sizes: ["6MM", "5MM", "4MM", "3MM", "2MM"]
-    },
-    {
-      id: 2,
-      name: "VVS Cuban Chain 14K Gold (ALL SIZES)",
-      image: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=800&q=80",
-      category: "CZ / UNISEX",
-      price: 225,
-      originalPrice: 237,
-      rating: 5,
-      reviews: 256,
-      badges: ["IN STOCK", "9% OFF"],
-      sizes: ["3MM", "5MM"]
-    },
-    {
-      id: 3,
-      name: "VVS Cuban Link Chain 14K Gold (ALL SIZES)",
-      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=800&q=80",
-      category: "CZ / UNISEX",
-      price: 337,
-      originalPrice: 355,
-      rating: 5,
-      reviews: 626,
-      badges: ["IN STOCK", "5% OFF"],
-      sizes: ["20MM", "15MM", "8MM"]
-    },
-    {
-      id: 4,
-      name: "5MM Moissanite Tennis Chain 14K Gold",
-      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80",
-      category: "5MM / UNISEX",
-      price: 644,
-      originalPrice: 678,
-      rating: 5,
-      reviews: 148,
-      badges: ["IN STOCK", "6% OFF"]
-    },
-    {
-      id: 5,
-      name: "3MM Moissanite Tennis Chain 14K Gold",
-      image: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=800&q=80",
-      category: "3MM / UNISEX",
-      price: 527,
-      originalPrice: 555,
-      rating: 5,
-      reviews: 438,
-      badges: ["IN STOCK", "5% OFF"]
-    },
-    {
-      id: 6,
-      name: "Moissanite Cuban Link Chain 14K Gold (ALL SIZES)",
-      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=800&q=80",
-      category: "925 SILVER / UNISEX",
-      price: 1235,
-      originalPrice: 1300,
-      rating: 5,
-      reviews: 1060,
-      badges: ["IN STOCK", "5% OFF"]
+  // Get unique filter options from products
+  const productTypes = [...new Set(products.map(p => p.product_type))].map(type => ({
+    name: type,
+    count: products.filter(p => p.product_type === type).length
+  }));
+
+  const colors = [...new Set(products.map(p => p.color))].map(color => ({
+    name: color,
+    count: products.filter(p => p.color === color).length
+  }));
+
+  const materials = [...new Set(products.map(p => p.material))].map(material => ({
+    name: material,
+    count: products.filter(p => p.material === material).length
+  }));
+
+  // Filter products based on selections
+  const filteredProducts = products.filter(product => {
+    if (selectedProductTypes.length > 0 && !selectedProductTypes.includes(product.product_type)) {
+      return false;
     }
-  ];
-
-  const productTypes = [
-    { name: "Cuban Chains", count: 75 },
-    { name: "Ships Today", count: 36 },
-    { name: "Tennis Chains", count: 32 },
-    { name: "Plain Cuban Chains", count: 13 },
-    { name: "Colorful Chains", count: 9 },
-    { name: "Infinity Link Chains", count: 10 },
-    { name: "Tennis Bracelets", count: 1 },
-    { name: "Byzantine Chains", count: 3 },
-    { name: "Cable Link Chains", count: 3 },
-    { name: "Cluster Chains", count: 8 }
-  ];
-
-  const colors = [
-    { name: "Yellow Gold", count: 160 },
-    { name: "White Gold", count: 159 },
-    { name: "Rose Gold", count: 154 },
-    { name: "Black Gold", count: 6 }
-  ];
-
-  const materials = [
-    { name: "925 Silver", count: 134 },
-    { name: "14K Solid Gold", count: 1 },
-    { name: "Stainless Steel", count: 34 },
-    { name: "14K Gold Plated", count: 1 },
-    { name: "Brass", count: 7 },
-    { name: "Silver", count: 2 }
-  ];
+    if (selectedColors.length > 0 && !selectedColors.includes(product.color)) {
+      return false;
+    }
+    if (selectedMaterials.length > 0 && !selectedMaterials.includes(product.material)) {
+      return false;
+    }
+    if (priceFrom && product.price < parseInt(priceFrom) * 100) {
+      return false;
+    }
+    if (priceTo && product.price > parseInt(priceTo) * 100) {
+      return false;
+    }
+    return true;
+  });
 
   const chainTypes = [
     "TENNIS CHAINS",
@@ -148,7 +142,17 @@ const Chains = () => {
           {productTypes.map((type) => (
             <div key={type.name} className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${type.name}`} />
+                <Checkbox 
+                  id={`desktop-${type.name}`}
+                  checked={selectedProductTypes.includes(type.name)}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setSelectedProductTypes([...selectedProductTypes, type.name]);
+                    } else {
+                      setSelectedProductTypes(selectedProductTypes.filter(t => t !== type.name));
+                    }
+                  }}
+                />
                 <label htmlFor={`desktop-${type.name}`} className="text-sm text-gray-700">
                   {type.name}
                 </label>
@@ -193,7 +197,17 @@ const Chains = () => {
           {colors.map((color) => (
             <div key={color.name} className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${color.name}`} />
+                <Checkbox 
+                  id={`desktop-${color.name}`}
+                  checked={selectedColors.includes(color.name)}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setSelectedColors([...selectedColors, color.name]);
+                    } else {
+                      setSelectedColors(selectedColors.filter(c => c !== color.name));
+                    }
+                  }}
+                />
                 <label htmlFor={`desktop-${color.name}`} className="text-sm text-gray-700">
                   {color.name}
                 </label>
@@ -211,7 +225,17 @@ const Chains = () => {
           {materials.map((material) => (
             <div key={material.name} className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${material.name}`} />
+                <Checkbox 
+                  id={`desktop-${material.name}`}
+                  checked={selectedMaterials.includes(material.name)}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setSelectedMaterials([...selectedMaterials, material.name]);
+                    } else {
+                      setSelectedMaterials(selectedMaterials.filter(m => m !== material.name));
+                    }
+                  }}
+                />
                 <label htmlFor={`desktop-${material.name}`} className="text-sm text-gray-700">
                   {material.name}
                 </label>
@@ -348,6 +372,22 @@ const Chains = () => {
     )
   );
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <PromoBar />
+        <Header />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading products...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <PromoBar />
@@ -384,26 +424,14 @@ const Chains = () => {
           <div className="max-w-sm mx-auto">
             {/* Hero Images */}
             <div className="grid grid-cols-4 gap-2 mb-6">
-              <img 
-                src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=200&q=80" 
-                alt="Chain 1" 
-                className="w-full aspect-square rounded-lg object-cover"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=200&q=80" 
-                alt="Chain 2" 
-                className="w-full aspect-square rounded-lg object-cover"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=200&q=80" 
-                alt="Chain 3" 
-                className="w-full aspect-square rounded-lg object-cover"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=200&q=80" 
-                alt="Chain 4" 
-                className="w-full aspect-square rounded-lg object-cover"
-              />
+              {filteredProducts.slice(0, 4).map((product, index) => (
+                <img 
+                  key={index}
+                  src={product.image_url} 
+                  alt={`Chain ${index + 1}`} 
+                  className="w-full aspect-square rounded-lg object-cover"
+                />
+              ))}
             </div>
             
             <div className="text-center">
@@ -436,7 +464,7 @@ const Chains = () => {
         <div className={`flex-1 ${isMobile ? 'py-4 px-4' : 'py-8 px-8'}`}>
           {/* Product count and controls */}
           <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-semibold">180 Products</span>
+            <span className="text-lg font-semibold">{filteredProducts.length} Products</span>
             <div className="flex items-center space-x-4">
               {!isMobile && (
                 <Select value={sortBy} onValueChange={setSortBy}>
@@ -470,35 +498,38 @@ const Chains = () => {
 
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
                 
                 {/* Product Image */}
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
                   <img
-                    src={product.image}
+                    src={product.image_url}
                     alt={product.name}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   />
                   
                   {/* Badges */}
                   <div className="absolute top-2 left-2 flex flex-col space-y-1">
-                    {product.badges.map((badge, index) => (
-                      <Badge
-                        key={index}
-                        className={`text-xs font-semibold ${
-                          badge.includes('STOCK') 
-                            ? 'bg-blue-500 text-white' 
-                            : 'bg-red-500 text-white'
-                        }`}
-                      >
-                        {badge}
+                    {product.in_stock && (
+                      <Badge className="bg-blue-500 text-white text-xs font-semibold">
+                        IN STOCK
                       </Badge>
-                    ))}
+                    )}
+                    {product.discount_percentage > 0 && (
+                      <Badge className="bg-red-500 text-white text-xs font-semibold">
+                        {product.discount_percentage}% OFF
+                      </Badge>
+                    )}
+                    {product.ships_today && (
+                      <Badge className="bg-green-500 text-white text-xs font-semibold">
+                        SHIPS TODAY
+                      </Badge>
+                    )}
                   </div>
 
                   {/* Size options */}
-                  {product.sizes && (
+                  {product.sizes && product.sizes.length > 0 && (
                     <div className="absolute bottom-2 left-2 flex flex-wrap gap-1">
                       {product.sizes.slice(0, 2).map((size, index) => (
                         <Badge key={index} variant="secondary" className="text-xs">
@@ -530,16 +561,39 @@ const Chains = () => {
                         <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <span className="text-xs text-gray-500">({product.reviews})</span>
+                    <span className="text-xs text-gray-500">({product.review_count})</span>
                   </div>
                   
-                  <div className="flex items-center space-x-2">
-                    <span className="text-lg font-bold text-blue-600">${product.price}</span>
-                    {product.originalPrice && (
-                      <span className="text-sm text-gray-500 line-through">
-                        ${product.originalPrice}
-                      </span>
-                    )}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
+                      {product.original_price && (
+                        <span className="text-sm text-gray-500 line-through">
+                          ${(product.original_price / 100).toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+                    
+                    {/* Buy Now Button */}
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button 
+                          size="sm" 
+                          className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1"
+                          onClick={() => setSelectedProduct(product)}
+                        >
+                          Buy Now
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>{product.name}</DialogTitle>
+                        </DialogHeader>
+                        {selectedProduct && (
+                          <ProductCheckout product={selectedProduct} />
+                        )}
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
               </div>
