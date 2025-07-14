@@ -69,7 +69,19 @@ const Chains = () => {
         .order('featured', { ascending: false });
 
       if (error) throw error;
-      setProducts(data || []);
+      
+      // Update the first product's image URL to the new one
+      const updatedData = data?.map((product, index) => {
+        if (index === 0) { // Update the first product
+          return {
+            ...product,
+            image_url: 'https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/chains//cF5-s7xg.webp'
+          };
+        }
+        return product;
+      });
+      
+      setProducts(updatedData || []);
     } catch (error) {
       console.error('Error fetching products:', error);
       toast({
