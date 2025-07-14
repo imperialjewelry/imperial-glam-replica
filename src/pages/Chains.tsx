@@ -430,12 +430,12 @@ const Chains = () => {
         </section>
       )}
 
-      {/* Mobile Hero Section */}
+      {/* Mobile Hero Section - Fixed spacing and margins */}
       {isMobile && (
-        <section className="bg-gray-50 py-8 px-4">
+        <section className="bg-gray-50 py-6 px-3">
           <div className="max-w-sm mx-auto">
             {/* Hero Images */}
-            <div className="grid grid-cols-4 gap-2 mb-6">
+            <div className="grid grid-cols-4 gap-1.5 mb-4">
               {filteredProducts.slice(0, 4).map((product, index) => (
                 <img 
                   key={index}
@@ -447,17 +447,17 @@ const Chains = () => {
             </div>
             
             <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              <h1 className="text-xl font-bold text-gray-900 mb-2">
                 MOISSANITE DIAMOND CHAINS
               </h1>
-              <p className="text-sm text-gray-600 mb-6">
+              <p className="text-sm text-gray-600 mb-4">
                 All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Chains
               </p>
               
               {/* Chain Types Navigation */}
-              <div className="flex justify-center space-x-4 mb-6 text-xs">
+              <div className="flex justify-center space-x-3 mb-4 text-xs">
                 {chainTypes.map((type, index) => (
-                  <span key={index} className="text-gray-500 border-r border-gray-300 pr-4 last:border-r-0">
+                  <span key={index} className="text-gray-500 border-r border-gray-300 pr-3 last:border-r-0">
                     {type}
                   </span>
                 ))}
@@ -472,11 +472,13 @@ const Chains = () => {
         {/* Desktop Sidebar Filters */}
         {!isMobile && renderDesktopFilters()}
 
-        {/* Products Section */}
-        <div className={`flex-1 ${isMobile ? 'py-4 px-4' : 'py-8 px-8'}`}>
+        {/* Products Section - Fixed mobile spacing */}
+        <div className={`flex-1 ${isMobile ? 'py-3 px-3' : 'py-8 px-8'}`}>
           {/* Product count and controls */}
-          <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-semibold">{filteredProducts.length} Products</span>
+          <div className="flex items-center justify-between mb-4">
+            <span className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold`}>
+              {filteredProducts.length} Products
+            </span>
             <div className="flex items-center space-x-4">
               {!isMobile && (
                 <Select value={sortBy} onValueChange={setSortBy}>
@@ -496,9 +498,9 @@ const Chains = () => {
                   variant="outline" 
                   size="sm" 
                   onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center space-x-2"
+                  className="flex items-center space-x-2 text-xs px-3 py-1.5"
                 >
-                  <Filter className="w-4 h-4" />
+                  <Filter className="w-3 h-3" />
                   <span>FILTER</span>
                 </Button>
               )}
@@ -508,8 +510,8 @@ const Chains = () => {
           {/* Mobile Collapsible Filters */}
           {isMobile && renderMobileFilters()}
 
-          {/* Products Grid */}
-          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
+          {/* Products Grid - Fixed mobile spacing and button sizing */}
+          <div className={`grid ${isMobile ? 'grid-cols-2 gap-2' : 'grid-cols-4 gap-4'}`}>
             {filteredProducts.map((product) => (
               <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
                 
@@ -521,20 +523,20 @@ const Chains = () => {
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   />
                   
-                  {/* Badges */}
-                  <div className="absolute top-2 left-2 flex flex-col space-y-1">
+                  {/* Badges - Smaller on mobile */}
+                  <div className="absolute top-1.5 left-1.5 flex flex-col space-y-1">
                     {product.in_stock && (
-                      <Badge className="bg-blue-500 text-white text-xs font-semibold">
+                      <Badge className={`bg-blue-500 text-white font-semibold ${isMobile ? 'text-xs px-1.5 py-0.5' : 'text-xs'}`}>
                         IN STOCK
                       </Badge>
                     )}
                     {product.discount_percentage > 0 && (
-                      <Badge className="bg-red-500 text-white text-xs font-semibold">
+                      <Badge className={`bg-red-500 text-white font-semibold ${isMobile ? 'text-xs px-1.5 py-0.5' : 'text-xs'}`}>
                         {product.discount_percentage}% OFF
                       </Badge>
                     )}
                     {product.ships_today && (
-                      <Badge className="bg-green-500 text-white text-xs font-semibold">
+                      <Badge className={`bg-green-500 text-white font-semibold ${isMobile ? 'text-xs px-1.5 py-0.5' : 'text-xs'}`}>
                         SHIPS TODAY
                       </Badge>
                     )}
@@ -542,14 +544,14 @@ const Chains = () => {
 
                   {/* Size options */}
                   {product.sizes && product.sizes.length > 0 && (
-                    <div className="absolute bottom-2 left-2 flex flex-wrap gap-1">
+                    <div className="absolute bottom-1.5 left-1.5 flex flex-wrap gap-1">
                       {product.sizes.slice(0, 2).map((size, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
+                        <Badge key={index} variant="secondary" className={`${isMobile ? 'text-xs px-1 py-0.5' : 'text-xs'}`}>
                           {size}
                         </Badge>
                       ))}
                       {product.sizes.length > 2 && (
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" className={`${isMobile ? 'text-xs px-1 py-0.5' : 'text-xs'}`}>
                           +{product.sizes.length - 2}
                         </Badge>
                       )}
@@ -557,49 +559,57 @@ const Chains = () => {
                   )}
                 </div>
 
-                {/* Product Info */}
-                <div className="p-3 space-y-2">
-                  <div className="text-xs text-gray-500 uppercase">
+                {/* Product Info - Adjusted mobile spacing */}
+                <div className={`${isMobile ? 'p-2 space-y-1.5' : 'p-3 space-y-2'}`}>
+                  <div className={`text-gray-500 uppercase ${isMobile ? 'text-xs' : 'text-xs'}`}>
                     {product.category}
                   </div>
                   
-                  <h3 className="font-medium text-gray-900 line-clamp-2 text-sm leading-tight">
+                  <h3 className={`font-medium text-gray-900 line-clamp-2 leading-tight ${isMobile ? 'text-xs' : 'text-sm'}`}>
                     {product.name}
                   </h3>
                   
                   <div className="flex items-center space-x-1">
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        <Star key={i} className={`fill-yellow-400 text-yellow-400 ${isMobile ? 'w-2.5 h-2.5' : 'w-3 h-3'}`} />
                       ))}
                     </div>
-                    <span className="text-xs text-gray-500">({product.review_count})</span>
+                    <span className={`text-gray-500 ${isMobile ? 'text-xs' : 'text-xs'}`}>({product.review_count})</span>
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
+                    <div className="flex items-center space-x-1.5">
+                      <span className={`font-bold text-blue-600 ${isMobile ? 'text-sm' : 'text-lg'}`}>
+                        ${(product.price / 100).toFixed(2)}
+                      </span>
                       {product.original_price && (
-                        <span className="text-sm text-gray-500 line-through">
+                        <span className={`text-gray-500 line-through ${isMobile ? 'text-xs' : 'text-sm'}`}>
                           ${(product.original_price / 100).toFixed(2)}
                         </span>
                       )}
                     </div>
                     
-                    {/* Buy Now Button */}
+                    {/* Buy Now Button - Properly sized for mobile */}
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button 
                           size="sm" 
-                          className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1"
+                          className={`bg-blue-500 hover:bg-blue-600 text-white ${
+                            isMobile 
+                              ? 'text-xs px-2 py-1 h-7 min-w-0' 
+                              : 'text-xs px-3 py-1'
+                          }`}
                           onClick={() => setSelectedProduct(product)}
                         >
-                          Buy Now
+                          Buy
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-md">
+                      <DialogContent className={`${isMobile ? 'max-w-[95vw] mx-2' : 'max-w-md'}`}>
                         <DialogHeader>
-                          <DialogTitle>{product.name}</DialogTitle>
+                          <DialogTitle className={`${isMobile ? 'text-sm' : ''}`}>
+                            {product.name}
+                          </DialogTitle>
                         </DialogHeader>
                         {selectedProduct && (
                           <ProductCheckout product={selectedProduct} />
