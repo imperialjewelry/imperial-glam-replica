@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
@@ -52,8 +51,11 @@ const Bracelets = () => {
         .select('*')
         .order('featured', { ascending: false });
       
-      if (error) throw error;
-      return (data || []) as BraceletProduct[];
+      if (error) {
+        console.error('Error fetching bracelet products:', error);
+        throw error;
+      }
+      return (data as unknown as BraceletProduct[]) || [];
     },
   });
 
