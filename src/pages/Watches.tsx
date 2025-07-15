@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,9 +7,31 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
+
+interface WatchProduct {
+  id: string;
+  name: string;
+  image_url: string;
+  category: string;
+  price: number;
+  original_price: number | null;
+  rating: number;
+  review_count: number;
+  in_stock: boolean;
+  ships_today: boolean;
+  discount_percentage: number;
+  sizes: string[];
+  product_type: string;
+  color: string;
+  material: string;
+  gemstone: string | null;
+  diamond_cut: string | null;
+}
 
 const Watches = () => {
   const isMobile = useIsMobile();
@@ -21,8 +43,9 @@ const Watches = () => {
     productType: false,
     price: false,
     color: false,
-    dialColor: false,
-    size: false
+    material: false,
+    gemstone: false,
+    diamondCut: false
   });
 
   const toggleSection = (section: keyof typeof openSections) => {
@@ -32,82 +55,22 @@ const Watches = () => {
     }));
   };
 
-  const products = [
-    {
-      id: 1,
-      name: "Presidential Moissanite Watch 14K Gold",
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80",
-      category: "PRESIDENTIAL / UNISEX",
-      price: 1850,
-      originalPrice: 1947,
-      rating: 5,
-      reviews: 342,
-      badges: ["IN STOCK", "5% OFF"],
-      sizes: ["41MM", "42MM"]
-    },
-    {
-      id: 2,
-      name: "Bust Down VVS Diamond Watch 14K Gold",
-      image: "https://images.unsplash.com/photo-1594534475808-b18fc33b045e?auto=format&fit=crop&w=800&q=80",
-      category: "BUST DOWN / UNISEX",
-      price: 2450,
-      originalPrice: 2578,
-      rating: 5,
-      reviews: 156,
-      badges: ["IN STOCK", "5% OFF"],
-      sizes: ["40MM", "41MM"]
-    },
-    {
-      id: 3,
-      name: "Colored Dial Tennis Watch 14K Gold",
-      image: "https://images.unsplash.com/photo-1548181622-7187e8b5c5b4?auto=format&fit=crop&w=800&q=80",
-      category: "COLORED DIAL / UNISEX",
-      price: 1680,
-      originalPrice: 1768,
-      rating: 5,
-      reviews: 289,
-      badges: ["IN STOCK", "5% OFF"],
-      sizes: ["41MM", "42MM"]
-    },
-    {
-      id: 4,
-      name: "Skeleton Automatic Watch 14K White Gold",
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80",
-      category: "SKELETON / UNISEX",
-      price: 2890,
-      originalPrice: 3042,
-      rating: 5,
-      reviews: 89,
-      badges: ["IN STOCK", "5% OFF"]
-    },
-    {
-      id: 5,
-      name: "Presidential Blue Dial Watch 14K Rose Gold",
-      image: "https://images.unsplash.com/photo-1594534475808-b18fc33b045e?auto=format&fit=crop&w=800&q=80",
-      category: "PRESIDENTIAL / UNISEX",
-      price: 1950,
-      originalPrice: 2052,
-      rating: 5,
-      reviews: 234,
-      badges: ["IN STOCK", "5% OFF"]
-    },
-    {
-      id: 6,
-      name: "Bust Down Black Dial Watch 14K Gold",
-      image: "https://images.unsplash.com/photo-1548181622-7187e8b5c5b4?auto=format&fit=crop&w=800&q=80",
-      category: "BUST DOWN / UNISEX",
-      price: 2650,
-      originalPrice: 2789,
-      rating: 5,
-      reviews: 178,
-      badges: ["IN STOCK", "5% OFF"]
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ['watch-products'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('watch_products')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data as WatchProduct[];
     }
-  ];
+  });
 
   const productTypes = [
     { name: "Presidential Watches", count: 12 },
     { name: "Ships Today", count: 12 },
-    { name: "Colored Dial Watches", count: 9 },
     { name: "Bust Down Watches", count: 4 },
     { name: "Skeleton Watches", count: 3 }
   ];
@@ -115,22 +78,33 @@ const Watches = () => {
   const colors = [
     { name: "Yellow Gold", count: 8 },
     { name: "White Gold", count: 12 },
-    { name: "Rose Gold", count: 6 }
+    { name: "Rose Gold", count: 6 },
+    { name: "Black Gold", count: 20 }
   ];
 
-  const dialColors = [
-    { name: "Black", count: 2 },
-    { name: "Blue", count: 2 },
-    { name: "Green", count: 2 },
-    { name: "Red", count: 2 },
-    { name: "White", count: 1 }
+  const materials = [
+    { name: "925 Silver", count: 100 },
+    { name: "Solid Gold", count: 12 },
+    { name: "Brass", count: 7 }
   ];
 
-  const sizes = [
-    { name: "41MM", count: 12 },
-    { name: "42MM", count: 6 },
-    { name: "40MM", count: 3 },
-    { name: "44MM", count: 4 }
+  const gemstones = [
+    { name: "Moissanite", count: 11 },
+    { name: "VVS Diamond Simulants (CZ)", count: 5 },
+    { name: "VVS Moissanite", count: 6 },
+    { name: "VVS Moissanites", count: 2 }
+  ];
+
+  const diamondCuts = [
+    { name: "Round Cut", count: 109 },
+    { name: "Baguette", count: 18 },
+    { name: "Emerald Cut", count: 3 },
+    { name: "Baguette Cut", count: 2 },
+    { name: "Heart Cut", count: 2 },
+    { name: "Marquise Cut", count: 2 },
+    { name: "Oval Cut", count: 4 },
+    { name: "Pear Cut", count: 2 },
+    { name: "Princess Cut", count: 1 }
   ];
 
   const watchTypes = [
@@ -206,37 +180,55 @@ const Watches = () => {
         </div>
       </div>
 
-      {/* Dial Color */}
+      {/* Material */}
       <div className="mb-8">
-        <h3 className="font-medium text-gray-900 mb-4 uppercase">DIAL COLOR</h3>
+        <h3 className="font-medium text-gray-900 mb-4 uppercase">MATERIAL</h3>
         <div className="space-y-3">
-          {dialColors.map((dialColor) => (
-            <div key={dialColor.name} className="flex items-center justify-between">
+          {materials.map((material) => (
+            <div key={material.name} className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${dialColor.name}`} />
-                <label htmlFor={`desktop-${dialColor.name}`} className="text-sm text-gray-700">
-                  {dialColor.name}
+                <Checkbox id={`desktop-${material.name}`} />
+                <label htmlFor={`desktop-${material.name}`} className="text-sm text-gray-700">
+                  {material.name}
                 </label>
               </div>
-              <span className="text-sm text-gray-500">({dialColor.count})</span>
+              <span className="text-sm text-gray-500">({material.count})</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Size */}
+      {/* Gemstone */}
       <div className="mb-8">
-        <h3 className="font-medium text-gray-900 mb-4 uppercase">SIZE</h3>
+        <h3 className="font-medium text-gray-900 mb-4 uppercase">GEMSTONE</h3>
         <div className="space-y-3">
-          {sizes.map((size) => (
-            <div key={size.name} className="flex items-center justify-between">
+          {gemstones.map((gemstone) => (
+            <div key={gemstone.name} className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${size.name}`} />
-                <label htmlFor={`desktop-${size.name}`} className="text-sm text-gray-700">
-                  {size.name}
+                <Checkbox id={`desktop-${gemstone.name}`} />
+                <label htmlFor={`desktop-${gemstone.name}`} className="text-sm text-gray-700">
+                  {gemstone.name}
                 </label>
               </div>
-              <span className="text-sm text-gray-500">({size.count})</span>
+              <span className="text-sm text-gray-500">({gemstone.count})</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Diamond Cut */}
+      <div className="mb-8">
+        <h3 className="font-medium text-gray-900 mb-4 uppercase">DIAMOND CUT</h3>
+        <div className="space-y-3">
+          {diamondCuts.map((cut) => (
+            <div key={cut.name} className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Checkbox id={`desktop-${cut.name}`} />
+                <label htmlFor={`desktop-${cut.name}`} className="text-sm text-gray-700">
+                  {cut.name}
+                </label>
+              </div>
+              <span className="text-sm text-gray-500">({cut.count})</span>
             </div>
           ))}
         </div>
@@ -342,46 +334,69 @@ const Watches = () => {
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Dial Color Filter */}
-        <Collapsible open={openSections.dialColor} onOpenChange={() => toggleSection('dialColor')}>
+        {/* Material Filter */}
+        <Collapsible open={openSections.material} onOpenChange={() => toggleSection('material')}>
           <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
-            <span className="font-medium">DIAL COLOR</span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.dialColor ? 'rotate-180' : ''}`} />
+            <span className="font-medium">MATERIAL</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.material ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
           <CollapsibleContent className="p-4 border-b">
             <div className="space-y-3">
-              {dialColors.map((dialColor) => (
-                <div key={dialColor.name} className="flex items-center justify-between">
+              {materials.map((material) => (
+                <div key={material.name} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id={dialColor.name} />
-                    <label htmlFor={dialColor.name} className="text-sm text-gray-700">
-                      {dialColor.name}
+                    <Checkbox id={material.name} />
+                    <label htmlFor={material.name} className="text-sm text-gray-700">
+                      {material.name}
                     </label>
                   </div>
-                  <span className="text-sm text-gray-500">({dialColor.count})</span>
+                  <span className="text-sm text-gray-500">({material.count})</span>
                 </div>
               ))}
             </div>
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Size Filter */}
-        <Collapsible open={openSections.size} onOpenChange={() => toggleSection('size')}>
+        {/* Gemstone Filter */}
+        <Collapsible open={openSections.gemstone} onOpenChange={() => toggleSection('gemstone')}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+            <span className="font-medium">GEMSTONE</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.gemstone ? 'rotate-180' : ''}`} />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="p-4 border-b">
+            <div className="space-y-3">
+              {gemstones.map((gemstone) => (
+                <div key={gemstone.name} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id={gemstone.name} />
+                    <label htmlFor={gemstone.name} className="text-sm text-gray-700">
+                      {gemstone.name}
+                    </label>
+                  </div>
+                  <span className="text-sm text-gray-500">({gemstone.count})</span>
+                </div>
+              ))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+
+        {/* Diamond Cut Filter */}
+        <Collapsible open={openSections.diamondCut} onOpenChange={() => toggleSection('diamondCut')}>
           <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left hover:bg-gray-50">
-            <span className="font-medium">SIZE</span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.size ? 'rotate-180' : ''}`} />
+            <span className="font-medium">DIAMOND CUT</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.diamondCut ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
           <CollapsibleContent className="p-4">
             <div className="space-y-3">
-              {sizes.map((size) => (
-                <div key={size.name} className="flex items-center justify-between">
+              {diamondCuts.map((cut) => (
+                <div key={cut.name} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id={size.name} />
-                    <label htmlFor={size.name} className="text-sm text-gray-700">
-                      {size.name}
+                    <Checkbox id={cut.name} />
+                    <label htmlFor={cut.name} className="text-sm text-gray-700">
+                      {cut.name}
                     </label>
                   </div>
-                  <span className="text-sm text-gray-500">({size.count})</span>
+                  <span className="text-sm text-gray-500">({cut.count})</span>
                 </div>
               ))}
             </div>
@@ -455,7 +470,7 @@ const Watches = () => {
         <div className={`flex-1 ${isMobile ? 'py-4 px-4' : 'py-8 px-8'}`}>
           {/* Product count and controls */}
           <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-semibold">40 Products</span>
+            <span className="text-lg font-semibold">{products.length} Products</span>
             <div className="flex items-center space-x-4">
               {!isMobile && (
                 <Select value={sortBy} onValueChange={setSortBy}>
@@ -495,29 +510,27 @@ const Watches = () => {
                 {/* Product Image */}
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
                   <img
-                    src={product.image}
+                    src={product.image_url}
                     alt={product.name}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   />
                   
                   {/* Badges */}
                   <div className="absolute top-2 left-2 flex flex-col space-y-1">
-                    {product.badges.map((badge, index) => (
-                      <Badge
-                        key={index}
-                        className={`text-xs font-semibold ${
-                          badge.includes('STOCK') 
-                            ? 'bg-blue-500 text-white' 
-                            : 'bg-red-500 text-white'
-                        }`}
-                      >
-                        {badge}
+                    {product.in_stock && (
+                      <Badge className="text-xs font-semibold bg-blue-500 text-white">
+                        IN STOCK
                       </Badge>
-                    ))}
+                    )}
+                    {product.discount_percentage > 0 && (
+                      <Badge className="text-xs font-semibold bg-red-500 text-white">
+                        {product.discount_percentage}% OFF
+                      </Badge>
+                    )}
                   </div>
 
                   {/* Size options */}
-                  {product.sizes && (
+                  {product.sizes && product.sizes.length > 0 && (
                     <div className="absolute bottom-2 left-2 flex flex-wrap gap-1">
                       {product.sizes.slice(0, 2).map((size, index) => (
                         <Badge key={index} variant="secondary" className="text-xs">
@@ -549,14 +562,14 @@ const Watches = () => {
                         <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <span className="text-xs text-gray-500">({product.reviews})</span>
+                    <span className="text-xs text-gray-500">({product.review_count})</span>
                   </div>
                   
                   <div className="flex items-center space-x-2">
-                    <span className="text-lg font-bold text-blue-600">${product.price}</span>
-                    {product.originalPrice && (
+                    <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
+                    {product.original_price && (
                       <span className="text-sm text-gray-500 line-through">
-                        ${product.originalPrice}
+                        ${(product.original_price / 100).toFixed(2)}
                       </span>
                     )}
                   </div>
