@@ -9,51 +9,91 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { productId, selectedSize, customerEmail } = await req.json();
-    
-    if (!productId) {
-      throw new Error("Product ID is required");
+
+    if (!productId || !customerEmail) {
+      throw new Error("Missing required fields: productId and customerEmail");
     }
 
-    // Initialize Supabase client with service role to access products
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-      { auth: { persistSession: false } }
-    );
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error("Missing Supabase configuration");
+    }
 
-    // Fetch product details from database
-    const { data: product, error: productError } = await supabase
-      .from("chain_products")
-      .select("*")
-      .eq("id", productId)
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Try to find the product in chain_products first
+    let product = null;
+    let productTableType = 'chain_products';
+    
+    const { data: chainProduct } = await supabase
+      .from('chain_products')
+      .select('*')
+      .eq('id', productId)
       .single();
 
-    if (productError || !product) {
+    if (chainProduct) {
+      product = chainProduct;
+    } else {
+      // If not found in chain_products, check bracelet_products
+      const { data: braceletProduct, error: braceletError } = await supabase
+        .from('bracelet_products')
+        .select('*')
+        .eq('id', productId)
+        .single();
+
+      if (braceletProduct) {
+        product = braceletProduct;
+        productTableType = 'bracelet_products';
+      } else {
+        throw new Error("Product not found");
+      }
+    }
+
+    if (!product) {
       throw new Error("Product not found");
     }
 
     // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) {
+      throw new Error("Missing Stripe configuration");
+    }
+
+    const stripe = new Stripe(stripeKey, {
       apiVersion: "2023-10-16",
     });
 
+    // Check if customer exists in Stripe
+    const customers = await stripe.customers.list({
+      email: customerEmail,
+      limit: 1,
+    });
+
+    let customerId = null;
+    if (customers.data.length > 0) {
+      customerId = customers.data[0].id;
+    }
+
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
-      customer_email: customerEmail,
+      customer: customerId,
+      customer_email: customerId ? undefined : customerEmail,
       line_items: [
         {
           price_data: {
             currency: "usd",
             product_data: {
               name: product.name,
-              description: selectedSize ? `Size: ${selectedSize}` : product.description,
+              description: product.description || "",
               images: [product.image_url],
             },
             unit_amount: product.price,
@@ -67,28 +107,44 @@ serve(async (req) => {
       metadata: {
         product_id: productId,
         selected_size: selectedSize || "",
+        product_table_type: productTableType,
       },
     });
 
-    // Create order record in database
-    await supabase.from("orders").insert({
-      stripe_session_id: session.id,
-      product_id: productId,
-      selected_size: selectedSize,
-      amount: product.price,
-      guest_email: customerEmail,
-      status: "pending",
-    });
+    // Create order record
+    const { error: orderError } = await supabase
+      .from('orders')
+      .insert({
+        stripe_session_id: session.id,
+        product_id: productId,
+        selected_size: selectedSize,
+        amount: product.price,
+        currency: 'usd',
+        status: 'pending',
+        guest_email: customerEmail,
+        product_table_type: productTableType,
+      });
 
-    return new Response(JSON.stringify({ url: session.url }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    if (orderError) {
+      console.error("Error creating order:", orderError);
+      // Don't throw here, as the Stripe session was created successfully
+    }
+
+    return new Response(
+      JSON.stringify({ url: session.url }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      }
+    );
   } catch (error) {
-    console.error("Checkout error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    console.error("Error creating checkout session:", error);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500,
+      }
+    );
   }
 });

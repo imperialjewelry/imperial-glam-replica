@@ -73,22 +73,17 @@ const ProductCheckout = ({ product }: ProductCheckoutProps) => {
   };
 
   return (
-    <div className="space-y-4 p-4 border rounded-lg bg-white">
-      <div className="flex items-center space-x-2 mb-4">
-        <ShoppingCart className="w-5 h-5" />
-        <h3 className="font-semibold">Quick Checkout</h3>
-      </div>
-
+    <div className="w-full space-y-4">
       {/* Size Selection */}
       {product.sizes && product.sizes.length > 0 && (
         <div className="space-y-2">
-          <Label htmlFor="size">Select Size</Label>
+          <Label htmlFor="size" className="text-sm font-medium">Select Size</Label>
           <div className="flex flex-wrap gap-2">
             {product.sizes.map((size) => (
               <Badge
                 key={size}
                 variant={selectedSize === size ? "default" : "outline"}
-                className="cursor-pointer hover:bg-blue-500 hover:text-white"
+                className="cursor-pointer hover:bg-blue-500 hover:text-white transition-colors px-3 py-1"
                 onClick={() => setSelectedSize(size)}
               >
                 {size}
@@ -100,21 +95,22 @@ const ProductCheckout = ({ product }: ProductCheckoutProps) => {
 
       {/* Email Input */}
       <div className="space-y-2">
-        <Label htmlFor="email">Email Address</Label>
+        <Label htmlFor="email" className="text-sm font-medium">Email Address</Label>
         <Input
           id="email"
           type="email"
           value={customerEmail}
           onChange={(e) => setCustomerEmail(e.target.value)}
           placeholder="your@email.com"
+          className="text-sm"
           required
         />
       </div>
 
       {/* Price Display */}
       <div className="flex items-center justify-between py-2 border-t">
-        <span className="font-medium">Total:</span>
-        <span className="text-xl font-bold text-blue-600">
+        <span className="font-medium text-sm">Total:</span>
+        <span className="text-lg font-bold text-blue-600">
           ${(product.price / 100).toFixed(2)}
         </span>
       </div>
@@ -123,14 +119,14 @@ const ProductCheckout = ({ product }: ProductCheckoutProps) => {
       <Button
         onClick={handleCheckout}
         disabled={isLoading}
-        className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+        className="w-full bg-blue-500 hover:bg-blue-600 text-white text-sm py-2"
       >
         {isLoading ? (
           "Processing..."
         ) : (
           <>
             <CreditCard className="w-4 h-4 mr-2" />
-            Buy Now with Stripe
+            Buy Now
           </>
         )}
       </Button>
