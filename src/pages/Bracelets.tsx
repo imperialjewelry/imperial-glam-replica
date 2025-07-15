@@ -32,6 +32,8 @@ interface BraceletProduct {
   in_stock: boolean;
   ships_today: boolean;
   featured: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 const Bracelets = () => {
@@ -46,7 +48,7 @@ const Bracelets = () => {
     queryKey: ['bracelet-products'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('bracelet_products')
+        .from('bracelet_products' as any)
         .select('*')
         .order('featured', { ascending: false });
       
