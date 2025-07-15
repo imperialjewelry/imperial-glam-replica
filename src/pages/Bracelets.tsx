@@ -20,6 +20,8 @@ interface Product {
   product_type: string;
   color: string;
   material: string;
+  gemstone: string | null;
+  diamond_cut: string | null;
   sizes: string[] | null;
   image_url: string;
   rating: number | null;
@@ -38,6 +40,9 @@ const Bracelets = () => {
   const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
+  const [selectedGemstones, setSelectedGemstones] = useState<string[]>([]);
+  const [selectedDiamondCuts, setSelectedDiamondCuts] = useState<string[]>([]);
+  const [shipsToday, setShipsToday] = useState(false);
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
 
@@ -45,9 +50,8 @@ const Bracelets = () => {
     queryKey: ['bracelet-products'],
     queryFn: async (): Promise<Product[]> => {
       const { data, error } = await supabase
-        .from('chain_products')
+        .from('bracelet_products')
         .select('*')
-        .ilike('category', '%bracelet%')
         .order('featured', { ascending: false });
       
       if (error) {
@@ -74,6 +78,18 @@ const Bracelets = () => {
     count: products.filter(p => p.material === material).length
   }));
 
+  const gemstones = [...new Set(products.map(p => p.gemstone).filter(Boolean))].map(gemstone => ({
+    name: gemstone!,
+    count: products.filter(p => p.gemstone === gemstone).length
+  }));
+
+  const diamondCuts = [...new Set(products.map(p => p.diamond_cut).filter(Boolean))].map(cut => ({
+    name: cut!,
+    count: products.filter(p => p.diamond_cut === cut).length
+  }));
+
+  const shipsToday_count = products.filter(p => p.ships_today).length;
+
   // Filter products based on selected filters
   const filteredProducts = products.filter(product => {
     const priceInDollars = product.price / 100;
@@ -84,6 +100,9 @@ const Bracelets = () => {
       (selectedProductTypes.length === 0 || selectedProductTypes.includes(product.product_type)) &&
       (selectedColors.length === 0 || selectedColors.includes(product.color)) &&
       (selectedMaterials.length === 0 || selectedMaterials.includes(product.material)) &&
+      (selectedGemstones.length === 0 || (product.gemstone && selectedGemstones.includes(product.gemstone))) &&
+      (selectedDiamondCuts.length === 0 || (product.diamond_cut && selectedDiamondCuts.includes(product.diamond_cut))) &&
+      (!shipsToday || product.ships_today) &&
       priceInDollars >= priceFromNum &&
       priceInDollars <= priceToNum
     );
@@ -94,6 +113,8 @@ const Bracelets = () => {
       productType: setSelectedProductTypes,
       color: setSelectedColors,
       material: setSelectedMaterials,
+      gemstone: setSelectedGemstones,
+      diamondCut: setSelectedDiamondCuts,
     };
 
     const setter = setters[filterType as keyof typeof setters];
@@ -191,6 +212,24 @@ const Bracelets = () => {
           <div className="hidden lg:block w-64 space-y-8">
             <FilterSection title="PRODUCT TYPE" items={productTypes} filterType="productType" />
             
+            {/* Ships Today Filter */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-sm uppercase tracking-wide">SHIPS TODAY</h3>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="ships-today"
+                  checked={shipsToday}
+                  onCheckedChange={(checked) => setShipsToday(!!checked)}
+                />
+                <label 
+                  htmlFor="ships-today"
+                  className="text-sm text-gray-700 cursor-pointer"
+                >
+                  Ships Today({shipsToday_count})
+                </label>
+              </div>
+            </div>
+
             {/* Price Range */}
             <div className="space-y-3">
               <h3 className="font-semibold text-sm uppercase tracking-wide">PRICE</h3>
@@ -226,6 +265,8 @@ const Bracelets = () => {
 
             <FilterSection title="COLOR" items={colors} filterType="color" />
             <FilterSection title="MATERIAL" items={materials} filterType="material" />
+            {gemstones.length > 0 && <FilterSection title="GEMSTONE" items={gemstones} filterType="gemstone" />}
+            {diamondCuts.length > 0 && <FilterSection title="DIAMOND CUT" items={diamondCuts} filterType="diamondCut" />}
           </div>
 
           {/* Main Content */}
@@ -293,6 +334,8 @@ const Bracelets = () => {
                     <p><span className="font-medium">Type:</span> {product.product_type}</p>
                     <p><span className="font-medium">Color:</span> {product.color}</p>
                     <p><span className="font-medium">Material:</span> {product.material}</p>
+                    {product.gemstone && <p><span className="font-medium">Gemstone:</span> {product.gemstone}</p>}
+                    {product.diamond_cut && <p><span className="font-medium">Cut:</span> {product.diamond_cut}</p>}
                   </div>
 
                   <ProductCheckout
@@ -316,6 +359,9 @@ const Bracelets = () => {
                     setSelectedProductTypes([]);
                     setSelectedColors([]);
                     setSelectedMaterials([]);
+                    setSelectedGemstones([]);
+                    setSelectedDiamondCuts([]);
+                    setShipsToday(false);
                     setPriceFrom('');
                     setPriceTo('');
                   }}
@@ -346,6 +392,29 @@ const Bracelets = () => {
               <Accordion type="multiple" className="space-y-4">
                 <MobileFilterSection title="PRODUCT TYPE" items={productTypes} filterType="productType" />
                 
+                <AccordionItem value="ships-today">
+                  <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide">
+                    SHIPS TODAY
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="space-y-3 pt-2">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="mobile-ships-today"
+                          checked={shipsToday}
+                          onCheckedChange={(checked) => setShipsToday(!!checked)}
+                        />
+                        <label 
+                          htmlFor="mobile-ships-today"
+                          className="text-sm text-gray-700 cursor-pointer"
+                        >
+                          Ships Today({shipsToday_count})
+                        </label>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+
                 <AccordionItem value="price">
                   <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide">
                     PRICE
@@ -384,6 +453,8 @@ const Bracelets = () => {
 
                 <MobileFilterSection title="COLOR" items={colors} filterType="color" />
                 <MobileFilterSection title="MATERIAL" items={materials} filterType="material" />
+                {gemstones.length > 0 && <MobileFilterSection title="GEMSTONE" items={gemstones} filterType="gemstone" />}
+                {diamondCuts.length > 0 && <MobileFilterSection title="DIAMOND CUT" items={diamondCuts} filterType="diamondCut" />}
               </Accordion>
             </div>
           </div>

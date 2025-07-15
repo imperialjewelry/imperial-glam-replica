@@ -14,6 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
+      bracelet_products: {
+        Row: {
+          category: string
+          color: string
+          created_at: string
+          description: string | null
+          diamond_cut: string | null
+          discount_percentage: number | null
+          featured: boolean | null
+          gemstone: string | null
+          id: string
+          image_url: string
+          in_stock: boolean | null
+          material: string
+          name: string
+          original_price: number | null
+          price: number
+          product_type: string
+          rating: number | null
+          review_count: number | null
+          ships_today: boolean | null
+          sizes: string[] | null
+          stripe_product_id: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          color: string
+          created_at?: string
+          description?: string | null
+          diamond_cut?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
+          gemstone?: string | null
+          id?: string
+          image_url: string
+          in_stock?: boolean | null
+          material: string
+          name: string
+          original_price?: number | null
+          price: number
+          product_type: string
+          rating?: number | null
+          review_count?: number | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          stripe_product_id: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          color?: string
+          created_at?: string
+          description?: string | null
+          diamond_cut?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
+          gemstone?: string | null
+          id?: string
+          image_url?: string
+          in_stock?: boolean | null
+          material?: string
+          name?: string
+          original_price?: number | null
+          price?: number
+          product_type?: string
+          rating?: number | null
+          review_count?: number | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          stripe_product_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       chain_products: {
         Row: {
           category: string
