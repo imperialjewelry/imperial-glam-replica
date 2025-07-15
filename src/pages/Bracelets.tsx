@@ -48,7 +48,7 @@ const Bracelets = () => {
     queryKey: ['bracelet-products'],
     queryFn: async (): Promise<BraceletProduct[]> => {
       const { data, error } = await supabase
-        .from('bracelet_products')
+        .from('bracelet_products' as any)
         .select('*')
         .order('featured', { ascending: false });
       
