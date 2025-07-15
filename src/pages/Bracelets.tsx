@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
@@ -47,7 +48,7 @@ const Bracelets = () => {
     queryKey: ['bracelet-products'],
     queryFn: async (): Promise<BraceletProduct[]> => {
       const { data, error } = await supabase
-        .from('bracelet_products' as any)
+        .from('bracelet_products')
         .select('*')
         .order('featured', { ascending: false });
       
@@ -55,7 +56,7 @@ const Bracelets = () => {
         console.error('Error fetching bracelet products:', error);
         throw error;
       }
-      return (data as unknown as BraceletProduct[]) || [];
+      return data || [];
     },
   });
 
