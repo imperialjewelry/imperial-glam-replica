@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
@@ -21,8 +22,6 @@ interface BraceletProduct {
   product_type: string;
   color: string;
   material: string;
-  gemstone: string;
-  diamond_cut: string;
   sizes: string[];
   image_url: string;
   rating: number;
@@ -39,16 +38,15 @@ const Bracelets = () => {
   const [selectedProductType, setSelectedProductType] = useState("all");
   const [selectedColor, setSelectedColor] = useState("all");
   const [selectedMaterial, setSelectedMaterial] = useState("all");
-  const [selectedGemstone, setSelectedGemstone] = useState("all");
-  const [selectedDiamondCut, setSelectedDiamondCut] = useState("all");
   const [sortBy, setSortBy] = useState("featured");
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['bracelet-products'],
     queryFn: async (): Promise<BraceletProduct[]> => {
       const { data, error } = await supabase
-        .from('bracelet_products' as any)
+        .from('chain_products')
         .select('*')
+        .eq('category', 'bracelet')
         .order('featured', { ascending: false });
       
       if (error) throw error;
@@ -60,17 +58,13 @@ const Bracelets = () => {
   const productTypes = [...new Set(products.map(p => p.product_type))];
   const colors = [...new Set(products.map(p => p.color))];
   const materials = [...new Set(products.map(p => p.material))];
-  const gemstones = [...new Set(products.map(p => p.gemstone).filter(Boolean))];
-  const diamondCuts = [...new Set(products.map(p => p.diamond_cut).filter(Boolean))];
 
   // Filter products based on selected filters
   const filteredProducts = products.filter(product => {
     return (
       (selectedProductType === "all" || product.product_type === selectedProductType) &&
       (selectedColor === "all" || product.color === selectedColor) &&
-      (selectedMaterial === "all" || product.material === selectedMaterial) &&
-      (selectedGemstone === "all" || product.gemstone === selectedGemstone) &&
-      (selectedDiamondCut === "all" || product.diamond_cut === selectedDiamondCut)
+      (selectedMaterial === "all" || product.material === selectedMaterial)
     );
   });
 
@@ -124,7 +118,7 @@ const Bracelets = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-sm p-4 md:p-6 mb-8">
           <h2 className="text-lg font-semibold mb-4">Filter Products</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Select value={selectedProductType} onValueChange={setSelectedProductType}>
               <SelectTrigger>
                 <SelectValue placeholder="Product Type" />
@@ -157,30 +151,6 @@ const Bracelets = () => {
                 <SelectItem value="all">All Materials</SelectItem>
                 {materials.map(material => (
                   <SelectItem key={material} value={material}>{material}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={selectedGemstone} onValueChange={setSelectedGemstone}>
-              <SelectTrigger>
-                <SelectValue placeholder="Gemstone" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Gemstones</SelectItem>
-                {gemstones.map(gemstone => (
-                  <SelectItem key={gemstone} value={gemstone}>{gemstone}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={selectedDiamondCut} onValueChange={setSelectedDiamondCut}>
-              <SelectTrigger>
-                <SelectValue placeholder="Diamond Cut" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Cuts</SelectItem>
-                {diamondCuts.map(cut => (
-                  <SelectItem key={cut} value={cut}>{cut}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -273,9 +243,6 @@ const Bracelets = () => {
                   <p><span className="font-medium">Type:</span> {product.product_type}</p>
                   <p><span className="font-medium">Color:</span> {product.color}</p>
                   <p><span className="font-medium">Material:</span> {product.material}</p>
-                  {product.gemstone && (
-                    <p><span className="font-medium">Gemstone:</span> {product.gemstone}</p>
-                  )}
                 </div>
 
                 {product.sizes && product.sizes.length > 0 && (
@@ -317,8 +284,6 @@ const Bracelets = () => {
                 setSelectedProductType("all");
                 setSelectedColor("all");
                 setSelectedMaterial("all");
-                setSelectedGemstone("all");
-                setSelectedDiamondCut("all");
               }}
               className="mt-4"
               variant="outline"
