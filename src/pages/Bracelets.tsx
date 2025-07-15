@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useQuery } from "@tanstack/react-query";
-import { ChevronDown, Filter, X } from 'lucide-react';
+import { Filter, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -10,7 +10,7 @@ import Footer from '@/components/Footer';
 import { supabase } from "@/integrations/supabase/client";
 import ProductCheckout from "@/components/ProductCheckout";
 
-interface BraceletProduct {
+interface Product {
   id: string;
   name: string;
   description: string | null;
@@ -20,8 +20,6 @@ interface BraceletProduct {
   product_type: string;
   color: string;
   material: string;
-  gemstone: string | null;
-  diamond_cut: string | null;
   sizes: string[] | null;
   image_url: string;
   rating: number | null;
@@ -40,17 +38,16 @@ const Bracelets = () => {
   const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
-  const [selectedGemstones, setSelectedGemstones] = useState<string[]>([]);
-  const [selectedDiamondCuts, setSelectedDiamondCuts] = useState<string[]>([]);
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['bracelet-products'],
-    queryFn: async (): Promise<BraceletProduct[]> => {
+    queryFn: async (): Promise<Product[]> => {
       const { data, error } = await supabase
-        .from('bracelet_products')
+        .from('chain_products')
         .select('*')
+        .ilike('category', '%bracelet%')
         .order('featured', { ascending: false });
       
       if (error) {
@@ -77,16 +74,6 @@ const Bracelets = () => {
     count: products.filter(p => p.material === material).length
   }));
 
-  const gemstones = [...new Set(products.map(p => p.gemstone).filter(Boolean))].map(gemstone => ({
-    name: gemstone!,
-    count: products.filter(p => p.gemstone === gemstone).length
-  }));
-
-  const diamondCuts = [...new Set(products.map(p => p.diamond_cut).filter(Boolean))].map(cut => ({
-    name: cut!,
-    count: products.filter(p => p.diamond_cut === cut).length
-  }));
-
   // Filter products based on selected filters
   const filteredProducts = products.filter(product => {
     const priceInDollars = product.price / 100;
@@ -97,8 +84,6 @@ const Bracelets = () => {
       (selectedProductTypes.length === 0 || selectedProductTypes.includes(product.product_type)) &&
       (selectedColors.length === 0 || selectedColors.includes(product.color)) &&
       (selectedMaterials.length === 0 || selectedMaterials.includes(product.material)) &&
-      (selectedGemstones.length === 0 || (product.gemstone && selectedGemstones.includes(product.gemstone))) &&
-      (selectedDiamondCuts.length === 0 || (product.diamond_cut && selectedDiamondCuts.includes(product.diamond_cut))) &&
       priceInDollars >= priceFromNum &&
       priceInDollars <= priceToNum
     );
@@ -109,8 +94,6 @@ const Bracelets = () => {
       productType: setSelectedProductTypes,
       color: setSelectedColors,
       material: setSelectedMaterials,
-      gemstone: setSelectedGemstones,
-      diamondCut: setSelectedDiamondCuts
     };
 
     const setter = setters[filterType as keyof typeof setters];
@@ -200,7 +183,7 @@ const Bracelets = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-black mb-2">Premium Bracelets</h1>
-          <p className="text-gray-600">Discover our collection of luxury bracelets with VVS stones and premium materials</p>
+          <p className="text-gray-600">Discover our collection of luxury bracelets with premium materials</p>
         </div>
 
         <div className="flex gap-8">
@@ -243,8 +226,6 @@ const Bracelets = () => {
 
             <FilterSection title="COLOR" items={colors} filterType="color" />
             <FilterSection title="MATERIAL" items={materials} filterType="material" />
-            {gemstones.length > 0 && <FilterSection title="GEMSTONE" items={gemstones} filterType="gemstone" />}
-            {diamondCuts.length > 0 && <FilterSection title="DIAMOND CUT" items={diamondCuts} filterType="diamondCut" />}
           </div>
 
           {/* Main Content */}
@@ -312,12 +293,6 @@ const Bracelets = () => {
                     <p><span className="font-medium">Type:</span> {product.product_type}</p>
                     <p><span className="font-medium">Color:</span> {product.color}</p>
                     <p><span className="font-medium">Material:</span> {product.material}</p>
-                    {product.gemstone && (
-                      <p><span className="font-medium">Gemstone:</span> {product.gemstone}</p>
-                    )}
-                    {product.diamond_cut && (
-                      <p><span className="font-medium">Cut:</span> {product.diamond_cut}</p>
-                    )}
                   </div>
 
                   <ProductCheckout
@@ -341,8 +316,6 @@ const Bracelets = () => {
                     setSelectedProductTypes([]);
                     setSelectedColors([]);
                     setSelectedMaterials([]);
-                    setSelectedGemstones([]);
-                    setSelectedDiamondCuts([]);
                     setPriceFrom('');
                     setPriceTo('');
                   }}
@@ -411,8 +384,6 @@ const Bracelets = () => {
 
                 <MobileFilterSection title="COLOR" items={colors} filterType="color" />
                 <MobileFilterSection title="MATERIAL" items={materials} filterType="material" />
-                {gemstones.length > 0 && <MobileFilterSection title="GEMSTONE" items={gemstones} filterType="gemstone" />}
-                {diamondCuts.length > 0 && <MobileFilterSection title="DIAMOND CUT" items={diamondCuts} filterType="diamondCut" />}
               </Accordion>
             </div>
           </div>
