@@ -9,7 +9,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
@@ -36,7 +35,6 @@ interface EarringProduct {
 
 const Earrings = () => {
   const isMobile = useIsMobile();
-  const navigate = useNavigate();
   const [sortBy, setSortBy] = useState('featured');
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
@@ -54,10 +52,6 @@ const Earrings = () => {
       return data as EarringProduct[];
     }
   });
-
-  const handleProductClick = (productId: string) => {
-    navigate(`/earrings/${productId}`);
-  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -87,11 +81,7 @@ const Earrings = () => {
 
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
             {products.map((product) => (
-              <div 
-                key={product.id} 
-                className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => handleProductClick(product.id)}
-              >
+              <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
                   <img
                     src={product.image_url}
