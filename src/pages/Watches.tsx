@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
+import ProductDetailModal from '../components/ProductDetailModal';
 
 interface WatchProduct {
   id: string;
@@ -39,6 +39,8 @@ const Watches = () => {
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<WatchProduct | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [openSections, setOpenSections] = useState({
     productType: false,
     price: false,
@@ -53,6 +55,11 @@ const Watches = () => {
       ...prev,
       [section]: !prev[section]
     }));
+  };
+
+  const handleProductClick = (product: WatchProduct) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
   };
 
   const { data: products = [], isLoading } = useQuery({
@@ -505,7 +512,11 @@ const Watches = () => {
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
             {products.map((product) => (
-              <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
+              <div 
+                key={product.id} 
+                className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => handleProductClick(product)}
+              >
                 
                 {/* Product Image */}
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
@@ -581,6 +592,13 @@ const Watches = () => {
       </div>
 
       <Footer />
+      
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };
