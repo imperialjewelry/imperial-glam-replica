@@ -158,6 +158,156 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_products: {
+        Row: {
+          category: string
+          color: string
+          created_at: string
+          customizable: boolean | null
+          description: string | null
+          discount_percentage: number | null
+          featured: boolean | null
+          gemstone: string | null
+          id: string
+          image_url: string
+          in_stock: boolean | null
+          material: string
+          name: string
+          original_price: number | null
+          price: number
+          product_type: string
+          rating: number | null
+          review_count: number | null
+          shape: string | null
+          ships_today: boolean | null
+          sizes: string[] | null
+          stripe_product_id: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          color: string
+          created_at?: string
+          customizable?: boolean | null
+          description?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
+          gemstone?: string | null
+          id?: string
+          image_url: string
+          in_stock?: boolean | null
+          material: string
+          name: string
+          original_price?: number | null
+          price: number
+          product_type: string
+          rating?: number | null
+          review_count?: number | null
+          shape?: string | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          stripe_product_id: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          color?: string
+          created_at?: string
+          customizable?: boolean | null
+          description?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
+          gemstone?: string | null
+          id?: string
+          image_url?: string
+          in_stock?: boolean | null
+          material?: string
+          name?: string
+          original_price?: number | null
+          price?: number
+          product_type?: string
+          rating?: number | null
+          review_count?: number | null
+          shape?: string | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          stripe_product_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      diamond_products: {
+        Row: {
+          category: string
+          chain_type: string | null
+          color: string
+          created_at: string
+          description: string | null
+          discount_percentage: number | null
+          featured: boolean | null
+          id: string
+          image_url: string
+          in_stock: boolean | null
+          material: string
+          name: string
+          original_price: number | null
+          price: number
+          product_type: string
+          rating: number | null
+          review_count: number | null
+          ships_today: boolean | null
+          sizes: string[] | null
+          stripe_product_id: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          chain_type?: string | null
+          color: string
+          created_at?: string
+          description?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
+          id?: string
+          image_url: string
+          in_stock?: boolean | null
+          material: string
+          name: string
+          original_price?: number | null
+          price: number
+          product_type: string
+          rating?: number | null
+          review_count?: number | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          stripe_product_id: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          chain_type?: string | null
+          color?: string
+          created_at?: string
+          description?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
+          id?: string
+          image_url?: string
+          in_stock?: boolean | null
+          material?: string
+          name?: string
+          original_price?: number | null
+          price?: number
+          product_type?: string
+          rating?: number | null
+          review_count?: number | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          stripe_product_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       earring_products: {
         Row: {
           category: string
@@ -304,6 +454,159 @@ export type Database = {
           ships_today?: boolean | null
           sizes?: string[] | null
           stripe_product_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      glasses_products: {
+        Row: {
+          category: string
+          color: string
+          created_at: string
+          description: string | null
+          discount_percentage: number | null
+          featured: boolean | null
+          frame_style: string | null
+          id: string
+          image_url: string
+          in_stock: boolean | null
+          lens_color: string | null
+          material: string
+          name: string
+          original_price: number | null
+          price: number
+          product_type: string
+          rating: number | null
+          review_count: number | null
+          ships_today: boolean | null
+          sizes: string[] | null
+          stripe_product_id: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          color: string
+          created_at?: string
+          description?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
+          frame_style?: string | null
+          id?: string
+          image_url: string
+          in_stock?: boolean | null
+          lens_color?: string | null
+          material: string
+          name: string
+          original_price?: number | null
+          price: number
+          product_type: string
+          rating?: number | null
+          review_count?: number | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          stripe_product_id: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          color?: string
+          created_at?: string
+          description?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
+          frame_style?: string | null
+          id?: string
+          image_url?: string
+          in_stock?: boolean | null
+          lens_color?: string | null
+          material?: string
+          name?: string
+          original_price?: number | null
+          price?: number
+          product_type?: string
+          rating?: number | null
+          review_count?: number | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          stripe_product_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      grillz_products: {
+        Row: {
+          category: string
+          color: string
+          created_at: string
+          description: string | null
+          discount_percentage: number | null
+          featured: boolean | null
+          gemstone: string | null
+          id: string
+          image_url: string
+          in_stock: boolean | null
+          material: string
+          name: string
+          original_price: number | null
+          price: number
+          product_type: string
+          rating: number | null
+          review_count: number | null
+          ships_today: boolean | null
+          sizes: string[] | null
+          stripe_product_id: string
+          style: string | null
+          teeth_count: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          color: string
+          created_at?: string
+          description?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
+          gemstone?: string | null
+          id?: string
+          image_url: string
+          in_stock?: boolean | null
+          material: string
+          name: string
+          original_price?: number | null
+          price: number
+          product_type: string
+          rating?: number | null
+          review_count?: number | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          stripe_product_id: string
+          style?: string | null
+          teeth_count?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          color?: string
+          created_at?: string
+          description?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
+          gemstone?: string | null
+          id?: string
+          image_url?: string
+          in_stock?: boolean | null
+          material?: string
+          name?: string
+          original_price?: number | null
+          price?: number
+          product_type?: string
+          rating?: number | null
+          review_count?: number | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          stripe_product_id?: string
+          style?: string | null
+          teeth_count?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -500,6 +803,84 @@ export type Database = {
           discount_percentage?: number | null
           featured?: boolean | null
           gemstone?: string | null
+          id?: string
+          image_url?: string
+          in_stock?: boolean | null
+          material?: string
+          name?: string
+          original_price?: number | null
+          price?: number
+          product_type?: string
+          rating?: number | null
+          review_count?: number | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          stripe_product_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      vvs_simulant_products: {
+        Row: {
+          carat_weight: string | null
+          category: string
+          clarity_grade: string | null
+          color: string
+          created_at: string
+          cut_quality: string | null
+          description: string | null
+          discount_percentage: number | null
+          featured: boolean | null
+          id: string
+          image_url: string
+          in_stock: boolean | null
+          material: string
+          name: string
+          original_price: number | null
+          price: number
+          product_type: string
+          rating: number | null
+          review_count: number | null
+          ships_today: boolean | null
+          sizes: string[] | null
+          stripe_product_id: string
+          updated_at: string
+        }
+        Insert: {
+          carat_weight?: string | null
+          category: string
+          clarity_grade?: string | null
+          color: string
+          created_at?: string
+          cut_quality?: string | null
+          description?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
+          id?: string
+          image_url: string
+          in_stock?: boolean | null
+          material: string
+          name: string
+          original_price?: number | null
+          price: number
+          product_type: string
+          rating?: number | null
+          review_count?: number | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          stripe_product_id: string
+          updated_at?: string
+        }
+        Update: {
+          carat_weight?: string | null
+          category?: string
+          clarity_grade?: string | null
+          color?: string
+          created_at?: string
+          cut_quality?: string | null
+          description?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
           id?: string
           image_url?: string
           in_stock?: boolean | null

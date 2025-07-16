@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,12 +6,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { supabase } from '@/integrations/supabase/client';
+import { Tables } from '@/integrations/supabase/types';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 
+type GrillzProduct = Tables<'grillz_products'>;
+
 const Grillz = () => {
   const isMobile = useIsMobile();
+  const [products, setProducts] = useState<GrillzProduct[]>([]);
   const [sortBy, setSortBy] = useState('featured');
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
@@ -20,8 +24,29 @@ const Grillz = () => {
   const [openSections, setOpenSections] = useState({
     productType: false,
     price: false,
-    color: false
+    color: false,
+    material: false,
+    style: false,
+    gemstone: false,
+    teethCount: false
   });
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    const { data, error } = await supabase
+      .from('grillz_products')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching grillz products:', error);
+    } else {
+      setProducts(data || []);
+    }
+  };
 
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
@@ -30,93 +55,43 @@ const Grillz = () => {
     }));
   };
 
-  const products = [
-    {
-      id: 1,
-      name: "8 on 8 VVS Grillz 14K Gold",
-      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80",
-      category: "8 ON 8 / UNISEX",
-      price: 476,
-      originalPrice: 501,
-      rating: 5,
-      reviews: 1082,
-      badges: ["IN STOCK", "5% OFF"]
-    },
-    {
-      id: 2,
-      name: "10 on 10 Diamond Grillz 14K Gold",
-      image: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=800&q=80",
-      category: "10 ON 10 / UNISEX",
-      price: 825,
-      originalPrice: 867,
-      rating: 5,
-      reviews: 456,
-      badges: ["IN STOCK", "5% OFF"]
-    },
-    {
-      id: 3,
-      name: "Custom Letter Grillz 14K Gold",
-      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=800&q=80",
-      category: "CUSTOM / UNISEX",
-      price: 1200,
-      originalPrice: 1265,
-      rating: 5,
-      reviews: 89,
-      badges: ["IN STOCK", "5% OFF"]
-    },
-    {
-      id: 4,
-      name: "10 on Bottom Grillz 14K Gold",
-      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80",
-      category: "10 ON BOTTOM / UNISEX",
-      price: 644,
-      originalPrice: 678,
-      rating: 5,
-      reviews: 234,
-      badges: ["IN STOCK", "5% OFF"]
-    },
-    {
-      id: 5,
-      name: "VVS 8 on 8 Grillz Rose Gold",
-      image: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=800&q=80",
-      category: "8 ON 8 / UNISEX",
-      price: 527,
-      originalPrice: 555,
-      rating: 5,
-      reviews: 678,
-      badges: ["IN STOCK", "5% OFF"]
-    },
-    {
-      id: 6,
-      name: "Premium 10 on 10 Grillz White Gold",
-      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=800&q=80",
-      category: "10 ON 10 / UNISEX",
-      price: 1135,
-      originalPrice: 1195,
-      rating: 5,
-      reviews: 345,
-      badges: ["IN STOCK", "5% OFF"]
-    }
-  ];
-
   const productTypes = [
-    { name: "8 on 8", count: 12 },
-    { name: "10 on 10", count: 4 },
-    { name: "Custom Letter Grillz", count: 1 },
-    { name: "10 on Bottom", count: 1 }
+    { name: "Diamond Grillz", count: 3 },
+    { name: "Moissanite Grillz", count: 2 },
+    { name: "Custom Grillz", count: 1 },
+    { name: "Gold Grillz", count: 4 },
+    { name: "Permanent Grillz", count: 2 }
   ];
 
   const colors = [
-    { name: "Yellow Gold", count: 15 },
-    { name: "White Gold", count: 17 },
-    { name: "Rose Gold", count: 15 },
-    { name: "Black Gold", count: 1 }
+    { name: "Yellow Gold", count: 5 },
+    { name: "White Gold", count: 4 },
+    { name: "Rose Gold", count: 3 }
   ];
 
-  const grillzTypes = [
-    "8 ON 8 GRILLZ",
-    "10 ON 10 GRILLZ", 
-    "CUSTOM GRILLZ"
+  const materials = [
+    { name: "Solid Gold", count: 6 },
+    { name: "925 Silver", count: 4 },
+    { name: "14K Gold", count: 2 }
+  ];
+
+  const styles = [
+    { name: "Iced Out", count: 4 },
+    { name: "Classic", count: 3 },
+    { name: "Custom Design", count: 2 }
+  ];
+
+  const gemstones = [
+    { name: "VVS Diamond Simulants (CZ)", count: 4 },
+    { name: "Moissanite", count: 3 },
+    { name: "VVS Moissanite", count: 2 }
+  ];
+
+  const teethCounts = [
+    { name: "6 Teeth", count: 3 },
+    { name: "8 Teeth", count: 2 },
+    { name: "Full Set", count: 1 },
+    { name: "4 Teeth", count: 2 }
   ];
 
   const renderDesktopFilters = () => (
@@ -185,13 +160,84 @@ const Grillz = () => {
           ))}
         </div>
       </div>
+
+      {/* Material */}
+      <div className="mb-8">
+        <h3 className="font-medium text-gray-900 mb-4 uppercase">MATERIAL</h3>
+        <div className="space-y-3">
+          {materials.map((material) => (
+            <div key={material.name} className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Checkbox id={`desktop-${material.name}`} />
+                <label htmlFor={`desktop-${material.name}`} className="text-sm text-gray-700">
+                  {material.name}
+                </label>
+              </div>
+              <span className="text-sm text-gray-500">({material.count})</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Style */}
+      <div className="mb-8">
+        <h3 className="font-medium text-gray-900 mb-4 uppercase">STYLE</h3>
+        <div className="space-y-3">
+          {styles.map((style) => (
+            <div key={style.name} className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Checkbox id={`desktop-${style.name}`} />
+                <label htmlFor={`desktop-${style.name}`} className="text-sm text-gray-700">
+                  {style.name}
+                </label>
+              </div>
+              <span className="text-sm text-gray-500">({style.count})</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Gemstone */}
+      <div className="mb-8">
+        <h3 className="font-medium text-gray-900 mb-4 uppercase">GEMSTONE</h3>
+        <div className="space-y-3">
+          {gemstones.map((gemstone) => (
+            <div key={gemstone.name} className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Checkbox id={`desktop-${gemstone.name}`} />
+                <label htmlFor={`desktop-${gemstone.name}`} className="text-sm text-gray-700">
+                  {gemstone.name}
+                </label>
+              </div>
+              <span className="text-sm text-gray-500">({gemstone.count})</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Teeth Count */}
+      <div className="mb-8">
+        <h3 className="font-medium text-gray-900 mb-4 uppercase">TEETH COUNT</h3>
+        <div className="space-y-3">
+          {teethCounts.map((teethCount) => (
+            <div key={teethCount.name} className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Checkbox id={`desktop-${teethCount.name}`} />
+                <label htmlFor={`desktop-${teethCount.name}`} className="text-sm text-gray-700">
+                  {teethCount.name}
+                </label>
+              </div>
+              <span className="text-sm text-gray-500">({teethCount.count})</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 
   const renderMobileFilters = () => (
     showFilters && (
       <div className="bg-white border rounded-lg mb-6 overflow-hidden">
-        
         {/* Sort By */}
         <div className="p-4 border-b">
           <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
@@ -265,11 +311,11 @@ const Grillz = () => {
 
         {/* Color Filter */}
         <Collapsible open={openSections.color} onOpenChange={() => toggleSection('color')}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left hover:bg-gray-50">
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
             <span className="font-medium">COLOR</span>
             <ChevronDown className={`w-4 h-4 transition-transform ${openSections.color ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
-          <CollapsibleContent className="p-4">
+          <CollapsibleContent className="p-4 border-b">
             <div className="space-y-3">
               {colors.map((color) => (
                 <div key={color.name} className="flex items-center justify-between">
@@ -285,6 +331,98 @@ const Grillz = () => {
             </div>
           </CollapsibleContent>
         </Collapsible>
+
+        {/* Material Filter */}
+        <Collapsible open={openSections.material} onOpenChange={() => toggleSection('material')}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+            <span className="font-medium">MATERIAL</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.material ? 'rotate-180' : ''}`} />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="p-4 border-b">
+            <div className="space-y-3">
+              {materials.map((material) => (
+                <div key={material.name} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id={material.name} />
+                    <label htmlFor={material.name} className="text-sm text-gray-700">
+                      {material.name}
+                    </label>
+                  </div>
+                  <span className="text-sm text-gray-500">({material.count})</span>
+                </div>
+              ))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+
+        {/* Style Filter */}
+        <Collapsible open={openSections.style} onOpenChange={() => toggleSection('style')}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+            <span className="font-medium">STYLE</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.style ? 'rotate-180' : ''}`} />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="p-4 border-b">
+            <div className="space-y-3">
+              {styles.map((style) => (
+                <div key={style.name} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id={style.name} />
+                    <label htmlFor={style.name} className="text-sm text-gray-700">
+                      {style.name}
+                    </label>
+                  </div>
+                  <span className="text-sm text-gray-500">({style.count})</span>
+                </div>
+              ))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+
+        {/* Gemstone Filter */}
+        <Collapsible open={openSections.gemstone} onOpenChange={() => toggleSection('gemstone')}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+            <span className="font-medium">GEMSTONE</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.gemstone ? 'rotate-180' : ''}`} />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="p-4 border-b">
+            <div className="space-y-3">
+              {gemstones.map((gemstone) => (
+                <div key={gemstone.name} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id={gemstone.name} />
+                    <label htmlFor={gemstone.name} className="text-sm text-gray-700">
+                      {gemstone.name}
+                    </label>
+                  </div>
+                  <span className="text-sm text-gray-500">({gemstone.count})</span>
+                </div>
+              ))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+
+        {/* Teeth Count Filter */}
+        <Collapsible open={openSections.teethCount} onOpenChange={() => toggleSection('teethCount')}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left hover:bg-gray-50">
+            <span className="font-medium">TEETH COUNT</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.teethCount ? 'rotate-180' : ''}`} />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="p-4">
+            <div className="space-y-3">
+              {teethCounts.map((teethCount) => (
+                <div key={teethCount.name} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id={teethCount.name} />
+                    <label htmlFor={teethCount.name} className="text-sm text-gray-700">
+                      {teethCount.name}
+                    </label>
+                  </div>
+                  <span className="text-sm text-gray-500">({teethCount.count})</span>
+                </div>
+              ))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
     )
   );
@@ -294,79 +432,19 @@ const Grillz = () => {
       <PromoBar />
       <Header />
       
-      {/* Desktop Hero Section */}
-      {!isMobile && (
-        <section className="bg-gray-50 py-12 px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                MOISSANITE DIAMOND GRILLZ
-              </h1>
-              <p className="text-lg text-gray-600 mb-8">
-                All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Grillz
-              </p>
-              
-              {/* Grillz Types Navigation */}
-              <div className="flex justify-center space-x-8 text-sm text-gray-500">
-                {grillzTypes.map((type, index) => (
-                  <span key={index} className="border-r border-gray-300 pr-8 last:border-r-0">
-                    {type}
-                  </span>
-                ))}
-              </div>
-            </div>
+      {/* Hero Section */}
+      <section className="bg-gray-50 py-12 px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              MOISSANITE DIAMOND GRILLZ
+            </h1>
+            <p className="text-lg text-gray-600 mb-8">
+              Premium Moissanite Iced Out 14K White, Yellow and Rose Gold Grillz
+            </p>
           </div>
-        </section>
-      )}
-
-      {/* Mobile Hero Section */}
-      {isMobile && (
-        <section className="bg-gray-50 py-8 px-4">
-          <div className="max-w-sm mx-auto">
-            {/* Hero Images */}
-            <div className="grid grid-cols-4 gap-2 mb-6">
-              <img 
-                src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=200&q=80" 
-                alt="Grillz 1" 
-                className="w-full aspect-square rounded-lg object-cover"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=200&q=80" 
-                alt="Grillz 2" 
-                className="w-full aspect-square rounded-lg object-cover"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=200&q=80" 
-                alt="Grillz 3" 
-                className="w-full aspect-square rounded-lg object-cover"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=200&q=80" 
-                alt="Grillz 4" 
-                className="w-full aspect-square rounded-lg object-cover"
-              />
-            </div>
-            
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                MOISSANITE DIAMOND GRILLZ
-              </h1>
-              <p className="text-sm text-gray-600 mb-6">
-                All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Grillz
-              </p>
-              
-              {/* Grillz Types Navigation */}
-              <div className="flex justify-center space-x-4 mb-6 text-xs">
-                {grillzTypes.map((type, index) => (
-                  <span key={index} className="text-gray-500 border-r border-gray-300 pr-4 last:border-r-0">
-                    {type}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
@@ -377,7 +455,7 @@ const Grillz = () => {
         <div className={`flex-1 ${isMobile ? 'py-4 px-4' : 'py-8 px-8'}`}>
           {/* Product count and controls */}
           <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-semibold">18 Products</span>
+            <span className="text-lg font-semibold">{products.length} Products</span>
             <div className="flex items-center space-x-4">
               {!isMobile && (
                 <Select value={sortBy} onValueChange={setSortBy}>
@@ -417,25 +495,23 @@ const Grillz = () => {
                 {/* Product Image */}
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
                   <img
-                    src={product.image}
+                    src={product.image_url}
                     alt={product.name}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   />
                   
                   {/* Badges */}
                   <div className="absolute top-2 left-2 flex flex-col space-y-1">
-                    {product.badges.map((badge, index) => (
-                      <Badge
-                        key={index}
-                        className={`text-xs font-semibold ${
-                          badge.includes('STOCK') 
-                            ? 'bg-blue-500 text-white' 
-                            : 'bg-red-500 text-white'
-                        }`}
-                      >
-                        {badge}
+                    {product.in_stock && (
+                      <Badge className="text-xs font-semibold bg-blue-500 text-white">
+                        IN STOCK
                       </Badge>
-                    ))}
+                    )}
+                    {product.discount_percentage && product.discount_percentage > 0 && (
+                      <Badge className="text-xs font-semibold bg-red-500 text-white">
+                        {product.discount_percentage}% OFF
+                      </Badge>
+                    )}
                   </div>
                 </div>
 
@@ -455,14 +531,14 @@ const Grillz = () => {
                         <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                       ))}
                     </div>
-                    <span className="text-xs text-gray-500">({product.reviews})</span>
+                    <span className="text-xs text-gray-500">({product.review_count})</span>
                   </div>
                   
                   <div className="flex items-center space-x-2">
-                    <span className="text-lg font-bold text-blue-600">${product.price}</span>
-                    {product.originalPrice && (
+                    <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
+                    {product.original_price && (
                       <span className="text-sm text-gray-500 line-through">
-                        ${product.originalPrice}
+                        ${(product.original_price / 100).toFixed(2)}
                       </span>
                     )}
                   </div>
