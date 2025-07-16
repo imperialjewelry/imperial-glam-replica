@@ -38,6 +38,7 @@ const ProductCheckout = ({ product }: ProductCheckoutProps) => {
         body: {
           productId: product.id,
           selectedSize,
+          customerEmail: 'guest@imperialjewelryshop.com', // Default guest email
         },
       });
 

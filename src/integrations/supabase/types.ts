@@ -820,6 +820,117 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          carat_weight: string | null
+          category: string
+          chain_type: string | null
+          clarity_grade: string | null
+          color: string
+          created_at: string
+          customizable: boolean | null
+          cut_quality: string | null
+          description: string | null
+          diamond_cut: string | null
+          discount_percentage: number | null
+          featured: boolean | null
+          frame_style: string | null
+          gemstone: string | null
+          id: string
+          image_url: string
+          in_stock: boolean | null
+          lens_color: string | null
+          material: string
+          name: string
+          original_price: number | null
+          price: number
+          product_type: string
+          rating: number | null
+          review_count: number | null
+          shape: string | null
+          ships_today: boolean | null
+          sizes: string[] | null
+          source_id: string
+          source_table: string
+          stripe_product_id: string
+          style: string | null
+          teeth_count: string | null
+          updated_at: string
+        }
+        Insert: {
+          carat_weight?: string | null
+          category: string
+          chain_type?: string | null
+          clarity_grade?: string | null
+          color: string
+          created_at?: string
+          customizable?: boolean | null
+          cut_quality?: string | null
+          description?: string | null
+          diamond_cut?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
+          frame_style?: string | null
+          gemstone?: string | null
+          id?: string
+          image_url: string
+          in_stock?: boolean | null
+          lens_color?: string | null
+          material: string
+          name: string
+          original_price?: number | null
+          price: number
+          product_type: string
+          rating?: number | null
+          review_count?: number | null
+          shape?: string | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          source_id: string
+          source_table: string
+          stripe_product_id: string
+          style?: string | null
+          teeth_count?: string | null
+          updated_at?: string
+        }
+        Update: {
+          carat_weight?: string | null
+          category?: string
+          chain_type?: string | null
+          clarity_grade?: string | null
+          color?: string
+          created_at?: string
+          customizable?: boolean | null
+          cut_quality?: string | null
+          description?: string | null
+          diamond_cut?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
+          frame_style?: string | null
+          gemstone?: string | null
+          id?: string
+          image_url?: string
+          in_stock?: boolean | null
+          lens_color?: string | null
+          material?: string
+          name?: string
+          original_price?: number | null
+          price?: number
+          product_type?: string
+          rating?: number | null
+          review_count?: number | null
+          shape?: string | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          source_id?: string
+          source_table?: string
+          stripe_product_id?: string
+          style?: string | null
+          teeth_count?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       vvs_simulant_products: {
         Row: {
           carat_weight: string | null
