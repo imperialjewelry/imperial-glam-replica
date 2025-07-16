@@ -197,21 +197,19 @@ const Bracelets = () => {
       <Header />
       
       {/* Hero Section */}
-      <section className="bg-gray-50 py-12 px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              MOISSANITE DIAMOND BRACELETS
-            </h1>
-            <p className="text-lg text-gray-600 mb-8">
-              All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Bracelets
-            </p>
-          </div>
+      <section className="bg-gray-50 py-16 px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            MOISSANITE DIAMOND BRACELETS
+          </h1>
+          <p className="text-lg text-gray-600 mb-8">
+            All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Bracelets
+          </p>
         </div>
       </section>
 
       {/* Main Content */}
-      <div className="flex">
+      <div className="max-w-7xl mx-auto flex">
         {/* Desktop Sidebar Filters */}
         <div className="hidden lg:block w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
           <h2 className="text-lg font-semibold mb-6">Filters</h2>

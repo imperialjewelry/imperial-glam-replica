@@ -60,53 +60,14 @@ const ProductCheckout = ({ product }: ProductCheckoutProps) => {
   };
 
   return (
-    <div className="w-full space-y-4">
-      {/* Size Selection */}
-      {product.sizes && product.sizes.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex flex-wrap gap-2">
-            {product.sizes.map((size) => (
-              <Badge
-                key={size}
-                variant={selectedSize === size ? "default" : "outline"}
-                className="cursor-pointer hover:bg-blue-500 hover:text-white transition-colors px-3 py-1"
-                onClick={() => setSelectedSize(size)}
-              >
-                {size}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Price Display */}
-      <div className="flex items-center justify-between py-2 border-t">
-        <span className="font-medium text-sm">Total:</span>
-        <span className="text-lg font-bold text-blue-600">
-          ${(product.price / 100).toFixed(2)}
-        </span>
-      </div>
-
-      {/* Checkout Button */}
-      <Button
-        onClick={handleCheckout}
-        disabled={isLoading}
-        className="w-full bg-blue-500 hover:bg-blue-600 text-white text-sm py-2"
-      >
-        {isLoading ? (
-          "Processing..."
-        ) : (
-          <>
-            <CreditCard className="w-4 h-4 mr-2" />
-            Buy Now
-          </>
-        )}
-      </Button>
-
-      <p className="text-xs text-gray-500 text-center">
-        Secure checkout powered by Stripe
-      </p>
-    </div>
+    <Button
+      onClick={handleCheckout}
+      disabled={isLoading}
+      className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 h-8"
+      size="sm"
+    >
+      {isLoading ? "..." : "Buy Now"}
+    </Button>
   );
 };
 
