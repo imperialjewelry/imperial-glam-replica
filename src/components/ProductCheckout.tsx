@@ -1,8 +1,6 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, CreditCard } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -20,20 +18,10 @@ interface ProductCheckoutProps {
 
 const ProductCheckout = ({ product }: ProductCheckoutProps) => {
   const [selectedSize, setSelectedSize] = useState('');
-  const [customerEmail, setCustomerEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const handleCheckout = async () => {
-    if (!customerEmail) {
-      toast({
-        title: "Email Required",
-        description: "Please enter your email address to continue.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       toast({
         title: "Size Required",
@@ -50,7 +38,6 @@ const ProductCheckout = ({ product }: ProductCheckoutProps) => {
         body: {
           productId: product.id,
           selectedSize,
-          customerEmail,
         },
       });
 
@@ -77,7 +64,6 @@ const ProductCheckout = ({ product }: ProductCheckoutProps) => {
       {/* Size Selection */}
       {product.sizes && product.sizes.length > 0 && (
         <div className="space-y-2">
-          <Label htmlFor="size" className="text-sm font-medium">Select Size</Label>
           <div className="flex flex-wrap gap-2">
             {product.sizes.map((size) => (
               <Badge
@@ -92,20 +78,6 @@ const ProductCheckout = ({ product }: ProductCheckoutProps) => {
           </div>
         </div>
       )}
-
-      {/* Email Input */}
-      <div className="space-y-2">
-        <Label htmlFor="email" className="text-sm font-medium">Email Address</Label>
-        <Input
-          id="email"
-          type="email"
-          value={customerEmail}
-          onChange={(e) => setCustomerEmail(e.target.value)}
-          placeholder="your@email.com"
-          className="text-sm"
-          required
-        />
-      </div>
 
       {/* Price Display */}
       <div className="flex items-center justify-between py-2 border-t">
