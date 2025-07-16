@@ -13,6 +13,7 @@ import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import ProductCheckout from '../components/ProductCheckout';
+import { useNavigate } from 'react-router-dom';
 
 interface Product {
   id: string;
@@ -38,6 +39,7 @@ interface Product {
 const Chains = () => {
   const isMobile = useIsMobile();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('featured');
@@ -472,7 +474,7 @@ const Chains = () => {
         {/* Desktop Sidebar Filters */}
         {!isMobile && renderDesktopFilters()}
 
-        {/* Products Section - Fixed mobile spacing */}
+        {/* Products Section */}
         <div className={`flex-1 ${isMobile ? 'py-3 px-3' : 'py-8 px-8'}`}>
           {/* Product count and controls */}
           <div className="flex items-center justify-between mb-4">
@@ -510,10 +512,14 @@ const Chains = () => {
           {/* Mobile Collapsible Filters */}
           {isMobile && renderMobileFilters()}
 
-          {/* Products Grid - Fixed mobile spacing and button sizing */}
+          {/* Products Grid - Updated with click navigation */}
           <div className={`grid ${isMobile ? 'grid-cols-2 gap-2' : 'grid-cols-4 gap-4'}`}>
             {filteredProducts.map((product) => (
-              <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
+              <div 
+                key={product.id} 
+                className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => navigate(`/chain/${product.id}`)}
+              >
                 
                 {/* Product Image */}
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
@@ -559,8 +565,11 @@ const Chains = () => {
                   )}
                 </div>
 
-                {/* Product Info - Adjusted mobile spacing */}
+                
+                {/* Product Info - Remove the Buy button and make entire card clickable */}
                 <div className={`${isMobile ? 'p-2 space-y-1.5' : 'p-3 space-y-2'}`}>
+                  {/* Product Info - Adjusted mobile spacing */}
+                  
                   <div className={`text-gray-500 uppercase ${isMobile ? 'text-xs' : 'text-xs'}`}>
                     {product.category}
                   </div>
@@ -590,32 +599,10 @@ const Chains = () => {
                       )}
                     </div>
                     
-                    {/* Buy Now Button - Properly sized for mobile */}
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button 
-                          size="sm" 
-                          className={`bg-blue-500 hover:bg-blue-600 text-white ${
-                            isMobile 
-                              ? 'text-xs px-2 py-1 h-7 min-w-0' 
-                              : 'text-xs px-3 py-1'
-                          }`}
-                          onClick={() => setSelectedProduct(product)}
-                        >
-                          Buy
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className={`${isMobile ? 'max-w-[95vw] mx-2' : 'max-w-md'}`}>
-                        <DialogHeader>
-                          <DialogTitle className={`${isMobile ? 'text-sm' : ''}`}>
-                            {product.name}
-                          </DialogTitle>
-                        </DialogHeader>
-                        {selectedProduct && (
-                          <ProductCheckout product={selectedProduct} />
-                        )}
-                      </DialogContent>
-                    </Dialog>
+                    {/* View Details text instead of Buy button */}
+                    <span className={`text-blue-600 ${isMobile ? 'text-xs' : 'text-sm'}`}>
+                      View Details →
+                    </span>
                   </div>
                 </div>
               </div>
