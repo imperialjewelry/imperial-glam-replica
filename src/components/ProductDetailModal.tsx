@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Star, ChevronLeft, ChevronRight, Check, Gift, CreditCard } from 'lucide-react';
-import { ProductCheckout } from './ProductCheckout';
+import ProductCheckout from './ProductCheckout';
 
 interface WatchProduct {
   id: string;
