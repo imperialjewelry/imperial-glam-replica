@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { Search, ShoppingCart, Menu, X, Instagram, MessageCircle, Star, Truck, ChevronDown } from 'lucide-react';
+import { ShoppingCart, Menu, X, Instagram, MessageCircle, Star, Truck, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import {
@@ -9,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import SearchBar from './SearchBar';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -45,16 +45,14 @@ const Header = () => {
         {/* Main header */}
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="w-1/3"></div>
+            <div className="w-1/4"></div>
             <div className="flex-1 flex justify-center">
               <Link to="/" className="text-2xl font-bold text-black tracking-wide hover:text-gray-800 transition-colors">
                 IMPERIAL JEWELRY
               </Link>
             </div>
-            <div className="w-1/3 flex items-center justify-end space-x-4">
-              <Button variant="ghost" size="sm">
-                <Search className="w-5 h-5" />
-              </Button>
+            <div className="w-1/4 flex items-center justify-end space-x-4">
+              <SearchBar />
               <Button variant="ghost" size="sm">
                 <ShoppingCart className="w-5 h-5" />
               </Button>
@@ -139,12 +137,14 @@ const Header = () => {
           
           <div className="flex items-center space-x-1">
             <Button variant="ghost" size="sm" className="p-2">
-              <Search className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="sm" className="p-2">
               <ShoppingCart className="w-5 h-5" />
             </Button>
           </div>
+        </div>
+
+        {/* Mobile search bar */}
+        <div className="px-4 py-3 border-b border-gray-200">
+          <SearchBar />
         </div>
 
         {/* Mobile social icons bar */}
