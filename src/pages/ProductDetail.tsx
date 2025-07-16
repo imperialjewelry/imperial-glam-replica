@@ -52,15 +52,56 @@ const ProductDetail = () => {
     if (!category || !id) return;
 
     try {
-      const tableName = `${category}_products`;
+      let tableName = '';
+      switch (category) {
+        case 'chains':
+          tableName = 'chain_products';
+          break;
+        case 'bracelets':
+          tableName = 'bracelet_products';
+          break;
+        case 'watches':
+          tableName = 'watch_products';
+          break;
+        case 'pendants':
+          tableName = 'pendant_products';
+          break;
+        case 'earrings':
+          tableName = 'earring_products';
+          break;
+        case 'custom':
+          tableName = 'custom_products';
+          break;
+        case 'grillz':
+          tableName = 'grillz_products';
+          break;
+        case 'glasses':
+          tableName = 'glasses_products';
+          break;
+        case 'rings':
+          tableName = 'hip_hop_ring_products';
+          break;
+        case 'engagement-rings':
+          tableName = 'engagement_ring_products';
+          break;
+        case 'vvs-diamond-simulants':
+          tableName = 'vvs_simulant_products';
+          break;
+        case 'diamond':
+          tableName = 'diamond_products';
+          break;
+        default:
+          throw new Error('Invalid category');
+      }
+
       const { data, error } = await supabase
-        .from(tableName)
+        .from(tableName as any)
         .select('*')
         .eq('id', id)
         .single();
 
       if (error) throw error;
-      setProduct(data);
+      setProduct(data as Product);
     } catch (error) {
       console.error('Error fetching product:', error);
       toast({
