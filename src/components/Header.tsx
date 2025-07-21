@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Menu, X, User, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SearchBar from './SearchBar';
-import ShoppingCart from './ShoppingCart';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -47,10 +46,9 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Desktop Search, Cart, and User */}
+          {/* Desktop Search and User */}
           <div className="hidden lg:flex items-center space-x-4">
             <SearchBar />
-            <ShoppingCart />
             <Button variant="outline" size="sm">
               <User className="h-4 w-4" />
             </Button>
@@ -65,7 +63,6 @@ const Header = () => {
             >
               <Search className="h-4 w-4" />
             </Button>
-            <ShoppingCart />
             <Button
               variant="ghost"
               size="sm"
