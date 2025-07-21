@@ -1,9 +1,9 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, CreditCard } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ShoppingCart } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 
 interface ProductCheckoutProps {
@@ -18,57 +18,65 @@ interface ProductCheckoutProps {
 
 const ProductCheckout = ({ product }: ProductCheckoutProps) => {
   const [selectedSize, setSelectedSize] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [showSizeSelect, setShowSizeSelect] = useState(false);
+  const { addToCart } = useCart();
   const { toast } = useToast();
 
-  const handleCheckout = async () => {
+  const handleAddToCart = () => {
     if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+      setShowSizeSelect(true);
       toast({
         title: "Size Required",
-        description: "Please select a size before proceeding.",
+        description: "Please select a size before adding to cart.",
         variant: "destructive",
       });
       return;
     }
 
-    setIsLoading(true);
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image_url: product.image_url,
+      selectedSize: selectedSize || undefined,
+      quantity: 1
+    });
 
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: {
-          productId: product.id,
-          selectedSize,
-          customerEmail: 'guest@imperialjewelryshop.com', // Default guest email
-        },
-      });
+    toast({
+      title: "Added to Cart",
+      description: `${product.name} has been added to your cart.`,
+    });
 
-      if (error) throw error;
-
-      // Open Stripe checkout in new tab
-      if (data?.url) {
-        window.open(data.url, '_blank');
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      toast({
-        title: "Checkout Error",
-        description: "There was an error processing your request. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    setSelectedSize('');
+    setShowSizeSelect(false);
   };
 
   return (
-    <Button
-      onClick={handleCheckout}
-      disabled={isLoading}
-      className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 h-8"
-      size="sm"
-    >
-      {isLoading ? "..." : "Buy Now"}
-    </Button>
+    <div className="space-y-2">
+      {showSizeSelect && product.sizes && product.sizes.length > 0 && (
+        <Select value={selectedSize} onValueChange={setSelectedSize}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select size" />
+          </SelectTrigger>
+          <SelectContent>
+            {product.sizes.map((size) => (
+              <SelectItem key={size} value={size}>
+                {size}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+      
+      <Button
+        onClick={handleAddToCart}
+        className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 h-8 w-full"
+        size="sm"
+      >
+        <ShoppingCart className="w-3 h-3 mr-1" />
+        Add to Cart
+      </Button>
+    </div>
   );
 };
 
