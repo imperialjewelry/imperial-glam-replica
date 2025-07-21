@@ -11,79 +11,72 @@ const Header = () => {
   const { getTotalItems } = useCart();
 
   const categories = [
-    { name: 'Chains', href: '/chains' },
-    { name: 'Bracelets', href: '/bracelets' },
-    { name: 'Watches', href: '/watches' },
-    { name: 'Pendants', href: '/pendants' },
-    { name: 'Earrings', href: '/earrings' },
-    { name: 'Custom', href: '/custom' },
-    { name: 'Grillz', href: '/grillz' },
-    { name: 'Glasses', href: '/glasses' },
-  ];
-
-  const rings = [
-    { name: 'Hip Hop Rings', href: '/rings/hip-hop' },
-    { name: 'Engagement Rings', href: '/rings/engagement' },
+    { name: 'BEST DEALS', href: '/best-deals' },
+    { name: 'CHAINS', href: '/chains' },
+    { name: 'BRACELETS', href: '/bracelets' },
+    { name: 'WATCHES', href: '/watches' },
+    { name: 'PENDANTS', href: '/pendants' },
+    { name: 'EARRINGS', href: '/earrings' },
+    { name: 'CUSTOM', href: '/custom' },
+    { name: 'GRILLZ', href: '/grillz' },
+    { name: 'GLASSES', href: '/glasses' },
+    { name: 'RINGS', href: '/rings' },
+    { name: 'DIAMOND', href: '/diamond' },
+    { name: 'VVS DIAMOND SIMULANTS', href: '/vvs-diamond-simulants' },
   ];
 
   return (
-    <header className="bg-white shadow-sm border-b">
-      {/* Top bar */}
-      <div className="bg-gray-50 px-4 py-2 text-sm text-gray-600 text-center">
-        <span>Free shipping on orders over $100 | Use code: FREESHIP</span>
+    <header className="bg-white shadow-sm">
+      {/* Top bar with reviews and shipping info */}
+      <div className="bg-gray-50 px-4 py-2 text-sm text-gray-600">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center">
+              <div className="flex text-yellow-400 mr-2">
+                {[...Array(5)].map((_, i) => (
+                  <span key={i}>★</span>
+                ))}
+              </div>
+              <span>30,000+ Reviews</span>
+            </div>
+          </div>
+          <div className="flex items-center space-x-4">
+            <span>📦 READY TO SHIP | View all →</span>
+            <div className="flex space-x-2">
+              <span>📷</span>
+              <span>🔗</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Main header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <a href="/" className="text-2xl font-bold text-gray-900">
-              Imperial Jewelry
+            <a href="/" className="text-3xl font-bold text-gray-900 tracking-wider">
+              IMPERIAL JEWELRY
             </a>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
-            {categories.map((category) => (
-              <a
-                key={category.name}
-                href={category.href}
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
-              >
-                {category.name}
-              </a>
-            ))}
-            <div className="relative group">
-              <button className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors">
-                Rings
-              </button>
-              <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                <div className="py-1">
-                  {rings.map((ring) => (
-                    <a
-                      key={ring.name}
-                      href={ring.href}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      {ring.name}
-                    </a>
-                  ))}
-                </div>
-              </div>
+          {/* Search bar */}
+          <div className="hidden md:flex flex-1 max-w-lg mx-8">
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder="Search products..."
+                className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <Search className="absolute right-3 top-2.5 w-5 h-5 text-gray-400" />
             </div>
-          </nav>
+          </div>
 
           {/* Right side icons */}
           <div className="flex items-center space-x-4">
-            {/* Search */}
-            <button className="text-gray-700 hover:text-gray-900">
-              <Search className="w-5 h-5" />
-            </button>
-
             {/* User */}
             <button className="text-gray-700 hover:text-gray-900">
-              <User className="w-5 h-5" />
+              <User className="w-6 h-6" />
             </button>
 
             {/* Shopping Cart */}
@@ -99,6 +92,21 @@ const Header = () => {
           </div>
         </div>
 
+        {/* Navigation */}
+        <nav className="hidden md:flex border-t border-gray-200 py-4">
+          <div className="flex space-x-8 mx-auto">
+            {categories.map((category) => (
+              <a
+                key={category.name}
+                href={category.href}
+                className="text-gray-700 hover:text-blue-600 text-sm font-medium transition-colors uppercase tracking-wide"
+              >
+                {category.name}
+              </a>
+            ))}
+          </div>
+        </nav>
+
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-gray-200 py-4">
@@ -107,28 +115,27 @@ const Header = () => {
                 <a
                   key={category.name}
                   href={category.href}
-                  className="text-gray-700 hover:text-gray-900 text-base font-medium"
+                  className="text-gray-700 hover:text-gray-900 text-base font-medium uppercase"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {category.name}
                 </a>
               ))}
-              <div className="border-t border-gray-200 pt-4">
-                <p className="text-gray-500 text-sm font-medium mb-2">Rings</p>
-                {rings.map((ring) => (
-                  <a
-                    key={ring.name}
-                    href={ring.href}
-                    className="block text-gray-700 hover:text-gray-900 text-base font-medium py-1 ml-4"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {ring.name}
-                  </a>
-                ))}
-              </div>
             </div>
           </div>
         )}
+      </div>
+
+      {/* Promotional banner */}
+      <div className="bg-black text-white py-2 overflow-hidden">
+        <div className="animate-marquee whitespace-nowrap">
+          <span className="mx-4">⭐ BUY NOW PAY LATER</span>
+          <span className="mx-4">⭐ 4-DAY SHIPPING</span>
+          <span className="mx-4">⭐ BUY NOW PAY LATER</span>
+          <span className="mx-4">⭐ 4-DAY SHIPPING</span>
+          <span className="mx-4">⭐ BUY NOW PAY LATER</span>
+          <span className="mx-4">⭐ 4-DAY SHIPPING</span>
+        </div>
       </div>
     </header>
   );
