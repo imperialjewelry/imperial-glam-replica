@@ -1,7 +1,9 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useCart } from '@/contexts/CartContext';
+import { Badge } from '@/components/ui/badge';
+import { ShoppingCart, CreditCard } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface ProductCheckoutProps {
@@ -11,21 +13,19 @@ interface ProductCheckoutProps {
     price: number;
     sizes?: string[];
     image_url: string;
-    source_table?: string;
   };
-  selectedSize?: string;
 }
 
-const ProductCheckout = ({ product, selectedSize }: ProductCheckoutProps) => {
+const ProductCheckout = ({ product }: ProductCheckoutProps) => {
+  const [selectedSize, setSelectedSize] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { addToCart } = useCart();
   const { toast } = useToast();
 
-  const handleAddToCart = async () => {
+  const handleCheckout = async () => {
     if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       toast({
         title: "Size Required",
-        description: "Please select a size before adding to cart.",
+        description: "Please select a size before proceeding.",
         variant: "destructive",
       });
       return;
@@ -34,27 +34,25 @@ const ProductCheckout = ({ product, selectedSize }: ProductCheckoutProps) => {
     setIsLoading(true);
 
     try {
-      // Determine source table based on product data or default to chain_products
-      const sourceTable = product.source_table || 'chain_products';
-      
-      addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image_url: product.image_url,
-        selectedSize,
-        source_table: sourceTable,
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: {
+          productId: product.id,
+          selectedSize,
+          customerEmail: 'guest@imperialjewelryshop.com', // Default guest email
+        },
       });
 
-      toast({
-        title: "Added to Cart",
-        description: `${product.name} has been added to your cart.`,
-      });
+      if (error) throw error;
+
+      // Open Stripe checkout in new tab
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
     } catch (error) {
-      console.error('Add to cart error:', error);
+      console.error('Checkout error:', error);
       toast({
-        title: "Error",
-        description: "There was an error adding the item to your cart.",
+        title: "Checkout Error",
+        description: "There was an error processing your request. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -64,12 +62,12 @@ const ProductCheckout = ({ product, selectedSize }: ProductCheckoutProps) => {
 
   return (
     <Button
-      onClick={handleAddToCart}
+      onClick={handleCheckout}
       disabled={isLoading}
       className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 h-8"
       size="sm"
     >
-      {isLoading ? "..." : "Add to Cart"}
+      {isLoading ? "..." : "Buy Now"}
     </Button>
   );
 };
