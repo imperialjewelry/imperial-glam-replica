@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, CreditCard } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 
 interface ProductCheckoutProps {
@@ -13,62 +13,72 @@ interface ProductCheckoutProps {
     price: number;
     sizes?: string[];
     image_url: string;
+    stripe_product_id: string;
   };
 }
 
 const ProductCheckout = ({ product }: ProductCheckoutProps) => {
   const [selectedSize, setSelectedSize] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { addToCart, dispatch } = useCart();
   const { toast } = useToast();
 
-  const handleCheckout = async () => {
+  const handleAddToCart = () => {
     if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       toast({
         title: "Size Required",
-        description: "Please select a size before proceeding.",
+        description: "Please select a size before adding to cart.",
         variant: "destructive",
       });
       return;
     }
 
-    setIsLoading(true);
+    // Generate a stripe price ID based on product and size
+    // In a real implementation, you'd have these predefined
+    const stripePriceId = `price_${product.stripe_product_id}_${selectedSize || 'default'}`;
 
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: {
-          productId: product.id,
-          selectedSize,
-          customerEmail: 'guest@imperialjewelryshop.com', // Default guest email
-        },
-      });
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image_url: product.image_url,
+      selectedSize,
+      stripe_price_id: stripePriceId,
+    });
 
-      if (error) throw error;
+    toast({
+      title: "Added to Cart",
+      description: `${product.name} has been added to your cart.`,
+    });
 
-      // Open Stripe checkout in new tab
-      if (data?.url) {
-        window.open(data.url, '_blank');
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-      toast({
-        title: "Checkout Error",
-        description: "There was an error processing your request. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    // Open cart after adding item
+    dispatch({ type: 'TOGGLE_CART' });
   };
 
   return (
-    <Button
-      onClick={handleCheckout}
-      disabled={isLoading}
-      className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 h-8"
-      size="sm"
-    >
-      {isLoading ? "..." : "Buy Now"}
-    </Button>
+    <div className="flex items-center space-x-2">
+      {product.sizes && product.sizes.length > 0 && (
+        <select
+          value={selectedSize}
+          onChange={(e) => setSelectedSize(e.target.value)}
+          className="px-2 py-1 border border-gray-300 rounded text-xs"
+        >
+          <option value="">Select Size</option>
+          {product.sizes.map((size) => (
+            <option key={size} value={size}>
+              {size}
+            </option>
+          ))}
+        </select>
+      )}
+      <Button
+        onClick={handleAddToCart}
+        className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 h-8"
+        size="sm"
+      >
+        <ShoppingCart className="w-3 h-3 mr-1" />
+        Add to Cart
+      </Button>
+    </div>
   );
 };
 

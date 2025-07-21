@@ -9,9 +9,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import SearchBar from './SearchBar';
+import { useCart } from '@/contexts/CartContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { dispatch, getTotalItems } = useCart();
   const navigation = ['BEST DEALS', 'CHAINS', 'BRACELETS', 'WATCHES', 'PENDANTS', 'EARRINGS', 'CUSTOM', 'GRILLZ', 'GLASSES', 'RINGS', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
   const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
   
@@ -53,8 +55,18 @@ const Header = () => {
             </div>
             <div className="w-1/4 flex items-center justify-end space-x-4">
               <SearchBar />
-              <Button variant="ghost" size="sm">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => dispatch({ type: 'TOGGLE_CART' })}
+                className="relative"
+              >
                 <ShoppingCart className="w-5 h-5" />
+                {getTotalItems() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {getTotalItems()}
+                  </span>
+                )}
               </Button>
             </div>
           </div>
@@ -136,8 +148,18 @@ const Header = () => {
           </Link>
           
           <div className="flex items-center space-x-1">
-            <Button variant="ghost" size="sm" className="p-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="p-2 relative"
+              onClick={() => dispatch({ type: 'TOGGLE_CART' })}
+            >
               <ShoppingCart className="w-5 h-5" />
+              {getTotalItems() > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {getTotalItems()}
+                </span>
+              )}
             </Button>
           </div>
         </div>
