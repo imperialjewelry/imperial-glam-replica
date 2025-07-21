@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -37,7 +38,7 @@ const Bracelets = () => {
     queryFn: async (): Promise<Product[]> => {
       const { data, error } = await supabase
         .from('bracelet_products')
-        .select('*, stripe_price_id')
+        .select('*')
         .order('featured', { ascending: false });
       
       if (error) {
