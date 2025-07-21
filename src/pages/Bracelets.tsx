@@ -32,7 +32,6 @@ interface Product {
   created_at: string;
   updated_at: string;
   stripe_product_id: string;
-  stripe_price_id: string;
 }
 
 const Bracelets = () => {
@@ -51,7 +50,7 @@ const Bracelets = () => {
     queryFn: async (): Promise<Product[]> => {
       const { data, error } = await supabase
         .from('bracelet_products')
-        .select('*, stripe_price_id')
+        .select('*')
         .order('featured', { ascending: false });
       
       if (error) {
