@@ -28,7 +28,7 @@ interface Product {
   created_at: string;
   updated_at: string;
   stripe_product_id: string;
-  stripe_price_id: string;
+  stripe_price_id?: string; // Made optional since it was recently added
 }
 
 const Bracelets = () => {
