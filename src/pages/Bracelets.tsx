@@ -32,6 +32,7 @@ interface Product {
   created_at: string;
   updated_at: string;
   stripe_product_id: string;
+  stripe_price_id: string;
 }
 
 const Bracelets = () => {
@@ -374,6 +375,7 @@ const Bracelets = () => {
                         price: product.price,
                         sizes: product.sizes || [],
                         image_url: product.image_url,
+                        stripe_product_id: product.stripe_product_id,
                       }}
                     />
                   </div>
