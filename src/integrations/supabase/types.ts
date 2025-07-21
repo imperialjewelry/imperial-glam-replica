@@ -36,6 +36,7 @@ export type Database = {
           review_count: number | null
           ships_today: boolean | null
           sizes: string[] | null
+          stripe_price_id: string | null
           stripe_product_id: string
           updated_at: string
         }
@@ -60,6 +61,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id: string
           updated_at?: string
         }
@@ -84,6 +86,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id?: string
           updated_at?: string
         }
@@ -109,6 +112,7 @@ export type Database = {
           review_count: number | null
           ships_today: boolean | null
           sizes: string[] | null
+          stripe_price_id: string | null
           stripe_product_id: string
           updated_at: string
         }
@@ -131,6 +135,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id: string
           updated_at?: string
         }
@@ -153,6 +158,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id?: string
           updated_at?: string
         }
@@ -181,6 +187,7 @@ export type Database = {
           shape: string | null
           ships_today: boolean | null
           sizes: string[] | null
+          stripe_price_id: string | null
           stripe_product_id: string
           updated_at: string
         }
@@ -206,6 +213,7 @@ export type Database = {
           shape?: string | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id: string
           updated_at?: string
         }
@@ -231,6 +239,7 @@ export type Database = {
           shape?: string | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id?: string
           updated_at?: string
         }
@@ -257,6 +266,7 @@ export type Database = {
           review_count: number | null
           ships_today: boolean | null
           sizes: string[] | null
+          stripe_price_id: string | null
           stripe_product_id: string
           updated_at: string
         }
@@ -280,6 +290,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id: string
           updated_at?: string
         }
@@ -303,6 +314,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id?: string
           updated_at?: string
         }
@@ -330,6 +342,7 @@ export type Database = {
           review_count: number | null
           ships_today: boolean | null
           sizes: string[] | null
+          stripe_price_id: string | null
           stripe_product_id: string
           updated_at: string
         }
@@ -354,6 +367,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id: string
           updated_at?: string
         }
@@ -378,6 +392,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id?: string
           updated_at?: string
         }
@@ -405,6 +420,7 @@ export type Database = {
           review_count: number | null
           ships_today: boolean | null
           sizes: string[] | null
+          stripe_price_id: string | null
           stripe_product_id: string
           updated_at: string
         }
@@ -429,6 +445,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id: string
           updated_at?: string
         }
@@ -453,6 +470,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id?: string
           updated_at?: string
         }
@@ -480,6 +498,7 @@ export type Database = {
           review_count: number | null
           ships_today: boolean | null
           sizes: string[] | null
+          stripe_price_id: string | null
           stripe_product_id: string
           updated_at: string
         }
@@ -504,6 +523,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id: string
           updated_at?: string
         }
@@ -528,6 +548,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id?: string
           updated_at?: string
         }
@@ -554,6 +575,7 @@ export type Database = {
           review_count: number | null
           ships_today: boolean | null
           sizes: string[] | null
+          stripe_price_id: string | null
           stripe_product_id: string
           style: string | null
           teeth_count: string | null
@@ -579,6 +601,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id: string
           style?: string | null
           teeth_count?: string | null
@@ -604,6 +627,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id?: string
           style?: string | null
           teeth_count?: string | null
@@ -633,6 +657,7 @@ export type Database = {
           review_count: number | null
           ships_today: boolean | null
           sizes: string[] | null
+          stripe_price_id: string | null
           stripe_product_id: string
           updated_at: string
         }
@@ -657,6 +682,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id: string
           updated_at?: string
         }
@@ -681,6 +707,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id?: string
           updated_at?: string
         }
@@ -767,6 +794,7 @@ export type Database = {
           review_count: number | null
           ships_today: boolean | null
           sizes: string[] | null
+          stripe_price_id: string | null
           stripe_product_id: string
           updated_at: string
         }
@@ -791,6 +819,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id: string
           updated_at?: string
         }
@@ -815,6 +844,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id?: string
           updated_at?: string
         }
@@ -852,6 +882,7 @@ export type Database = {
           sizes: string[] | null
           source_id: string
           source_table: string
+          stripe_price_id: string | null
           stripe_product_id: string
           style: string | null
           teeth_count: string | null
@@ -888,6 +919,7 @@ export type Database = {
           sizes?: string[] | null
           source_id: string
           source_table: string
+          stripe_price_id?: string | null
           stripe_product_id: string
           style?: string | null
           teeth_count?: string | null
@@ -924,6 +956,7 @@ export type Database = {
           sizes?: string[] | null
           source_id?: string
           source_table?: string
+          stripe_price_id?: string | null
           stripe_product_id?: string
           style?: string | null
           teeth_count?: string | null
@@ -954,6 +987,7 @@ export type Database = {
           review_count: number | null
           ships_today: boolean | null
           sizes: string[] | null
+          stripe_price_id: string | null
           stripe_product_id: string
           updated_at: string
         }
@@ -979,6 +1013,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id: string
           updated_at?: string
         }
@@ -1004,6 +1039,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id?: string
           updated_at?: string
         }
@@ -1031,6 +1067,7 @@ export type Database = {
           review_count: number | null
           ships_today: boolean | null
           sizes: string[] | null
+          stripe_price_id: string | null
           stripe_product_id: string
           updated_at: string
         }
@@ -1055,6 +1092,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id: string
           updated_at?: string
         }
@@ -1079,6 +1117,7 @@ export type Database = {
           review_count?: number | null
           ships_today?: boolean | null
           sizes?: string[] | null
+          stripe_price_id?: string | null
           stripe_product_id?: string
           updated_at?: string
         }
