@@ -16,6 +16,8 @@ serve(async (req) => {
   try {
     const { line_items, customerEmail } = await req.json();
 
+    console.log('Received checkout request:', { line_items, customerEmail });
+
     if (!line_items || !Array.isArray(line_items) || line_items.length === 0) {
       throw new Error("line_items is required and must be a non-empty array");
     }
@@ -23,6 +25,22 @@ serve(async (req) => {
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
     });
+
+    // Validate that all price IDs exist in Stripe
+    console.log('Validating price IDs...');
+    for (const item of line_items) {
+      if (!item.price) {
+        throw new Error(`Missing price ID for item: ${JSON.stringify(item)}`);
+      }
+      
+      try {
+        await stripe.prices.retrieve(item.price);
+        console.log(`Price ID ${item.price} is valid`);
+      } catch (error) {
+        console.error(`Invalid price ID ${item.price}:`, error);
+        throw new Error(`Invalid price ID: ${item.price}`);
+      }
+    }
 
     // Create checkout session with multiple line items
     const session = await stripe.checkout.sessions.create({
@@ -33,7 +51,9 @@ serve(async (req) => {
       cancel_url: `${req.headers.get("origin")}/`,
     });
 
-    // Optionally store order information in Supabase
+    console.log('Created checkout session:', session.id);
+
+    // Store order information in Supabase
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
@@ -51,6 +71,8 @@ serve(async (req) => {
       status: "pending",
       created_at: new Date().toISOString()
     });
+
+    console.log('Order record created in database');
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

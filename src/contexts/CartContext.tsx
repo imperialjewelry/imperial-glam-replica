@@ -37,13 +37,17 @@ const CartContext = createContext<{
   clearCart: () => void;
 } | null>(null);
 
+// Helper function to generate unique cart item ID
+const generateCartItemId = (productId: string, selectedSize?: string, selectedColor?: string) => {
+  return `${productId}-${selectedSize || 'default'}-${selectedColor || 'default'}`;
+};
+
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
     case 'ADD_ITEM': {
-      const existingItemIndex = state.items.findIndex(
-        item => item.id === action.payload.id && 
-                item.selectedSize === action.payload.selectedSize &&
-                item.selectedColor === action.payload.selectedColor
+      const cartItemId = generateCartItemId(action.payload.id, action.payload.selectedSize, action.payload.selectedColor);
+      const existingItemIndex = state.items.findIndex(item => 
+        generateCartItemId(item.id, item.selectedSize, item.selectedColor) === cartItemId
       );
 
       if (existingItemIndex > -1) {
@@ -55,12 +59,14 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       return { ...state, items: [...state.items, action.payload] };
     }
     case 'REMOVE_ITEM':
-      return { ...state, items: state.items.filter(item => item.id !== action.payload) };
+      return { ...state, items: state.items.filter(item => 
+        generateCartItemId(item.id, item.selectedSize, item.selectedColor) !== action.payload
+      ) };
     case 'UPDATE_QUANTITY':
       return {
         ...state,
         items: state.items.map(item =>
-          item.id === action.payload.id
+          generateCartItemId(item.id, item.selectedSize, item.selectedColor) === action.payload.id
             ? { ...item, quantity: Math.max(1, action.payload.quantity) }
             : item
         )

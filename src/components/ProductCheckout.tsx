@@ -14,6 +14,7 @@ interface ProductCheckoutProps {
     sizes?: string[];
     image_url: string;
     stripe_product_id: string;
+    stripe_price_id: string;
   };
 }
 
@@ -32,17 +33,14 @@ const ProductCheckout = ({ product }: ProductCheckoutProps) => {
       return;
     }
 
-    // Generate a stripe price ID based on product and size
-    // In a real implementation, you'd have these predefined
-    const stripePriceId = `price_${product.stripe_product_id}_${selectedSize || 'default'}`;
-
+    // Use the actual stripe_price_id from the product
     addToCart({
       id: product.id,
       name: product.name,
       price: product.price,
       image_url: product.image_url,
       selectedSize,
-      stripe_price_id: stripePriceId,
+      stripe_price_id: product.stripe_price_id,
     });
 
     toast({

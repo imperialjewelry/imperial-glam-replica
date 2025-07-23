@@ -10,6 +10,11 @@ const ShoppingCart = () => {
   const { state, dispatch, removeFromCart, updateQuantity, getTotalPrice, getTotalItems, clearCart } = useCart();
   const { toast } = useToast();
 
+  // Helper function to generate cart item ID
+  const generateCartItemId = (productId: string, selectedSize?: string, selectedColor?: string) => {
+    return `${productId}-${selectedSize || 'default'}-${selectedColor || 'default'}`;
+  };
+
   const handleCheckout = async () => {
     if (state.items.length === 0) {
       toast({
@@ -21,11 +26,13 @@ const ShoppingCart = () => {
     }
 
     try {
-      // Prepare line items for Stripe checkout
+      // Prepare line items for Stripe checkout using actual stripe_price_id
       const lineItems = state.items.map(item => ({
         price: item.stripe_price_id,
         quantity: item.quantity,
       }));
+
+      console.log('Sending checkout request with line items:', lineItems);
 
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: {
@@ -83,52 +90,55 @@ const ShoppingCart = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {state.items.map((item) => (
-                <div key={`${item.id}-${item.selectedSize}-${item.selectedColor}`} className="flex items-center space-x-3 p-3 border rounded-lg">
-                  <img
-                    src={item.image_url}
-                    alt={item.name}
-                    className="w-16 h-16 object-cover rounded"
-                  />
-                  <div className="flex-1">
-                    <h4 className="font-medium text-sm">{item.name}</h4>
-                    {item.selectedSize && (
-                      <p className="text-xs text-gray-500">Size: {item.selectedSize}</p>
-                    )}
-                    {item.selectedColor && (
-                      <p className="text-xs text-gray-500">Color: {item.selectedColor}</p>
-                    )}
-                    <p className="text-sm font-semibold">${(item.price / 100).toFixed(2)}</p>
-                  </div>
-                  <div className="flex items-center space-x-2">
+              {state.items.map((item) => {
+                const cartItemId = generateCartItemId(item.id, item.selectedSize, item.selectedColor);
+                return (
+                  <div key={cartItemId} className="flex items-center space-x-3 p-3 border rounded-lg">
+                    <img
+                      src={item.image_url}
+                      alt={item.name}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-medium text-sm">{item.name}</h4>
+                      {item.selectedSize && (
+                        <p className="text-xs text-gray-500">Size: {item.selectedSize}</p>
+                      )}
+                      {item.selectedColor && (
+                        <p className="text-xs text-gray-500">Color: {item.selectedColor}</p>
+                      )}
+                      <p className="text-sm font-semibold">${(item.price / 100).toFixed(2)}</p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => updateQuantity(cartItemId, item.quantity - 1)}
+                        className="w-8 h-8 p-0"
+                      >
+                        <Minus className="w-3 h-3" />
+                      </Button>
+                      <span className="w-8 text-center text-sm">{item.quantity}</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => updateQuantity(cartItemId, item.quantity + 1)}
+                        className="w-8 h-8 p-0"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </Button>
+                    </div>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
-                      onClick={() => updateQuantity(`${item.id}-${item.selectedSize}-${item.selectedColor}`, item.quantity - 1)}
-                      className="w-8 h-8 p-0"
+                      onClick={() => removeFromCart(cartItemId)}
+                      className="text-red-500 hover:text-red-700"
                     >
-                      <Minus className="w-3 h-3" />
-                    </Button>
-                    <span className="w-8 text-center text-sm">{item.quantity}</span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => updateQuantity(`${item.id}-${item.selectedSize}-${item.selectedColor}`, item.quantity + 1)}
-                      className="w-8 h-8 p-0"
-                    >
-                      <Plus className="w-3 h-3" />
+                      <X className="w-4 h-4" />
                     </Button>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeFromCart(`${item.id}-${item.selectedSize}-${item.selectedColor}`)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
