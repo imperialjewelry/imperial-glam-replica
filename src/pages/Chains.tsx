@@ -33,6 +33,7 @@ interface Product {
   in_stock: boolean;
   ships_today: boolean;
   featured: boolean;
+  stripe_price_id?: string;
 }
 
 const Chains = () => {
@@ -72,7 +73,7 @@ const Chains = () => {
       
       // Update the first product's image URL to the new one
       const updatedData = data?.map((product, index) => {
-        if (index === 0) { // Update the first product
+        if (index === 0) {
           return {
             ...product,
             image_url: 'https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/chains//cF5-s7xg.webp'
@@ -136,6 +137,9 @@ const Chains = () => {
     }
     return true;
   });
+
+  // Filter products that have stripe_price_id
+  const validProducts = filteredProducts.filter(product => product.stripe_price_id);
 
   const chainTypes = [
     "TENNIS CHAINS",
@@ -291,7 +295,17 @@ const Chains = () => {
               {productTypes.map((type) => (
                 <div key={type.name} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id={type.name} />
+                    <Checkbox 
+                      id={type.name}
+                      checked={selectedProductTypes.includes(type.name)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedProductTypes([...selectedProductTypes, type.name]);
+                        } else {
+                          setSelectedProductTypes(selectedProductTypes.filter(t => t !== type.name));
+                        }
+                      }}
+                    />
                     <label htmlFor={type.name} className="text-sm text-gray-700">
                       {type.name}
                     </label>
@@ -346,7 +360,17 @@ const Chains = () => {
               {colors.map((color) => (
                 <div key={color.name} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id={color.name} />
+                    <Checkbox 
+                      id={color.name}
+                      checked={selectedColors.includes(color.name)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedColors([...selectedColors, color.name]);
+                        } else {
+                          setSelectedColors(selectedColors.filter(c => c !== color.name));
+                        }
+                      }}
+                    />
                     <label htmlFor={color.name} className="text-sm text-gray-700">
                       {color.name}
                     </label>
@@ -369,7 +393,17 @@ const Chains = () => {
               {materials.map((material) => (
                 <div key={material.name} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id={material.name} />
+                    <Checkbox 
+                      id={material.name}
+                      checked={selectedMaterials.includes(material.name)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedMaterials([...selectedMaterials, material.name]);
+                        } else {
+                          setSelectedMaterials(selectedMaterials.filter(m => m !== material.name));
+                        }
+                      }}
+                    />
                     <label htmlFor={material.name} className="text-sm text-gray-700">
                       {material.name}
                     </label>
@@ -477,7 +511,7 @@ const Chains = () => {
           {/* Product count and controls */}
           <div className="flex items-center justify-between mb-4">
             <span className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold`}>
-              {filteredProducts.length} Products
+              {validProducts.length} Products
             </span>
             <div className="flex items-center space-x-4">
               {!isMobile && (
@@ -512,7 +546,7 @@ const Chains = () => {
 
           {/* Products Grid - Fixed mobile spacing and button sizing */}
           <div className={`grid ${isMobile ? 'grid-cols-2 gap-2' : 'grid-cols-4 gap-4'}`}>
-            {filteredProducts.map((product) => (
+            {validProducts.map((product) => (
               <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
                 
                 {/* Product Image */}
@@ -611,8 +645,16 @@ const Chains = () => {
                             {product.name}
                           </DialogTitle>
                         </DialogHeader>
-                        {selectedProduct && (
-                          <ProductCheckout product={selectedProduct} />
+                        {selectedProduct && selectedProduct.stripe_price_id && (
+                          <ProductCheckout product={{
+                            id: selectedProduct.id,
+                            name: selectedProduct.name,
+                            price: selectedProduct.price,
+                            image_url: selectedProduct.image_url,
+                            stripe_product_id: selectedProduct.stripe_product_id,
+                            stripe_price_id: selectedProduct.stripe_price_id,
+                            sizes: selectedProduct.sizes
+                          }} />
                         )}
                       </DialogContent>
                     </Dialog>

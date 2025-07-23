@@ -14,7 +14,7 @@ interface ProductCheckoutProps {
     sizes?: string[];
     image_url: string;
     stripe_product_id: string;
-    stripe_price_id: string;
+    stripe_price_id?: string;
   };
 }
 
@@ -33,7 +33,15 @@ const ProductCheckout = ({ product }: ProductCheckoutProps) => {
       return;
     }
 
-    // Use the actual stripe_price_id from the product
+    if (!product.stripe_price_id) {
+      toast({
+        title: "Product Error",
+        description: "This product is not available for purchase at the moment.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     addToCart({
       id: product.id,
       name: product.name,
@@ -48,7 +56,6 @@ const ProductCheckout = ({ product }: ProductCheckoutProps) => {
       description: `${product.name} has been added to your cart.`,
     });
 
-    // Open cart after adding item
     dispatch({ type: 'TOGGLE_CART' });
   };
 
@@ -72,6 +79,7 @@ const ProductCheckout = ({ product }: ProductCheckoutProps) => {
         onClick={handleAddToCart}
         className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 h-8"
         size="sm"
+        disabled={!product.stripe_price_id}
       >
         <ShoppingCart className="w-3 h-3 mr-1" />
         Add to Cart

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -64,6 +63,9 @@ const Bracelets = () => {
       return data || [];
     },
   });
+
+  // Filter products that have stripe_price_id
+  const validProducts = products.filter(product => product.stripe_price_id);
 
   if (isLoading) {
     return (
@@ -239,7 +241,7 @@ const Bracelets = () => {
         {/* Products Section */}
         <div className={`flex-1 ${isMobile ? 'py-4 px-4' : 'py-8 px-8'}`}>
           <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-semibold">{products.length} Products</span>
+            <span className="text-lg font-semibold">{validProducts.length} Products</span>
             
             <div className="flex items-center space-x-4">
               {isMobile && (
@@ -269,7 +271,7 @@ const Bracelets = () => {
 
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-6`}>
-            {products.map((product) => (
+            {validProducts.map((product) => (
               <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
                   <img
@@ -342,7 +344,15 @@ const Bracelets = () => {
                     )}
                   </div>
 
-                  <ProductCheckout product={product} />
+                  <ProductCheckout product={{
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image_url: product.image_url,
+                    stripe_product_id: product.stripe_product_id,
+                    stripe_price_id: product.stripe_price_id,
+                    sizes: product.sizes
+                  }} />
                 </div>
               </div>
             ))}

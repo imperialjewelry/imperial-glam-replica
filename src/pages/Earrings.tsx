@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
+import ProductCheckout from '@/components/ProductCheckout';
 
 interface EarringProduct {
   id: string;
@@ -31,6 +31,8 @@ interface EarringProduct {
   material: string;
   gemstone: string | null;
   diamond_cut: string | null;
+  stripe_product_id: string;
+  stripe_price_id?: string;
 }
 
 const Earrings = () => {
@@ -53,6 +55,9 @@ const Earrings = () => {
       return data as EarringProduct[];
     }
   });
+
+  // Filter products that have stripe_price_id
+  const validProducts = products.filter(product => product.stripe_price_id);
 
   if (isLoading) {
     return (
@@ -218,7 +223,7 @@ const Earrings = () => {
         {/* Products Section */}
         <div className={`flex-1 ${isMobile ? 'py-4 px-4' : 'py-8 px-8'}`}>
           <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-semibold">{products.length} Products</span>
+            <span className="text-lg font-semibold">{validProducts.length} Products</span>
             
             <div className="flex items-center space-x-4">
               {isMobile && (
@@ -248,7 +253,7 @@ const Earrings = () => {
 
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-6`}>
-            {products.map((product) => (
+            {validProducts.map((product) => (
               <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
                   <img
@@ -310,7 +315,7 @@ const Earrings = () => {
                     <span className="text-xs text-gray-500">({product.review_count})</span>
                   </div>
                   
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 mb-3">
                     <span className="text-lg font-bold text-blue-600">
                       ${(product.price / 100).toFixed(2)}
                     </span>
@@ -320,6 +325,16 @@ const Earrings = () => {
                       </span>
                     )}
                   </div>
+
+                  <ProductCheckout product={{
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image_url: product.image_url,
+                    stripe_product_id: product.stripe_product_id,
+                    stripe_price_id: product.stripe_price_id,
+                    sizes: product.sizes
+                  }} />
                 </div>
               </div>
             ))}
