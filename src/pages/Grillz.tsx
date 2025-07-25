@@ -12,6 +12,7 @@ import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import ProductCheckout from '../components/ProductCheckout';
+import GrillzProductModal from '../components/GrillzProductModal';
 
 type GrillzProduct = Tables<'grillz_products'>;
 
@@ -19,6 +20,7 @@ const Grillz = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<GrillzProduct[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<GrillzProduct[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<GrillzProduct | null>(null);
   const [sortBy, setSortBy] = useState('featured');
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
@@ -479,7 +481,11 @@ const Grillz = () => {
             {filteredProducts
               .filter(product => product.stripe_price_id)
               .map((product) => (
-                <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
+                <div 
+                  key={product.id} 
+                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => setSelectedProduct(product)}
+                >
                   
                   {/* Product Image */}
                   <div className="relative aspect-square overflow-hidden rounded-t-lg">
@@ -532,15 +538,17 @@ const Grillz = () => {
                           </span>
                         )}
                       </div>
-                      <ProductCheckout product={{
-                        id: product.id,
-                        name: product.name,
-                        price: product.price,
-                        sizes: product.sizes,
-                        image_url: product.image_url,
-                        stripe_product_id: product.stripe_product_id,
-                        stripe_price_id: product.stripe_price_id!
-                      }} />
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <ProductCheckout product={{
+                          id: product.id,
+                          name: product.name,
+                          price: product.price,
+                          sizes: product.sizes,
+                          image_url: product.image_url,
+                          stripe_product_id: product.stripe_product_id,
+                          stripe_price_id: product.stripe_price_id!
+                        }} />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -548,6 +556,14 @@ const Grillz = () => {
           </div>
         </div>
       </div>
+
+      {/* Product Modal */}
+      {selectedProduct && (
+        <GrillzProductModal 
+          product={selectedProduct} 
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
 
       <Footer />
     </div>
