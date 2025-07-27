@@ -71,18 +71,8 @@ const Chains = () => {
 
       if (error) throw error;
       
-      // Update the first product's image URL to the new one
-      const updatedData = data?.map((product, index) => {
-        if (index === 0) {
-          return {
-            ...product,
-            image_url: 'https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/chains//cF5-s7xg.webp'
-          };
-        }
-        return product;
-      });
-      
-      setProducts(updatedData || []);
+      // Use the actual data without any modifications
+      setProducts(data || []);
     } catch (error) {
       console.error('Error fetching products:', error);
       toast({
