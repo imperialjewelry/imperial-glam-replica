@@ -232,7 +232,7 @@ const Header = () => {
                 <div className="flex items-center space-x-3 py-2">
                   <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
                     <img 
-                      src="/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png"
+                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/chains//infinitylink.webp"
                       alt="Chains"
                       className="w-full h-full object-cover"
                     />
