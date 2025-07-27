@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { ShoppingCart, Menu, X, Instagram, MessageCircle, Star, Truck, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -260,7 +261,13 @@ const Header = () => {
 
                 {/* WATCHES */}
                 <div className="flex items-center space-x-3 py-2">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
+                    <img 
+                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/watches//rolexoysterperpetuasl.webp"
+                      alt="Watches"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   <Link 
                     to="/watches"
                     className="text-sm font-medium text-gray-700 hover:text-black"
@@ -272,7 +279,13 @@ const Header = () => {
 
                 {/* PENDANTS */}
                 <div className="flex items-center space-x-3 py-2">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
+                    <img 
+                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/earrings//skullpendanyt.webp"
+                      alt="Pendants"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   <Link 
                     to="/pendants"
                     className="text-sm font-medium text-gray-700 hover:text-black"
@@ -284,7 +297,13 @@ const Header = () => {
 
                 {/* EARRINGS */}
                 <div className="flex items-center space-x-3 py-2">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
+                    <img 
+                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/earrings//dart.webp"
+                      alt="Earrings"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   <Link 
                     to="/earrings"
                     className="text-sm font-medium text-gray-700 hover:text-black"
@@ -308,7 +327,13 @@ const Header = () => {
 
                 {/* GRILLZ */}
                 <div className="flex items-center space-x-3 py-2">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
+                    <img 
+                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/grillz//IMG_5019%20(1).webp"
+                      alt="Grillz"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   <Link 
                     to="/grillz"
                     className="text-sm font-medium text-gray-700 hover:text-black"
