@@ -230,7 +230,13 @@ const Header = () => {
                 
                 {/* CHAINS */}
                 <div className="flex items-center space-x-3 py-2">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
+                    <img 
+                      src="/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png"
+                      alt="Chains"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   <Link 
                     to="/chains"
                     className="text-sm font-medium text-gray-700 hover:text-black"
