@@ -12,26 +12,9 @@ import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import WatchProductModal from '../components/WatchProductModal';
+import { Tables } from '@/integrations/supabase/types';
 
-interface WatchProduct {
-  id: string;
-  name: string;
-  image_url: string;
-  category: string;
-  price: number;
-  original_price: number | null;
-  rating: number;
-  review_count: number;
-  in_stock: boolean;
-  ships_today: boolean;
-  discount_percentage: number;
-  sizes: string[];
-  product_type: string;
-  color: string;
-  material: string;
-  gemstone: string | null;
-  diamond_cut: string | null;
-}
+type WatchProduct = Tables<'watch_products'>;
 
 const Watches = () => {
   const isMobile = useIsMobile();
@@ -533,7 +516,7 @@ const Watches = () => {
                         IN STOCK
                       </Badge>
                     )}
-                    {product.discount_percentage > 0 && (
+                    {product.discount_percentage && product.discount_percentage > 0 && (
                       <Badge className="text-xs font-semibold bg-red-500 text-white">
                         {product.discount_percentage}% OFF
                       </Badge>
