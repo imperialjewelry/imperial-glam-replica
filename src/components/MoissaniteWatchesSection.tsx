@@ -12,70 +12,65 @@ const MoissaniteWatchesSection = () => {
     {
       id: 1,
       image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "Bust Down Moissanite Watch | 44MM | 18K White Gold",
-      material: "44MM / UNISEX",
-      currentPrice: "$1,891",
-      originalPrice: "$1,990",
+      title: "VVS Moissanite Presidential Watch | 14K Gold",
+      material: "14K GOLD / UNISEX",
+      currentPrice: "$2,499",
+      originalPrice: "$2,999",
       rating: 5,
-      reviews: 167,
-      discount: "5% OFF",
-      badge: "SHIPS TODAY"
+      reviews: 87,
+      discount: "17% OFF"
     },
     {
       id: 2,
       image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "Men's VVS Moissanite Watch | 42MM | 18CT Bust Down | 14K",
-      material: "42MM / UNISEX",
-      currentPrice: "$2,206",
-      originalPrice: "$2,322",
+      title: "Moissanite Day-Date Watch | Rose Gold",
+      material: "14K ROSE GOLD / UNISEX",
+      currentPrice: "$2,199",
+      originalPrice: "$2,699",
       rating: 4,
-      reviews: 25,
-      discount: "5% OFF",
-      badge: "SHIPS TODAY"
+      reviews: 56,
+      discount: "19% OFF"
     },
     {
       id: 3,
       image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "Moissanite Skeleton Watch | 42MM | 14K White Gold | 3-11ct",
-      material: "42MM / UNISEX",
-      currentPrice: "$2,181",
-      originalPrice: "$2,423",
+      title: "VVS Moissanite Oyster Watch | White Gold",
+      material: "14K WHITE GOLD / UNISEX",
+      currentPrice: "$2,799",
+      originalPrice: "$3,399",
       rating: 5,
-      reviews: 398,
-      discount: "10% OFF",
-      badge: "SHIPS TODAY"
+      reviews: 102,
+      discount: "18% OFF"
     },
     {
       id: 4,
       image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "Moissanite Iced Out Silicone Band Watch | 35MM | 14K VVS",
-      material: "40MM / UNISEX",
-      currentPrice: "$2,181",
-      originalPrice: "$2,423",
+      title: "Moissanite GMT Watch | Yellow Gold",
+      material: "14K YELLOW GOLD / UNISEX",
+      currentPrice: "$3,199",
+      originalPrice: "$3,899",
       rating: 5,
-      reviews: 16,
-      discount: "10% OFF",
-      badge: "SHIPS TODAY"
+      reviews: 73,
+      discount: "18% OFF"
     },
     {
       id: 5,
       image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "Moissanite Presidential Watch | Green Face | 41MM",
-      material: "41MM / UNISEX",
-      currentPrice: "$1,868",
-      originalPrice: "$2,076",
-      rating: 4,
-      reviews: 12,
-      discount: "10% OFF",
-      badge: "MADE TO ORDER"
+      title: "VVS Moissanite Skeleton Watch | Platinum",
+      material: "PLATINUM / UNISEX",
+      currentPrice: "$4,299",
+      originalPrice: "$5,199",
+      rating: 5,
+      reviews: 41,
+      discount: "17% OFF"
     }
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-white">
       <div className="flex flex-col md:flex-row">
         {/* Title section with background image - smaller on mobile */}
-        <div className="w-full md:w-64 h-32 md:h-auto bg-gradient-to-br from-gray-800 to-black relative overflow-hidden flex items-center justify-center">
+        <div className="w-full md:w-64 h-32 md:h-auto bg-gradient-to-br from-green-600 to-blue-600 relative overflow-hidden flex items-center justify-center">
           <div 
             className="absolute inset-0 bg-cover bg-center opacity-30"
             style={{
@@ -93,7 +88,7 @@ const MoissaniteWatchesSection = () => {
         <div className="flex-1 overflow-hidden">
           <div className="flex items-center justify-between mb-6 px-4">
             <div className="flex space-x-4">
-              {['WATCHES', 'LUXURY'].map((tab) => (
+              {['WATCHES', 'CUSTOM'].map((tab) => (
                 <Button
                   key={tab}
                   variant={activeTab === tab ? "default" : "ghost"}
@@ -118,7 +113,7 @@ const MoissaniteWatchesSection = () => {
                   className="flex-shrink-0 w-64 group relative bg-white overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg"
                 >
                   {/* Product image */}
-                  <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-blue-600 to-purple-700">
+                  <div className="relative aspect-square overflow-hidden bg-gray-100">
                     <img
                       src={product.image}
                       alt={product.title}
@@ -131,15 +126,6 @@ const MoissaniteWatchesSection = () => {
                         {product.discount}
                       </Badge>
                     </div>
-
-                    {/* Ships Today badge - positioned on right side */}
-                    {product.badge && (
-                      <div className="absolute top-3 right-3">
-                        <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">
-                          {product.badge}
-                        </Badge>
-                      </div>
-                    )}
                   </div>
 
                   {/* Product info */}

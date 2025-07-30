@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const ProductShowcase = () => {
   const [activeTab, setActiveTab] = useState('BEST SELLERS');
@@ -169,9 +170,11 @@ const ProductShowcase = () => {
 
         {/* Shop button */}
         <div className="flex justify-center mt-8">
-          <Button className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 text-lg">
-            SHOP BEST SELLERS →
-          </Button>
+          <Link to="/chains">
+            <Button className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 text-lg">
+              SHOP BEST SELLERS →
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
