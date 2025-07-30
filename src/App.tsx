@@ -18,6 +18,7 @@ import HipHopRings from "./pages/HipHopRings";
 import EngagementRings from "./pages/EngagementRings";
 import VvsDiamondSimulants from "./pages/VvsDiamondSimulants";
 import Diamond from "./pages/Diamond";
+import Product from "./pages/Product";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 import ShoppingCart from "./components/ShoppingCart";
@@ -46,6 +47,7 @@ const App = () => (
             <Route path="/rings/engagement" element={<EngagementRings />} />
             <Route path="/vvs-diamond-simulants" element={<VvsDiamondSimulants />} />
             <Route path="/diamond" element={<Diamond />} />
+            <Route path="/product/:id" element={<Product />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

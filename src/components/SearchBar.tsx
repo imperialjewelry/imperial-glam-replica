@@ -101,7 +101,7 @@ const SearchBar = () => {
               {searchResults.map((product) => (
                 <Link
                   key={product.id}
-                  to={`/${product.category.toLowerCase()}`}
+                  to={`/product/${product.id}`}
                   className="flex items-center p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
                   onClick={() => setIsOpen(false)}
                 >
