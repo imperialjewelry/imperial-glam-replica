@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import Index from "./pages/Index";
+import BestDeals from "./pages/BestDeals";
 import Chains from "./pages/Chains";
 import Bracelets from "./pages/Bracelets";
 import Watches from "./pages/Watches";
@@ -34,7 +34,8 @@ const App = () => (
         <BrowserRouter>
           <ShoppingCart />
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<BestDeals />} />
+            <Route path="/home" element={<Index />} />
             <Route path="/chains" element={<Chains />} />
             <Route path="/bracelets" element={<Bracelets />} />
             <Route path="/watches" element={<Watches />} />
