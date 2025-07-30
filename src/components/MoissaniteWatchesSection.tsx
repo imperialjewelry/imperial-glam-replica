@@ -1,13 +1,10 @@
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const MoissaniteWatchesSection = () => {
-  const [activeTab, setActiveTab] = useState('WATCHES');
-
   const watchProducts = [
     {
       id: 1,
@@ -86,25 +83,6 @@ const MoissaniteWatchesSection = () => {
 
         {/* Products horizontal scroll */}
         <div className="flex-1 overflow-hidden">
-          <div className="flex items-center justify-between mb-6 px-4">
-            <div className="flex space-x-4">
-              {['WATCHES', 'CUSTOM'].map((tab) => (
-                <Button
-                  key={tab}
-                  variant={activeTab === tab ? "default" : "ghost"}
-                  onClick={() => setActiveTab(tab)}
-                  className={`${
-                    activeTab === tab 
-                      ? "text-blue-600 border-b-2 border-blue-600 bg-transparent hover:bg-transparent" 
-                      : "text-gray-400 hover:text-gray-600"
-                  } font-medium px-0 rounded-none`}
-                >
-                  {tab}
-                </Button>
-              ))}
-            </div>
-          </div>
-
           <div className="overflow-x-auto">
             <div className="flex space-x-4 px-4 pb-4">
               {watchProducts.map((product) => (
