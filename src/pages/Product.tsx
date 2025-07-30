@@ -7,6 +7,7 @@ import { Star, ShoppingCart, Heart, Share2, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/contexts/CartContext';
+import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import PromoBar from '@/components/PromoBar';
 import Footer from '@/components/Footer';
@@ -29,12 +30,14 @@ interface ProductDetails {
   color: string;
   product_type: string;
   source_table: string;
+  stripe_price_id: string;
 }
 
 const Product = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { dispatch } = useCart();
+  const { addToCart, dispatch } = useCart();
+  const { toast } = useToast();
   const [selectedSize, setSelectedSize] = useState('');
 
   const { data: product, isLoading, error } = useQuery({
@@ -57,16 +60,39 @@ const Product = () => {
   const handleAddToCart = () => {
     if (!product) return;
     
-    dispatch({
-      type: 'ADD_ITEM',
-      payload: {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image_url,
-        selectedSize: selectedSize || undefined,
-      },
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+      toast({
+        title: "Size Required",
+        description: "Please select a size before adding to cart.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!product.stripe_price_id) {
+      toast({
+        title: "Product Error",
+        description: "This product is not available for purchase at the moment.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image_url: product.image_url,
+      selectedSize: selectedSize || undefined,
+      stripe_price_id: product.stripe_price_id,
     });
+
+    toast({
+      title: "Added to Cart",
+      description: `${product.name} has been added to your cart.`,
+    });
+
+    dispatch({ type: 'TOGGLE_CART' });
   };
 
   const formatPrice = (price: number) => `$${(price / 100).toFixed(2)}`;
