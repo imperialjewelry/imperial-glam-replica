@@ -4,14 +4,14 @@ import { useIsMobile } from "@/hooks/use-mobile";
 const CategoryNavigation = () => {
   const isMobile = useIsMobile();
 
-  // Only show on mobile
-  if (!isMobile) return null;
+  // Don't show on mobile - only show on desktop if needed
+  if (isMobile) return null;
 
   const categories = [
     {
       id: 1,
       name: "CHAINS",
-      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=400&q=80"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/chains//infinitylink.webp"
     },
     {
       id: 2,
@@ -26,7 +26,7 @@ const CategoryNavigation = () => {
     {
       id: 4,
       name: "EARRINGS",
-      image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=400&q=80"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/earrings//dart.webp"
     }
   ];
 
