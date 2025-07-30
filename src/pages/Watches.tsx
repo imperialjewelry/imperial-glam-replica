@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,13 @@ const Watches = () => {
     diamondCut: false
   });
 
+  // Filter state
+  const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
+  const [selectedGemstones, setSelectedGemstones] = useState<string[]>([]);
+  const [selectedDiamondCuts, setSelectedDiamondCuts] = useState<string[]>([]);
+
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
       ...prev,
@@ -45,7 +53,7 @@ const Watches = () => {
     setIsModalOpen(true);
   };
 
-  const { data: products = [], isLoading } = useQuery({
+  const { data: allProducts = [], isLoading } = useQuery({
     queryKey: ['watch-products'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -58,43 +66,153 @@ const Watches = () => {
     }
   });
 
+  // Filter and sort products
+  const filteredAndSortedProducts = (() => {
+    let filtered = [...allProducts];
+
+    // Apply product type filter
+    if (selectedProductTypes.length > 0) {
+      filtered = filtered.filter(product => 
+        selectedProductTypes.includes(product.product_type)
+      );
+    }
+
+    // Apply color filter
+    if (selectedColors.length > 0) {
+      filtered = filtered.filter(product => 
+        selectedColors.includes(product.color)
+      );
+    }
+
+    // Apply material filter
+    if (selectedMaterials.length > 0) {
+      filtered = filtered.filter(product => 
+        selectedMaterials.includes(product.material)
+      );
+    }
+
+    // Apply gemstone filter
+    if (selectedGemstones.length > 0) {
+      filtered = filtered.filter(product => 
+        product.gemstone && selectedGemstones.includes(product.gemstone)
+      );
+    }
+
+    // Apply diamond cut filter
+    if (selectedDiamondCuts.length > 0) {
+      filtered = filtered.filter(product => 
+        product.diamond_cut && selectedDiamondCuts.includes(product.diamond_cut)
+      );
+    }
+
+    // Apply price filter
+    if (priceFrom || priceTo) {
+      const fromPrice = priceFrom ? parseFloat(priceFrom) * 100 : 0;
+      const toPrice = priceTo ? parseFloat(priceTo) * 100 : Infinity;
+      
+      filtered = filtered.filter(product => 
+        product.price >= fromPrice && product.price <= toPrice
+      );
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+      case 'featured':
+      default:
+        filtered.sort((a, b) => Number(b.featured) - Number(a.featured));
+        break;
+    }
+
+    return filtered;
+  })();
+
+  // Filter option handlers
+  const handleProductTypeChange = (productType: string, checked: boolean) => {
+    if (checked) {
+      setSelectedProductTypes(prev => [...prev, productType]);
+    } else {
+      setSelectedProductTypes(prev => prev.filter(type => type !== productType));
+    }
+  };
+
+  const handleColorChange = (color: string, checked: boolean) => {
+    if (checked) {
+      setSelectedColors(prev => [...prev, color]);
+    } else {
+      setSelectedColors(prev => prev.filter(c => c !== color));
+    }
+  };
+
+  const handleMaterialChange = (material: string, checked: boolean) => {
+    if (checked) {
+      setSelectedMaterials(prev => [...prev, material]);
+    } else {
+      setSelectedMaterials(prev => prev.filter(m => m !== material));
+    }
+  };
+
+  const handleGemstoneChange = (gemstone: string, checked: boolean) => {
+    if (checked) {
+      setSelectedGemstones(prev => [...prev, gemstone]);
+    } else {
+      setSelectedGemstones(prev => prev.filter(g => g !== gemstone));
+    }
+  };
+
+  const handleDiamondCutChange = (cut: string, checked: boolean) => {
+    if (checked) {
+      setSelectedDiamondCuts(prev => [...prev, cut]);
+    } else {
+      setSelectedDiamondCuts(prev => prev.filter(c => c !== cut));
+    }
+  };
+
   const productTypes = [
-    { name: "Presidential Watches", count: 12 },
-    { name: "Ships Today", count: 12 },
-    { name: "Bust Down Watches", count: 4 },
-    { name: "Skeleton Watches", count: 3 }
+    { name: "Presidential Watches", count: allProducts.filter(p => p.product_type === "Presidential Watches").length },
+    { name: "Ships Today", count: allProducts.filter(p => p.ships_today).length },
+    { name: "Bust Down Watches", count: allProducts.filter(p => p.product_type === "Bust Down Watches").length },
+    { name: "Skeleton Watches", count: allProducts.filter(p => p.product_type === "Skeleton Watches").length }
   ];
 
   const colors = [
-    { name: "Yellow Gold", count: 8 },
-    { name: "White Gold", count: 12 },
-    { name: "Rose Gold", count: 6 },
-    { name: "Black Gold", count: 20 }
+    { name: "Yellow Gold", count: allProducts.filter(p => p.color === "Yellow Gold").length },
+    { name: "White Gold", count: allProducts.filter(p => p.color === "White Gold").length },
+    { name: "Rose Gold", count: allProducts.filter(p => p.color === "Rose Gold").length },
+    { name: "Black Gold", count: allProducts.filter(p => p.color === "Black Gold").length }
   ];
 
   const materials = [
-    { name: "925 Silver", count: 100 },
-    { name: "Solid Gold", count: 12 },
-    { name: "Brass", count: 7 }
+    { name: "925 Silver", count: allProducts.filter(p => p.material === "925 Silver").length },
+    { name: "Solid Gold", count: allProducts.filter(p => p.material === "Solid Gold").length },
+    { name: "Brass", count: allProducts.filter(p => p.material === "Brass").length }
   ];
 
   const gemstones = [
-    { name: "Moissanite", count: 11 },
-    { name: "VVS Diamond Simulants (CZ)", count: 5 },
-    { name: "VVS Moissanite", count: 6 },
-    { name: "VVS Moissanites", count: 2 }
+    { name: "Moissanite", count: allProducts.filter(p => p.gemstone === "Moissanite").length },
+    { name: "VVS Diamond Simulants (CZ)", count: allProducts.filter(p => p.gemstone === "VVS Diamond Simulants (CZ)").length },
+    { name: "VVS Moissanite", count: allProducts.filter(p => p.gemstone === "VVS Moissanite").length },
+    { name: "VVS Moissanites", count: allProducts.filter(p => p.gemstone === "VVS Moissanites").length }
   ];
 
   const diamondCuts = [
-    { name: "Round Cut", count: 109 },
-    { name: "Baguette", count: 18 },
-    { name: "Emerald Cut", count: 3 },
-    { name: "Baguette Cut", count: 2 },
-    { name: "Heart Cut", count: 2 },
-    { name: "Marquise Cut", count: 2 },
-    { name: "Oval Cut", count: 4 },
-    { name: "Pear Cut", count: 2 },
-    { name: "Princess Cut", count: 1 }
+    { name: "Round Cut", count: allProducts.filter(p => p.diamond_cut === "Round Cut").length },
+    { name: "Baguette", count: allProducts.filter(p => p.diamond_cut === "Baguette").length },
+    { name: "Emerald Cut", count: allProducts.filter(p => p.diamond_cut === "Emerald Cut").length },
+    { name: "Baguette Cut", count: allProducts.filter(p => p.diamond_cut === "Baguette Cut").length },
+    { name: "Heart Cut", count: allProducts.filter(p => p.diamond_cut === "Heart Cut").length },
+    { name: "Marquise Cut", count: allProducts.filter(p => p.diamond_cut === "Marquise Cut").length },
+    { name: "Oval Cut", count: allProducts.filter(p => p.diamond_cut === "Oval Cut").length },
+    { name: "Pear Cut", count: allProducts.filter(p => p.diamond_cut === "Pear Cut").length },
+    { name: "Princess Cut", count: allProducts.filter(p => p.diamond_cut === "Princess Cut").length }
   ];
 
   const watchTypes = [
@@ -114,7 +232,11 @@ const Watches = () => {
           {productTypes.map((type) => (
             <div key={type.name} className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${type.name}`} />
+                <Checkbox 
+                  id={`desktop-${type.name}`} 
+                  checked={selectedProductTypes.includes(type.name)}
+                  onCheckedChange={(checked) => handleProductTypeChange(type.name, checked as boolean)}
+                />
                 <label htmlFor={`desktop-${type.name}`} className="text-sm text-gray-700">
                   {type.name}
                 </label>
@@ -159,7 +281,11 @@ const Watches = () => {
           {colors.map((color) => (
             <div key={color.name} className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${color.name}`} />
+                <Checkbox 
+                  id={`desktop-${color.name}`} 
+                  checked={selectedColors.includes(color.name)}
+                  onCheckedChange={(checked) => handleColorChange(color.name, checked as boolean)}
+                />
                 <label htmlFor={`desktop-${color.name}`} className="text-sm text-gray-700">
                   {color.name}
                 </label>
@@ -177,7 +303,11 @@ const Watches = () => {
           {materials.map((material) => (
             <div key={material.name} className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${material.name}`} />
+                <Checkbox 
+                  id={`desktop-${material.name}`} 
+                  checked={selectedMaterials.includes(material.name)}
+                  onCheckedChange={(checked) => handleMaterialChange(material.name, checked as boolean)}
+                />
                 <label htmlFor={`desktop-${material.name}`} className="text-sm text-gray-700">
                   {material.name}
                 </label>
@@ -195,7 +325,11 @@ const Watches = () => {
           {gemstones.map((gemstone) => (
             <div key={gemstone.name} className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${gemstone.name}`} />
+                <Checkbox 
+                  id={`desktop-${gemstone.name}`} 
+                  checked={selectedGemstones.includes(gemstone.name)}
+                  onCheckedChange={(checked) => handleGemstoneChange(gemstone.name, checked as boolean)}
+                />
                 <label htmlFor={`desktop-${gemstone.name}`} className="text-sm text-gray-700">
                   {gemstone.name}
                 </label>
@@ -213,7 +347,11 @@ const Watches = () => {
           {diamondCuts.map((cut) => (
             <div key={cut.name} className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${cut.name}`} />
+                <Checkbox 
+                  id={`desktop-${cut.name}`} 
+                  checked={selectedDiamondCuts.includes(cut.name)}
+                  onCheckedChange={(checked) => handleDiamondCutChange(cut.name, checked as boolean)}
+                />
                 <label htmlFor={`desktop-${cut.name}`} className="text-sm text-gray-700">
                   {cut.name}
                 </label>
@@ -257,7 +395,11 @@ const Watches = () => {
               {productTypes.map((type) => (
                 <div key={type.name} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id={type.name} />
+                    <Checkbox 
+                      id={type.name} 
+                      checked={selectedProductTypes.includes(type.name)}
+                      onCheckedChange={(checked) => handleProductTypeChange(type.name, checked as boolean)}
+                    />
                     <label htmlFor={type.name} className="text-sm text-gray-700">
                       {type.name}
                     </label>
@@ -312,7 +454,11 @@ const Watches = () => {
               {colors.map((color) => (
                 <div key={color.name} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id={color.name} />
+                    <Checkbox 
+                      id={color.name} 
+                      checked={selectedColors.includes(color.name)}
+                      onCheckedChange={(checked) => handleColorChange(color.name, checked as boolean)}
+                    />
                     <label htmlFor={color.name} className="text-sm text-gray-700">
                       {color.name}
                     </label>
@@ -335,7 +481,11 @@ const Watches = () => {
               {materials.map((material) => (
                 <div key={material.name} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id={material.name} />
+                    <Checkbox 
+                      id={material.name} 
+                      checked={selectedMaterials.includes(material.name)}
+                      onCheckedChange={(checked) => handleMaterialChange(material.name, checked as boolean)}
+                    />
                     <label htmlFor={material.name} className="text-sm text-gray-700">
                       {material.name}
                     </label>
@@ -358,7 +508,11 @@ const Watches = () => {
               {gemstones.map((gemstone) => (
                 <div key={gemstone.name} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id={gemstone.name} />
+                    <Checkbox 
+                      id={gemstone.name} 
+                      checked={selectedGemstones.includes(gemstone.name)}
+                      onCheckedChange={(checked) => handleGemstoneChange(gemstone.name, checked as boolean)}
+                    />
                     <label htmlFor={gemstone.name} className="text-sm text-gray-700">
                       {gemstone.name}
                     </label>
@@ -381,7 +535,11 @@ const Watches = () => {
               {diamondCuts.map((cut) => (
                 <div key={cut.name} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id={cut.name} />
+                    <Checkbox 
+                      id={cut.name} 
+                      checked={selectedDiamondCuts.includes(cut.name)}
+                      onCheckedChange={(checked) => handleDiamondCutChange(cut.name, checked as boolean)}
+                    />
                     <label htmlFor={cut.name} className="text-sm text-gray-700">
                       {cut.name}
                     </label>
@@ -460,7 +618,7 @@ const Watches = () => {
         <div className={`flex-1 ${isMobile ? 'py-4 px-4' : 'py-8 px-8'}`}>
           {/* Product count and controls */}
           <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-semibold">{products.length} Products</span>
+            <span className="text-lg font-semibold">{filteredAndSortedProducts.length} Products</span>
             <div className="flex items-center space-x-4">
               {!isMobile && (
                 <Select value={sortBy} onValueChange={setSortBy}>
@@ -494,7 +652,7 @@ const Watches = () => {
 
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
-            {products.map((product) => (
+            {filteredAndSortedProducts.map((product) => (
               <div 
                 key={product.id} 
                 className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
