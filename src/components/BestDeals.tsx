@@ -3,8 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const BestDeals = () => {
+  const isMobile = useIsMobile();
+
   const deals = [
     {
       id: 1,
@@ -64,56 +67,112 @@ const BestDeals = () => {
           <p className="text-gray-600 text-lg">Limited time offers on premium moissanite jewelry</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {deals.map((deal) => (
-            <Link key={deal.id} to={deal.link} className="group">
-              <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
-                {/* Product image */}
-                <div className="relative aspect-square overflow-hidden">
-                  <img
-                    src={deal.image}
-                    alt={deal.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  
-                  {/* Discount badge */}
-                  <div className="absolute top-4 left-4">
-                    <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
-                      {deal.discount}
-                    </Badge>
-                  </div>
-                </div>
-
-                {/* Product info */}
-                <div className="p-4">
-                  <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
-                    {deal.category}
-                  </div>
-                  
-                  <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                    {deal.title}
-                  </h3>
-                  
-                  <div className="flex items-center space-x-1 mb-2">
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`w-4 h-4 ${i < deal.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                      ))}
+        {/* Mobile: Horizontal scroll, Desktop: Grid */}
+        {isMobile ? (
+          <div className="overflow-x-auto">
+            <div className="flex space-x-4 pb-4">
+              {deals.map((deal) => (
+                <Link key={deal.id} to={deal.link} className="group flex-shrink-0 w-64">
+                  <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
+                    {/* Product image */}
+                    <div className="relative aspect-square overflow-hidden">
+                      <img
+                        src={deal.image}
+                        alt={deal.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      
+                      {/* Discount badge */}
+                      <div className="absolute top-4 left-4">
+                        <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                          {deal.discount}
+                        </Badge>
+                      </div>
                     </div>
-                    <span className="text-sm text-gray-500">({deal.reviews})</span>
+
+                    {/* Product info */}
+                    <div className="p-4">
+                      <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
+                        {deal.category}
+                      </div>
+                      
+                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                        {deal.title}
+                      </h3>
+                      
+                      <div className="flex items-center space-x-1 mb-2">
+                        <div className="flex">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className={`w-4 h-4 ${i < deal.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                          ))}
+                        </div>
+                        <span className="text-sm text-gray-500">({deal.reviews})</span>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xl font-bold text-blue-600">{deal.currentPrice}</span>
+                        <span className="text-sm text-gray-400 line-through">
+                          {deal.originalPrice}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <span className="text-xl font-bold text-blue-600">{deal.currentPrice}</span>
-                    <span className="text-sm text-gray-400 line-through">
-                      {deal.originalPrice}
-                    </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {deals.map((deal) => (
+              <Link key={deal.id} to={deal.link} className="group">
+                <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
+                  {/* Product image */}
+                  <div className="relative aspect-square overflow-hidden">
+                    <img
+                      src={deal.image}
+                      alt={deal.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    
+                    {/* Discount badge */}
+                    <div className="absolute top-4 left-4">
+                      <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                        {deal.discount}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {/* Product info */}
+                  <div className="p-4">
+                    <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
+                      {deal.category}
+                    </div>
+                    
+                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                      {deal.title}
+                    </h3>
+                    
+                    <div className="flex items-center space-x-1 mb-2">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`w-4 h-4 ${i < deal.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                        ))}
+                      </div>
+                      <span className="text-sm text-gray-500">({deal.reviews})</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xl font-bold text-blue-600">{deal.currentPrice}</span>
+                      <span className="text-sm text-gray-400 line-through">
+                        {deal.originalPrice}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
 
         {/* Shop All Deals Button */}
         <div className="text-center mt-12">
