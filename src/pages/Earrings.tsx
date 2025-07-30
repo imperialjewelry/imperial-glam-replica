@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,32 +8,14 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { Tables } from '@/integrations/supabase/types';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import ProductCheckout from '@/components/ProductCheckout';
+import EarringProductModal from '@/components/EarringProductModal';
 
-interface EarringProduct {
-  id: string;
-  name: string;
-  image_url: string;
-  category: string;
-  price: number;
-  original_price: number | null;
-  rating: number;
-  review_count: number;
-  in_stock: boolean;
-  ships_today: boolean;
-  discount_percentage: number;
-  sizes: string[];
-  product_type: string;
-  color: string;
-  material: string;
-  gemstone: string | null;
-  diamond_cut: string | null;
-  stripe_product_id: string;
-  stripe_price_id?: string;
-}
+type EarringProduct = Tables<'earring_products'>;
 
 const Earrings = () => {
   const isMobile = useIsMobile();
@@ -42,6 +24,15 @@ const Earrings = () => {
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<EarringProduct | null>(null);
+  const [filteredProducts, setFilteredProducts] = useState<EarringProduct[]>([]);
+  const [selectedFilters, setSelectedFilters] = useState({
+    productType: [] as string[],
+    color: [] as string[],
+    material: [] as string[],
+    gemstone: [] as string[],
+    diamondCut: [] as string[]
+  });
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ['earring-products'],
@@ -56,8 +47,135 @@ const Earrings = () => {
     }
   });
 
+  useEffect(() => {
+    applyFilters();
+  }, [products, selectedFilters, priceFrom, priceTo, sortBy]);
+
+  const applyFilters = () => {
+    let filtered = [...products];
+
+    // Apply product type filter
+    if (selectedFilters.productType.length > 0) {
+      filtered = filtered.filter(product => 
+        selectedFilters.productType.includes(product.product_type)
+      );
+    }
+
+    // Apply color filter
+    if (selectedFilters.color.length > 0) {
+      filtered = filtered.filter(product => 
+        selectedFilters.color.includes(product.color)
+      );
+    }
+
+    // Apply material filter
+    if (selectedFilters.material.length > 0) {
+      filtered = filtered.filter(product => 
+        selectedFilters.material.includes(product.material)
+      );
+    }
+
+    // Apply gemstone filter
+    if (selectedFilters.gemstone.length > 0) {
+      filtered = filtered.filter(product => 
+        product.gemstone && selectedFilters.gemstone.includes(product.gemstone)
+      );
+    }
+
+    // Apply diamond cut filter
+    if (selectedFilters.diamondCut.length > 0) {
+      filtered = filtered.filter(product => 
+        product.diamond_cut && selectedFilters.diamondCut.includes(product.diamond_cut)
+      );
+    }
+
+    // Apply price range filter
+    if (priceFrom || priceTo) {
+      filtered = filtered.filter(product => {
+        const price = product.price / 100;
+        const fromPrice = priceFrom ? parseFloat(priceFrom) : 0;
+        const toPrice = priceTo ? parseFloat(priceTo) : Infinity;
+        return price >= fromPrice && price <= toPrice;
+      });
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+      default:
+        // Keep original order for featured
+        break;
+    }
+
+    setFilteredProducts(filtered);
+  };
+
+  const handleFilterChange = (filterType: keyof typeof selectedFilters, value: string) => {
+    setSelectedFilters(prev => {
+      const currentFilters = prev[filterType];
+      const newFilters = currentFilters.includes(value)
+        ? currentFilters.filter(item => item !== value)
+        : [...currentFilters, value];
+      
+      return {
+        ...prev,
+        [filterType]: newFilters
+      };
+    });
+  };
+
+  // Get unique values and counts from products
+  const getFilterOptions = (field: keyof EarringProduct) => {
+    const counts: { [key: string]: number } = {};
+    products.forEach(product => {
+      const value = product[field] as string;
+      if (value) {
+        counts[value] = (counts[value] || 0) + 1;
+      }
+    });
+    return Object.entries(counts).map(([name, count]) => ({ name, count }));
+  };
+
+  const productTypes = getFilterOptions('product_type');
+  const colors = getFilterOptions('color');
+  const materials = getFilterOptions('material');
+  const gemstones = getFilterOptions('gemstone');
+  const diamondCuts = getFilterOptions('diamond_cut');
+
+  const renderFilterCheckbox = (
+    filterType: keyof typeof selectedFilters,
+    option: { name: string; count: number }
+  ) => {
+    const isChecked = selectedFilters[filterType].includes(option.name);
+    const checkboxId = `${filterType}-${option.name}`;
+    
+    return (
+      <div key={option.name} className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id={checkboxId}
+            checked={isChecked}
+            onCheckedChange={() => handleFilterChange(filterType, option.name)}
+          />
+          <label htmlFor={checkboxId} className="text-sm text-gray-700">
+            {option.name}
+          </label>
+        </div>
+        <span className="text-sm text-gray-500">({option.count})</span>
+      </div>
+    );
+  };
+
   // Filter products that have stripe_price_id
-  const validProducts = products.filter(product => product.stripe_price_id);
+  const validProducts = filteredProducts.filter(product => product.stripe_price_id);
 
   if (isLoading) {
     return (
@@ -111,112 +229,77 @@ const Earrings = () => {
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
-        {/* Filters Sidebar */}
+        {/* Desktop Sidebar Filters */}
         {!isMobile && (
-          <div className="w-64 p-6 border-r bg-gray-50">
-            <h3 className="font-semibold mb-4">Filters</h3>
+          <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
+            <h2 className="text-lg font-semibold mb-6">Filters</h2>
             
             {/* Product Type */}
-            <Collapsible defaultOpen className="mb-6">
-              <CollapsibleTrigger className="flex items-center justify-between w-full font-medium">
-                PRODUCT TYPE
-                <ChevronDown className="h-4 w-4" />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-2 space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="stud-earrings" />
-                  <label htmlFor="stud-earrings" className="text-sm">Stud Earrings</label>
-                  <span className="text-xs text-gray-500">(2)</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="hoop-earrings" />
-                  <label htmlFor="hoop-earrings" className="text-sm">Hoop Earrings</label>
-                  <span className="text-xs text-gray-500">(1)</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="drop-earrings" />
-                  <label htmlFor="drop-earrings" className="text-sm">Drop Earrings</label>
-                  <span className="text-xs text-gray-500">(1)</span>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+            <div className="mb-8">
+              <h3 className="font-medium text-gray-900 mb-4 uppercase">PRODUCT TYPE</h3>
+              <div className="space-y-3">
+                {productTypes.map((type) => renderFilterCheckbox('productType', type))}
+              </div>
+            </div>
 
-            {/* Price Range */}
-            <Collapsible defaultOpen className="mb-6">
-              <CollapsibleTrigger className="flex items-center justify-between w-full font-medium">
-                PRICE
-                <ChevronDown className="h-4 w-4" />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-2">
-                <div className="flex space-x-2">
-                  <div>
-                    <label className="text-xs text-gray-500">FROM</label>
-                    <input
-                      type="number"
-                      placeholder="0"
-                      value={priceFrom}
-                      onChange={(e) => setPriceFrom(e.target.value)}
-                      className="w-full p-2 border rounded text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-500">TO</label>
-                    <input
-                      type="number"
-                      placeholder="0"
-                      value={priceTo}
-                      onChange={(e) => setPriceTo(e.target.value)}
-                      className="w-full p-2 border rounded text-sm"
-                    />
-                  </div>
+            {/* Price */}
+            <div className="mb-8">
+              <h3 className="font-medium text-gray-900 mb-4 uppercase">PRICE</h3>
+              <div className="flex space-x-2">
+                <div className="flex-1">
+                  <label className="block text-xs text-gray-500 mb-1">FROM</label>
+                  <input
+                    type="number"
+                    value={priceFrom}
+                    onChange={(e) => setPriceFrom(e.target.value)}
+                    placeholder="0"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  />
                 </div>
-              </CollapsibleContent>
-            </Collapsible>
+                <div className="flex-1">
+                  <label className="block text-xs text-gray-500 mb-1">TO</label>
+                  <input
+                    type="number"
+                    value={priceTo}
+                    onChange={(e) => setPriceTo(e.target.value)}
+                    placeholder="0"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  />
+                </div>
+              </div>
+            </div>
 
             {/* Color */}
-            <Collapsible defaultOpen className="mb-6">
-              <CollapsibleTrigger className="flex items-center justify-between w-full font-medium">
-                COLOR
-                <ChevronDown className="h-4 w-4" />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-2 space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="yellow-gold" />
-                  <label htmlFor="yellow-gold" className="text-sm">Yellow Gold</label>
-                  <span className="text-xs text-gray-500">(1)</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="rose-gold" />
-                  <label htmlFor="rose-gold" className="text-sm">Rose Gold</label>
-                  <span className="text-xs text-gray-500">(1)</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="white-gold" />
-                  <label htmlFor="white-gold" className="text-sm">White Gold</label>
-                  <span className="text-xs text-gray-500">(2)</span>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+            <div className="mb-8">
+              <h3 className="font-medium text-gray-900 mb-4 uppercase">COLOR</h3>
+              <div className="space-y-3">
+                {colors.map((color) => renderFilterCheckbox('color', color))}
+              </div>
+            </div>
 
             {/* Material */}
-            <Collapsible defaultOpen className="mb-6">
-              <CollapsibleTrigger className="flex items-center justify-between w-full font-medium">
-                MATERIAL
-                <ChevronDown className="h-4 w-4" />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-2 space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="925-silver" />
-                  <label htmlFor="925-silver" className="text-sm">925 Silver</label>
-                  <span className="text-xs text-gray-500">(2)</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="14k-gold" />
-                  <label htmlFor="14k-gold" className="text-sm">14K Gold</label>
-                  <span className="text-xs text-gray-500">(2)</span>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+            <div className="mb-8">
+              <h3 className="font-medium text-gray-900 mb-4 uppercase">MATERIAL</h3>
+              <div className="space-y-3">
+                {materials.map((material) => renderFilterCheckbox('material', material))}
+              </div>
+            </div>
+
+            {/* Gemstone */}
+            <div className="mb-8">
+              <h3 className="font-medium text-gray-900 mb-4 uppercase">GEMSTONE</h3>
+              <div className="space-y-3">
+                {gemstones.map((gemstone) => renderFilterCheckbox('gemstone', gemstone))}
+              </div>
+            </div>
+
+            {/* Diamond Cut */}
+            <div className="mb-8">
+              <h3 className="font-medium text-gray-900 mb-4 uppercase">DIAMOND CUT</h3>
+              <div className="space-y-3">
+                {diamondCuts.map((cut) => renderFilterCheckbox('diamondCut', cut))}
+              </div>
+            </div>
           </div>
         )}
 
@@ -251,10 +334,116 @@ const Earrings = () => {
             </div>
           </div>
 
+          {/* Mobile Filters */}
+          {isMobile && showFilters && (
+            <div className="bg-white border rounded-lg mb-6 overflow-hidden">
+              {/* Product Type Filter */}
+              <Collapsible defaultOpen>
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+                  <span className="font-medium">PRODUCT TYPE</span>
+                  <ChevronDown className="w-4 h-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 border-b">
+                  <div className="space-y-3">
+                    {productTypes.map((type) => renderFilterCheckbox('productType', type))}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* Price Filter */}
+              <Collapsible defaultOpen>
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+                  <span className="font-medium">PRICE</span>
+                  <ChevronDown className="w-4 h-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 border-b">
+                  <div className="flex space-x-2">
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">FROM</label>
+                      <input
+                        type="number"
+                        value={priceFrom}
+                        onChange={(e) => setPriceFrom(e.target.value)}
+                        placeholder="0"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">TO</label>
+                      <input
+                        type="number"
+                        value={priceTo}
+                        onChange={(e) => setPriceTo(e.target.value)}
+                        placeholder="0"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                      />
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* Color Filter */}
+              <Collapsible defaultOpen>
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+                  <span className="font-medium">COLOR</span>
+                  <ChevronDown className="w-4 h-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 border-b">
+                  <div className="space-y-3">
+                    {colors.map((color) => renderFilterCheckbox('color', color))}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* Material Filter */}
+              <Collapsible defaultOpen>
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+                  <span className="font-medium">MATERIAL</span>
+                  <ChevronDown className="w-4 h-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 border-b">
+                  <div className="space-y-3">
+                    {materials.map((material) => renderFilterCheckbox('material', material))}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* Gemstone Filter */}
+              <Collapsible defaultOpen>
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+                  <span className="font-medium">GEMSTONE</span>
+                  <ChevronDown className="w-4 h-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 border-b">
+                  <div className="space-y-3">
+                    {gemstones.map((gemstone) => renderFilterCheckbox('gemstone', gemstone))}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* Diamond Cut Filter */}
+              <Collapsible defaultOpen>
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left hover:bg-gray-50">
+                  <span className="font-medium">DIAMOND CUT</span>
+                  <ChevronDown className="w-4 h-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4">
+                  <div className="space-y-3">
+                    {diamondCuts.map((cut) => renderFilterCheckbox('diamondCut', cut))}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+          )}
+
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-6`}>
             {validProducts.map((product) => (
-              <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
+              <div 
+                key={product.id} 
+                className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => setSelectedProduct(product)}
+              >
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
                   <img
                     src={product.image_url}
@@ -315,32 +504,43 @@ const Earrings = () => {
                     <span className="text-xs text-gray-500">({product.review_count})</span>
                   </div>
                   
-                  <div className="flex items-center space-x-2 mb-3">
-                    <span className="text-lg font-bold text-blue-600">
-                      ${(product.price / 100).toFixed(2)}
-                    </span>
-                    {product.original_price && product.original_price > product.price && (
-                      <span className="text-sm text-gray-500 line-through">
-                        ${(product.original_price / 100).toFixed(2)}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg font-bold text-blue-600">
+                        ${(product.price / 100).toFixed(2)}
                       </span>
-                    )}
+                      {product.original_price && product.original_price > product.price && (
+                        <span className="text-sm text-gray-500 line-through">
+                          ${(product.original_price / 100).toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <ProductCheckout product={{
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        image_url: product.image_url,
+                        stripe_product_id: product.stripe_product_id,
+                        stripe_price_id: product.stripe_price_id,
+                        sizes: product.sizes
+                      }} />
+                    </div>
                   </div>
-
-                  <ProductCheckout product={{
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    image_url: product.image_url,
-                    stripe_product_id: product.stripe_product_id,
-                    stripe_price_id: product.stripe_price_id,
-                    sizes: product.sizes
-                  }} />
                 </div>
               </div>
             ))}
           </div>
         </div>
       </div>
+
+      {/* Product Modal */}
+      {selectedProduct && (
+        <EarringProductModal 
+          product={selectedProduct} 
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
 
       <Footer />
     </div>
