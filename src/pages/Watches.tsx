@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
-import ProductDetailModal from '../components/ProductDetailModal';
+import WatchProductModal from '../components/WatchProductModal';
 
 interface WatchProduct {
   id: string;
@@ -593,12 +593,16 @@ const Watches = () => {
 
       <Footer />
       
-      {/* Product Detail Modal */}
-      <ProductDetailModal
-        product={selectedProduct}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+      {/* Watch Product Modal */}
+      {selectedProduct && isModalOpen && (
+        <WatchProductModal
+          product={selectedProduct}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedProduct(null);
+          }}
+        />
+      )}
     </div>
   );
 };
