@@ -1,11 +1,10 @@
-
 import { Button } from '@/components/ui/button';
 
 const CategorySection = () => {
   const categories = [
     {
       name: "CHAINS",
-      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=400&q=80"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/chains//infinitylink.webp"
     },
     {
       name: "BRACELETS", 
@@ -17,15 +16,15 @@ const CategorySection = () => {
     },
     {
       name: "EARRINGS",
-      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=400&q=80"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/earrings//dart.webp"
     },
     {
       name: "WATCHES",
-      image: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=400&q=80"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/watches//rolexoysterperpetuasl.webp"
     },
     {
       name: "GRILLZ",
-      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=400&q=80"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/grillz//IMG_5019%20(1).webp"
     },
     {
       name: "RINGS",
@@ -33,7 +32,7 @@ const CategorySection = () => {
     },
     {
       name: "PENDANTS",
-      image: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=400&q=80"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/earrings//skullpendanyt.webp"
     },
     {
       name: "GLASSES",
