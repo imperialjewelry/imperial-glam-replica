@@ -17,10 +17,10 @@ interface EarringProductModalProps {
 
 const EarringProductModal = ({ product, onClose }: EarringProductModalProps) => {
   const [selectedSize, setSelectedSize] = useState('');
-  const [selectedColor, setSelectedColor] = useState(product.color);
-  const [selectedMaterial, setSelectedMaterial] = useState(product.material);
-  const [selectedGemstone, setSelectedGemstone] = useState(product.gemstone || '');
-  const [selectedDiamondCut, setSelectedDiamondCut] = useState(product.diamond_cut || '');
+  const [selectedColor, setSelectedColor] = useState(product.color || 'Yellow Gold');
+  const [selectedMaterial, setSelectedMaterial] = useState(product.material || '925 Silver');
+  const [selectedGemstone, setSelectedGemstone] = useState(product.gemstone || 'VVS Diamond Simulants (CZ)');
+  const [selectedDiamondCut, setSelectedDiamondCut] = useState(product.diamond_cut || 'Round');
   const { addToCart, dispatch } = useCart();
   const { toast } = useToast();
 
@@ -138,7 +138,7 @@ const EarringProductModal = ({ product, onClose }: EarringProductModalProps) => 
                         <SelectValue placeholder="Select Size" />
                       </SelectTrigger>
                       <SelectContent>
-                        {product.sizes.map((size) => (
+                        {product.sizes.filter(size => size && size.trim() !== '').map((size) => (
                           <SelectItem key={size} value={size}>
                             {size}
                           </SelectItem>
@@ -158,9 +158,9 @@ const EarringProductModal = ({ product, onClose }: EarringProductModalProps) => 
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Yellow Gold">Yellow Gold</SelectItem>
-                      <SelectItem value="White Gold">White Gold</SelectItem>
-                      <SelectItem value="Rose Gold">Rose Gold</SelectItem>
+                      <SelectItem value="yellow-gold">Yellow Gold</SelectItem>
+                      <SelectItem value="white-gold">White Gold</SelectItem>
+                      <SelectItem value="rose-gold">Rose Gold</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -175,9 +175,9 @@ const EarringProductModal = ({ product, onClose }: EarringProductModalProps) => 
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="925 Silver">925 Silver</SelectItem>
-                      <SelectItem value="14K Gold">14K Gold</SelectItem>
-                      <SelectItem value="18K Gold">18K Gold</SelectItem>
+                      <SelectItem value="925-silver">925 Silver</SelectItem>
+                      <SelectItem value="14k-gold">14K Gold</SelectItem>
+                      <SelectItem value="18k-gold">18K Gold</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -193,9 +193,9 @@ const EarringProductModal = ({ product, onClose }: EarringProductModalProps) => 
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="VVS Diamond Simulants (CZ)">VVS Diamond Simulants (CZ)</SelectItem>
-                        <SelectItem value="Moissanite">Moissanite</SelectItem>
-                        <SelectItem value="VVS Moissanite">VVS Moissanite</SelectItem>
+                        <SelectItem value="vvs-diamond-simulants">VVS Diamond Simulants (CZ)</SelectItem>
+                        <SelectItem value="moissanite">Moissanite</SelectItem>
+                        <SelectItem value="vvs-moissanite">VVS Moissanite</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -212,10 +212,10 @@ const EarringProductModal = ({ product, onClose }: EarringProductModalProps) => 
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Round">Round</SelectItem>
-                        <SelectItem value="Princess">Princess</SelectItem>
-                        <SelectItem value="Emerald">Emerald</SelectItem>
-                        <SelectItem value="Oval">Oval</SelectItem>
+                        <SelectItem value="round">Round</SelectItem>
+                        <SelectItem value="princess">Princess</SelectItem>
+                        <SelectItem value="emerald">Emerald</SelectItem>
+                        <SelectItem value="oval">Oval</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

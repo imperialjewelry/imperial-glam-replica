@@ -17,11 +17,11 @@ interface GrillzProductModalProps {
 
 const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
   const [selectedSize, setSelectedSize] = useState('');
-  const [selectedColor, setSelectedColor] = useState(product.color);
-  const [selectedMaterial, setSelectedMaterial] = useState(product.material);
-  const [selectedStyle, setSelectedStyle] = useState(product.style || '');
-  const [selectedGemstone, setSelectedGemstone] = useState(product.gemstone || '');
-  const [selectedTeethCount, setSelectedTeethCount] = useState(product.teeth_count || '');
+  const [selectedColor, setSelectedColor] = useState(product.color || 'Yellow Gold');
+  const [selectedMaterial, setSelectedMaterial] = useState(product.material || 'Solid Gold');
+  const [selectedStyle, setSelectedStyle] = useState(product.style || 'Iced Out');
+  const [selectedGemstone, setSelectedGemstone] = useState(product.gemstone || 'VVS Diamond Simulants (CZ)');
+  const [selectedTeethCount, setSelectedTeethCount] = useState(product.teeth_count || '4 Teeth');
   const { addToCart, dispatch } = useCart();
   const { toast } = useToast();
 
@@ -139,7 +139,7 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
                         <SelectValue placeholder="Select Size" />
                       </SelectTrigger>
                       <SelectContent>
-                        {product.sizes.map((size) => (
+                        {product.sizes.filter(size => size && size.trim() !== '').map((size) => (
                           <SelectItem key={size} value={size}>
                             {size}
                           </SelectItem>
@@ -159,9 +159,9 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Yellow Gold">Yellow Gold</SelectItem>
-                      <SelectItem value="White Gold">White Gold</SelectItem>
-                      <SelectItem value="Rose Gold">Rose Gold</SelectItem>
+                      <SelectItem value="yellow-gold">Yellow Gold</SelectItem>
+                      <SelectItem value="white-gold">White Gold</SelectItem>
+                      <SelectItem value="rose-gold">Rose Gold</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -176,9 +176,9 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Solid Gold">Solid Gold</SelectItem>
-                      <SelectItem value="925 Silver">925 Silver</SelectItem>
-                      <SelectItem value="14K Gold">14K Gold</SelectItem>
+                      <SelectItem value="solid-gold">Solid Gold</SelectItem>
+                      <SelectItem value="925-silver">925 Silver</SelectItem>
+                      <SelectItem value="14k-gold">14K Gold</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -194,9 +194,9 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Iced Out">Iced Out</SelectItem>
-                        <SelectItem value="Classic">Classic</SelectItem>
-                        <SelectItem value="Custom Design">Custom Design</SelectItem>
+                        <SelectItem value="iced-out">Iced Out</SelectItem>
+                        <SelectItem value="classic">Classic</SelectItem>
+                        <SelectItem value="custom-design">Custom Design</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -213,9 +213,9 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="VVS Diamond Simulants (CZ)">VVS Diamond Simulants (CZ)</SelectItem>
-                        <SelectItem value="Moissanite">Moissanite</SelectItem>
-                        <SelectItem value="VVS Moissanite">VVS Moissanite</SelectItem>
+                        <SelectItem value="vvs-diamond-simulants">VVS Diamond Simulants (CZ)</SelectItem>
+                        <SelectItem value="moissanite">Moissanite</SelectItem>
+                        <SelectItem value="vvs-moissanite">VVS Moissanite</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -232,10 +232,10 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="4 Teeth">4 Teeth</SelectItem>
-                        <SelectItem value="6 Teeth">6 Teeth</SelectItem>
-                        <SelectItem value="8 Teeth">8 Teeth</SelectItem>
-                        <SelectItem value="Full Set">Full Set</SelectItem>
+                        <SelectItem value="4-teeth">4 Teeth</SelectItem>
+                        <SelectItem value="6-teeth">6 Teeth</SelectItem>
+                        <SelectItem value="8-teeth">8 Teeth</SelectItem>
+                        <SelectItem value="full-set">Full Set</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

@@ -39,7 +39,7 @@ const BestDeals = () => {
   const filteredProducts = products
     .filter(product => {
       if (categoryFilter === 'all') return true;
-      return product.category.toLowerCase() === categoryFilter;
+      return product.category && product.category.toLowerCase() === categoryFilter;
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -56,7 +56,13 @@ const BestDeals = () => {
       }
     });
 
-  const categories = ['all', ...new Set(products.map(p => p.category.toLowerCase()))];
+  // Get unique categories, filtering out empty/undefined values
+  const categories = ['all', ...new Set(
+    products
+      .map(p => p.category)
+      .filter(category => category && category.trim() !== '')
+      .map(category => category.toLowerCase())
+  )];
 
   const formatPrice = (price: number) => {
     return `$${(price / 100).toLocaleString()}`;
@@ -177,7 +183,7 @@ const BestDeals = () => {
 
                   <CardContent className="p-4">
                     <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
-                      {product.category} • {product.material}
+                      {product.category || 'UNCATEGORIZED'} • {product.material || 'N/A'}
                     </div>
                     
                     <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 text-sm">

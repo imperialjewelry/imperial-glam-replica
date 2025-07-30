@@ -17,8 +17,8 @@ interface ChainProductModalProps {
 
 const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
   const [selectedSize, setSelectedSize] = useState('');
-  const [selectedColor, setSelectedColor] = useState(product.color);
-  const [selectedMaterial, setSelectedMaterial] = useState(product.material);
+  const [selectedColor, setSelectedColor] = useState(product.color || 'Yellow Gold');
+  const [selectedMaterial, setSelectedMaterial] = useState(product.material || 'Solid Gold');
   const { addToCart, dispatch } = useCart();
   const { toast } = useToast();
 
@@ -139,7 +139,7 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
                         <SelectValue placeholder="Select Size" />
                       </SelectTrigger>
                       <SelectContent>
-                        {product.sizes.map((size) => (
+                        {product.sizes.filter(size => size && size.trim() !== '').map((size) => (
                           <SelectItem key={size} value={size}>
                             {size}
                           </SelectItem>
@@ -159,9 +159,9 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Yellow Gold">Yellow Gold</SelectItem>
-                      <SelectItem value="White Gold">White Gold</SelectItem>
-                      <SelectItem value="Rose Gold">Rose Gold</SelectItem>
+                      <SelectItem value="yellow-gold">Yellow Gold</SelectItem>
+                      <SelectItem value="white-gold">White Gold</SelectItem>
+                      <SelectItem value="rose-gold">Rose Gold</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -176,9 +176,9 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Solid Gold">Solid Gold</SelectItem>
-                      <SelectItem value="925 Silver">925 Silver</SelectItem>
-                      <SelectItem value="14K Gold">14K Gold</SelectItem>
+                      <SelectItem value="solid-gold">Solid Gold</SelectItem>
+                      <SelectItem value="925-silver">925 Silver</SelectItem>
+                      <SelectItem value="14k-gold">14K Gold</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
