@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ShoppingCart, Menu, X, Instagram, MessageCircle, Star, Truck, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -104,7 +103,7 @@ const Header = () => {
                   <Link 
                     key={item} 
                     to={
-                      item === 'BEST DEALS' ? '/' :
+                      item === 'BEST DEALS' ? '/best-deals' :
                       item === 'CHAINS' ? '/chains' : 
                       item === 'BRACELETS' ? '/bracelets' : 
                       item === 'WATCHES' ? '/watches' :
@@ -213,7 +212,7 @@ const Header = () => {
             <div className="p-4 space-y-6">
               <div className="space-y-4">
                 <div className="bg-gray-100 p-4 rounded-lg">
-                  <Link to="/" onClick={() => setIsMenuOpen(false)}>
+                  <Link to="/best-deals" onClick={() => setIsMenuOpen(false)}>
                     <h3 className="font-semibold text-sm mb-2">BEST DEALS</h3>
                     <p className="text-xs text-gray-600">Up to 70% off selected items</p>
                   </Link>
