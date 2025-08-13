@@ -48,9 +48,14 @@ const ShoppingCart = () => {
 
       if (error) throw error;
 
+      console.log('Checkout response:', data);
+
       if (data?.url) {
-        // Open Stripe checkout in new tab
-        window.open(data.url, '_blank');
+        console.log('Redirecting to:', data.url);
+        // Use window.location.href for better mobile compatibility
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received');
       }
     } catch (error) {
       console.error('Checkout error:', error);
