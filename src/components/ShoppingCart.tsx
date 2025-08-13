@@ -15,7 +15,12 @@ const ShoppingCart = () => {
     return `${productId}-${selectedSize || 'default'}-${selectedColor || 'default'}`;
   };
 
-  const handleCheckout = async () => {
+  const handleCheckout = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('Checkout button clicked - mobile/desktop');
+    
     if (state.items.length === 0) {
       toast({
         title: "Cart is empty",
@@ -67,8 +72,8 @@ const ShoppingCart = () => {
         onClick={() => dispatch({ type: 'CLOSE_CART' })}
       />
       
-      {/* Cart Panel */}
-      <div className="fixed right-0 top-0 h-full w-96 bg-white shadow-xl flex flex-col">
+      {/* Cart Panel - Responsive width */}
+      <div className="fixed right-0 top-0 h-full w-full max-w-sm sm:w-96 bg-white shadow-xl flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold">Shopping Cart ({getTotalItems()})</h2>
@@ -99,8 +104,8 @@ const ShoppingCart = () => {
                       alt={item.name}
                       className="w-16 h-16 object-cover rounded"
                     />
-                    <div className="flex-1">
-                      <h4 className="font-medium text-sm">{item.name}</h4>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-sm truncate">{item.name}</h4>
                       {item.selectedSize && (
                         <p className="text-xs text-gray-500">Size: {item.selectedSize}</p>
                       )}
@@ -132,7 +137,7 @@ const ShoppingCart = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => removeFromCart(cartItemId)}
-                      className="text-red-500 hover:text-red-700"
+                      className="text-red-500 hover:text-red-700 p-1"
                     >
                       <X className="w-4 h-4" />
                     </Button>
@@ -145,7 +150,7 @@ const ShoppingCart = () => {
 
         {/* Footer */}
         {state.items.length > 0 && (
-          <div className="border-t p-4 space-y-4">
+          <div className="border-t p-4 space-y-4 bg-white">
             <div className="flex justify-between items-center text-lg font-semibold">
               <span>Total:</span>
               <span>${(getTotalPrice() / 100).toFixed(2)}</span>
@@ -153,14 +158,16 @@ const ShoppingCart = () => {
             <div className="space-y-2">
               <Button 
                 onClick={handleCheckout}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 text-base font-medium touch-manipulation"
+                type="button"
               >
-                Checkout
+                Proceed to Checkout
               </Button>
               <Button 
                 variant="outline" 
                 onClick={clearCart}
-                className="w-full"
+                className="w-full py-3 text-base touch-manipulation"
+                type="button"
               >
                 Clear Cart
               </Button>
