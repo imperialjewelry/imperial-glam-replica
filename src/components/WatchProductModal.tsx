@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { X, Star, ShoppingCart } from 'lucide-react';
+import { X, Star, ShoppingCart, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -17,8 +17,6 @@ interface WatchProductModalProps {
 
 const WatchProductModal = ({ product, onClose }: WatchProductModalProps) => {
   const [selectedSize, setSelectedSize] = useState('');
-  const [selectedColor, setSelectedColor] = useState(product.color);
-  const [selectedMaterial, setSelectedMaterial] = useState(product.material);
   const { addToCart, dispatch } = useCart();
   const { toast } = useToast();
 
@@ -47,7 +45,7 @@ const WatchProductModal = ({ product, onClose }: WatchProductModalProps) => {
       price: product.price,
       image_url: product.image_url,
       selectedSize,
-      selectedColor,
+      selectedColor: product.color,
       stripe_price_id: product.stripe_price_id,
     });
 
@@ -59,6 +57,15 @@ const WatchProductModal = ({ product, onClose }: WatchProductModalProps) => {
     dispatch({ type: 'TOGGLE_CART' });
     onClose();
   };
+
+  const qualityFeatures = [
+    { text: "Doesn't fade", subtext: "or tarnish" },
+    { text: "Passes the", subtext: "diamond tester" },
+    { text: "Shines better", subtext: "than diamonds" },
+    { text: "GRA Certificate", subtext: "included" },
+    { text: "10x cheaper", subtext: "than real diamond jewelry" },
+    { text: "IceCartel", subtext: "Warranty" }
+  ];
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -126,8 +133,34 @@ const WatchProductModal = ({ product, onClose }: WatchProductModalProps) => {
                 )}
               </div>
 
-              {/* Product Options */}
+              {/* Quality Features */}
+              <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                <div className="grid grid-cols-3 gap-4">
+                  {qualityFeatures.map((feature, index) => (
+                    <div key={index} className="flex items-start space-x-2">
+                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div className="text-sm">
+                        <div className="font-medium text-gray-900">{feature.text}</div>
+                        <div className="text-gray-600">{feature.subtext}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Product Info Display */}
               <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg">
+                  <div>
+                    <span className="font-medium text-gray-700">Color:</span>
+                    <div className="text-gray-900 font-semibold">{product.color}</div>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-700">Material:</span>
+                    <div className="text-gray-900 font-semibold">{product.material}</div>
+                  </div>
+                </div>
+
                 {/* Size Selection */}
                 {product.sizes && product.sizes.length > 0 && (
                   <div>
@@ -148,40 +181,6 @@ const WatchProductModal = ({ product, onClose }: WatchProductModalProps) => {
                     </Select>
                   </div>
                 )}
-
-                {/* Color Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Color
-                  </label>
-                  <Select value={selectedColor} onValueChange={setSelectedColor}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Yellow Gold">Yellow Gold</SelectItem>
-                      <SelectItem value="White Gold">White Gold</SelectItem>
-                      <SelectItem value="Rose Gold">Rose Gold</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Material Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Material
-                  </label>
-                  <Select value={selectedMaterial} onValueChange={setSelectedMaterial}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Solid Gold">Solid Gold</SelectItem>
-                      <SelectItem value="925 Silver">925 Silver</SelectItem>
-                      <SelectItem value="14K Gold">14K Gold</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
 
               {/* Add to Cart Button */}
