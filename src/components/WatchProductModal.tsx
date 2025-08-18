@@ -64,7 +64,7 @@ const WatchProductModal = ({ product, onClose }: WatchProductModalProps) => {
     { text: "Shines better", subtext: "than diamonds" },
     { text: "GRA Certificate", subtext: "included" },
     { text: "10x cheaper", subtext: "than real diamond jewelry" },
-    { text: "IceCartel", subtext: "Warranty" }
+    { text: "Imperial", subtext: "Warranty" }
   ];
 
   return (
