@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { X, Star, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -29,9 +28,15 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
   const { addToCart, dispatch } = useCart();
   const { toast } = useToast();
 
-  // Parse lengths and prices from the JSONB field
+  // Parse lengths and prices from the JSONB field with proper type checking
   const lengthsAndPrices: LengthPrice[] = Array.isArray(product.lengths_and_prices) 
-    ? product.lengths_and_prices as LengthPrice[]
+    ? (product.lengths_and_prices as unknown as LengthPrice[]).filter(item => 
+        item && 
+        typeof item === 'object' && 
+        'length' in item && 
+        'price' in item && 
+        'stripe_price_id' in item
+      )
     : [];
 
   // Get the current price based on selected length
