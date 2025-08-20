@@ -10,6 +10,12 @@ import { Tables } from '@/integrations/supabase/types';
 
 type ChainProduct = Tables<'chain_products'>;
 
+interface LengthPrice {
+  length: string;
+  price: number;
+  stripe_price_id: string;
+}
+
 interface ChainProductModalProps {
   product: ChainProduct;
   onClose: () => void;
@@ -19,8 +25,35 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState(product.color || 'Yellow Gold');
   const [selectedMaterial, setSelectedMaterial] = useState(product.material || 'Solid Gold');
+  const [selectedLength, setSelectedLength] = useState('');
   const { addToCart, dispatch } = useCart();
   const { toast } = useToast();
+
+  // Parse lengths and prices from the JSONB field
+  const lengthsAndPrices: LengthPrice[] = Array.isArray(product.lengths_and_prices) 
+    ? product.lengths_and_prices as LengthPrice[]
+    : [];
+
+  // Get the current price based on selected length
+  const getCurrentPriceInfo = () => {
+    if (selectedLength && lengthsAndPrices.length > 0) {
+      const selectedOption = lengthsAndPrices.find(item => item.length === selectedLength);
+      if (selectedOption) {
+        return {
+          price: selectedOption.price,
+          stripe_price_id: selectedOption.stripe_price_id
+        };
+      }
+    }
+    
+    // Fallback to default product price
+    return {
+      price: product.price,
+      stripe_price_id: product.stripe_price_id
+    };
+  };
+
+  const currentPriceInfo = getCurrentPriceInfo();
 
   const handleAddToCart = () => {
     if (product.sizes && product.sizes.length > 0 && !selectedSize) {
@@ -32,7 +65,16 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
       return;
     }
 
-    if (!product.stripe_price_id) {
+    if (lengthsAndPrices.length > 0 && !selectedLength) {
+      toast({
+        title: "Length Required",
+        description: "Please select a length before adding to cart.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!currentPriceInfo.stripe_price_id) {
       toast({
         title: "Product Error",
         description: "This product is not available for purchase at the moment.",
@@ -44,16 +86,17 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
     addToCart({
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: currentPriceInfo.price,
       image_url: product.image_url,
       selectedSize,
       selectedColor,
-      stripe_price_id: product.stripe_price_id,
+      selectedLength,
+      stripe_price_id: currentPriceInfo.stripe_price_id,
     });
 
     toast({
       title: "Added to Cart",
-      description: `${product.name} has been added to your cart.`,
+      description: `${product.name}${selectedLength ? ` (${selectedLength})` : ''} has been added to your cart.`,
     });
 
     dispatch({ type: 'TOGGLE_CART' });
@@ -112,7 +155,7 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
 
                 <div className="flex items-center space-x-4 mb-6">
                   <span className="text-3xl font-bold text-blue-600">
-                    ${(product.price / 100).toFixed(2)}
+                    ${(currentPriceInfo.price / 100).toFixed(2)}
                   </span>
                   {product.original_price && (
                     <span className="text-xl text-gray-500 line-through">
@@ -128,6 +171,27 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
 
               {/* Product Options */}
               <div className="space-y-4">
+                {/* Length Selection */}
+                {lengthsAndPrices.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Length *
+                    </label>
+                    <Select value={selectedLength} onValueChange={setSelectedLength}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Length" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {lengthsAndPrices.map((item) => (
+                          <SelectItem key={item.length} value={item.length}>
+                            {item.length} - ${(item.price / 100).toFixed(2)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
                 {/* Size Selection */}
                 {product.sizes && product.sizes.length > 0 && (
                   <div>
@@ -188,10 +252,10 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
               <Button
                 onClick={handleAddToCart}
                 className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 text-lg"
-                disabled={!product.stripe_price_id}
+                disabled={!currentPriceInfo.stripe_price_id}
               >
                 <ShoppingCart className="w-5 h-5 mr-2" />
-                Add to Cart - ${(product.price / 100).toFixed(2)}
+                Add to Cart - ${(currentPriceInfo.price / 100).toFixed(2)}
               </Button>
 
               {/* Product Specifications */}

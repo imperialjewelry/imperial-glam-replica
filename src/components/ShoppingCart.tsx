@@ -1,184 +1,227 @@
 
-import React from 'react';
-import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
+import { useState } from 'react';
+import { X, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-const ShoppingCart = () => {
-  const { state, dispatch, removeFromCart, updateQuantity, getTotalPrice, getTotalItems, clearCart } = useCart();
+interface ShoppingCartProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
+  const { state, updateQuantity, removeFromCart, clearCart, getTotalPrice, getTotalItems } = useCart();
   const { toast } = useToast();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [customerEmail, setCustomerEmail] = useState('');
 
-  // Helper function to generate cart item ID
-  const generateCartItemId = (productId: string, selectedSize?: string, selectedColor?: string) => {
-    return `${productId}-${selectedSize || 'default'}-${selectedColor || 'default'}`;
+  const handleQuantityChange = (id: string, newQuantity: number) => {
+    if (newQuantity < 1) {
+      removeFromCart(id);
+    } else {
+      updateQuantity(id, newQuantity);
+    }
   };
 
-  const handleCheckout = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    console.log('Checkout button clicked - mobile/desktop');
-    
+  const handleCheckout = async () => {
     if (state.items.length === 0) {
       toast({
         title: "Cart is empty",
-        description: "Please add items to your cart before checkout.",
+        description: "Add some items to your cart before checking out.",
         variant: "destructive",
       });
       return;
     }
 
+    if (!customerEmail.trim()) {
+      toast({
+        title: "Email required",
+        description: "Please enter your email address to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsCheckingOut(true);
+
     try {
-      // Prepare line items for Stripe checkout using actual stripe_price_id
-      const lineItems = state.items.map(item => ({
+      const line_items = state.items.map(item => ({
         price: item.stripe_price_id,
-        quantity: item.quantity,
+        quantity: item.quantity || 1,
       }));
 
-      console.log('Sending checkout request with line items:', lineItems);
+      console.log('Creating checkout session with items:', line_items);
 
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: {
-          line_items: lineItems,
-          customerEmail: 'guest@imperialjewelryshop.com',
+          line_items,
+          customerEmail: customerEmail.trim(),
         },
       });
 
-      if (error) throw error;
-
-      console.log('Checkout response:', data);
+      if (error) {
+        console.error('Checkout error:', error);
+        throw error;
+      }
 
       if (data?.url) {
         console.log('Redirecting to:', data.url);
-        // Use window.location.href for better mobile compatibility
         window.location.href = data.url;
       } else {
         throw new Error('No checkout URL received');
       }
     } catch (error) {
-      console.error('Checkout error:', error);
+      console.error('Checkout failed:', error);
       toast({
-        title: "Checkout Error",
-        description: "There was an error processing your request. Please try again.",
+        title: "Checkout failed",
+        description: error instanceof Error ? error.message : "Please try again later.",
         variant: "destructive",
       });
+    } finally {
+      setIsCheckingOut(false);
     }
   };
 
-  if (!state.isOpen) return null;
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50">
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black bg-opacity-50"
-        onClick={() => dispatch({ type: 'CLOSE_CART' })}
-      />
+    <div className="fixed inset-0 z-50 overflow-hidden">
+      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose} />
       
-      {/* Cart Panel - Responsive width */}
-      <div className="fixed right-0 top-0 h-full w-full max-w-sm sm:w-96 bg-white shadow-xl flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold">Shopping Cart ({getTotalItems()})</h2>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => dispatch({ type: 'CLOSE_CART' })}
-          >
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
-
-        {/* Cart Items */}
-        <div className="flex-1 overflow-y-auto p-4">
-          {state.items.length === 0 ? (
-            <div className="text-center py-8">
-              <ShoppingBag className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-              <p className="text-gray-500">Your cart is empty</p>
+      <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl">
+        <div className="flex h-full flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b px-4 py-3">
+            <div className="flex items-center space-x-2">
+              <ShoppingBag className="h-5 w-5" />
+              <h2 className="text-lg font-semibold">Shopping Cart ({getTotalItems()})</h2>
             </div>
-          ) : (
-            <div className="space-y-4">
-              {state.items.map((item) => {
-                const cartItemId = generateCartItemId(item.id, item.selectedSize, item.selectedColor);
-                return (
-                  <div key={cartItemId} className="flex items-center space-x-3 p-3 border rounded-lg">
+            <button
+              onClick={onClose}
+              className="rounded-full p-1 hover:bg-gray-100"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Cart Items */}
+          <div className="flex-1 overflow-y-auto px-4 py-4">
+            {state.items.length === 0 ? (
+              <div className="flex h-full flex-col items-center justify-center text-center">
+                <ShoppingBag className="h-12 w-12 text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
+                <p className="text-gray-500">Add some items to get started!</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {state.items.map((item) => (
+                  <div key={`${item.id}-${item.selectedSize || ''}-${item.selectedColor || ''}-${item.selectedLength || ''}`} className="flex space-x-3 border-b pb-4">
                     <img
                       src={item.image_url}
                       alt={item.name}
-                      className="w-16 h-16 object-cover rounded"
+                      className="h-16 w-16 flex-shrink-0 rounded-md object-cover"
                     />
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm truncate">{item.name}</h4>
-                      {item.selectedSize && (
-                        <p className="text-xs text-gray-500">Size: {item.selectedSize}</p>
-                      )}
-                      {item.selectedColor && (
-                        <p className="text-xs text-gray-500">Color: {item.selectedColor}</p>
-                      )}
-                      <p className="text-sm font-semibold">${(item.price / 100).toFixed(2)}</p>
+                    <div className="flex-1 space-y-1">
+                      <h3 className="text-sm font-medium text-gray-900 line-clamp-2">
+                        {item.name}
+                      </h3>
+                      
+                      {/* Display selected options */}
+                      <div className="text-xs text-gray-500 space-y-0.5">
+                        {item.selectedLength && (
+                          <p>Length: {item.selectedLength}</p>
+                        )}
+                        {item.selectedSize && (
+                          <p>Size: {item.selectedSize}</p>
+                        )}
+                        {item.selectedColor && (
+                          <p>Color: {item.selectedColor}</p>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-blue-600">
+                          ${(item.price / 100).toFixed(2)}
+                        </span>
+                        
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => handleQuantityChange(item.id, (item.quantity || 1) - 1)}
+                            className="rounded-full p-1 hover:bg-gray-100"
+                          >
+                            <Minus className="h-3 w-3" />
+                          </button>
+                          <span className="text-sm font-medium w-8 text-center">
+                            {item.quantity || 1}
+                          </span>
+                          <button
+                            onClick={() => handleQuantityChange(item.id, (item.quantity || 1) + 1)}
+                            className="rounded-full p-1 hover:bg-gray-100"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </button>
+                          <button
+                            onClick={() => removeFromCart(item.id)}
+                            className="rounded-full p-1 hover:bg-gray-100 text-red-500"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => updateQuantity(cartItemId, item.quantity - 1)}
-                        className="w-8 h-8 p-0"
-                      >
-                        <Minus className="w-3 h-3" />
-                      </Button>
-                      <span className="w-8 text-center text-sm">{item.quantity}</span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => updateQuantity(cartItemId, item.quantity + 1)}
-                        className="w-8 h-8 p-0"
-                      >
-                        <Plus className="w-3 h-3" />
-                      </Button>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeFromCart(cartItemId)}
-                      className="text-red-500 hover:text-red-700 p-1"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
                   </div>
-                );
-              })}
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          {state.items.length > 0 && (
+            <div className="border-t px-4 py-4 space-y-4">
+              <div className="flex items-center justify-between text-lg font-semibold">
+                <span>Total:</span>
+                <span>${(getTotalPrice() / 100).toFixed(2)}</span>
+              </div>
+
+              {/* Customer Email Input */}
+              <div className="space-y-2">
+                <Label htmlFor="customer-email" className="text-sm font-medium">
+                  Email Address
+                </Label>
+                <Input
+                  id="customer-email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={customerEmail}
+                  onChange={(e) => setCustomerEmail(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Button
+                  onClick={handleCheckout}
+                  disabled={isCheckingOut}
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                >
+                  {isCheckingOut ? 'Processing...' : 'Checkout'}
+                </Button>
+                
+                <Button
+                  onClick={clearCart}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Clear Cart
+                </Button>
+              </div>
             </div>
           )}
         </div>
-
-        {/* Footer */}
-        {state.items.length > 0 && (
-          <div className="border-t p-4 space-y-4 bg-white">
-            <div className="flex justify-between items-center text-lg font-semibold">
-              <span>Total:</span>
-              <span>${(getTotalPrice() / 100).toFixed(2)}</span>
-            </div>
-            <div className="space-y-2">
-              <Button 
-                onClick={handleCheckout}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 text-base font-medium touch-manipulation"
-                type="button"
-              >
-                Proceed to Checkout
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={clearCart}
-                className="w-full py-3 text-base touch-manipulation"
-                type="button"
-              >
-                Clear Cart
-              </Button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
