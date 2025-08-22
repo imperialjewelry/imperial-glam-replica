@@ -31,6 +31,7 @@ interface EngagementRingProduct {
   material: string;
   gemstone: string | null;
   diamond_cut: string | null;
+  created_at?: string;
 }
 
 const EngagementRings = () => {
@@ -84,7 +85,10 @@ const EngagementRings = () => {
       case 'rating':
         return b.rating - a.rating;
       case 'newest':
-        return new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime();
+        if (a.created_at && b.created_at) {
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        }
+        return 0;
       default:
         return 0;
     }
@@ -270,7 +274,7 @@ const EngagementRings = () => {
                   <Checkbox
                     id="in-stock"
                     checked={inStockOnly}
-                    onCheckedChange={setInStockOnly}
+                    onCheckedChange={(checked) => setInStockOnly(!!checked)}
                   />
                   <label htmlFor="in-stock" className="text-sm">
                     In Stock Only
@@ -280,7 +284,7 @@ const EngagementRings = () => {
                   <Checkbox
                     id="ships-today"
                     checked={shipsToday}
-                    onCheckedChange={setShipsToday}
+                    onCheckedChange={(checked) => setShipsToday(!!checked)}
                   />
                   <label htmlFor="ships-today" className="text-sm">
                     Ships Today
