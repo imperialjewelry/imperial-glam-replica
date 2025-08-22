@@ -1,5 +1,6 @@
+
 import { useState } from 'react';
-import { X, Star, ShoppingCart } from 'lucide-react';
+import { X, Star, ShoppingCart, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -108,6 +109,15 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
     onClose();
   };
 
+  const qualityFeatures = [
+    { text: "Doesn't fade", subtext: "or tarnish" },
+    { text: "Passes the", subtext: "diamond tester" },
+    { text: "Shines better", subtext: "than diamonds" },
+    { text: "GRA Certificate", subtext: "included" },
+    { text: "10x cheaper", subtext: "than real diamond jewelry" },
+    { text: "Imperial", subtext: "Warranty" }
+  ];
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
@@ -172,6 +182,21 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
                 {product.description && (
                   <p className="text-gray-600 mb-6">{product.description}</p>
                 )}
+              </div>
+
+              {/* Quality Features */}
+              <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                <div className="grid grid-cols-3 gap-4">
+                  {qualityFeatures.map((feature, index) => (
+                    <div key={index} className="flex items-start space-x-2">
+                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div className="text-sm">
+                        <div className="font-medium text-gray-900">{feature.text}</div>
+                        <div className="text-gray-600">{feature.subtext}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Product Options */}
