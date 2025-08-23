@@ -76,7 +76,7 @@ const ChainsSection = () => {
           <div 
             className="absolute inset-0 bg-cover bg-center opacity-30"
             style={{
-              backgroundImage: `url('/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png')`
+              backgroundImage: `url('https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Baguette_Cuban_22__tester.webp')`
             }}
           />
           <div className="relative z-10 text-center text-white p-4 md:p-8">
