@@ -12,7 +12,7 @@ const CategorySection = () => {
     },
     {
       name: "CUSTOM",
-      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=400&q=80"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/6ACB04DC-1C32-49D1-996D-DFF4B862DA7D.webp"
     },
     {
       name: "EARRINGS",

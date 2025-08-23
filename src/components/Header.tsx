@@ -312,9 +312,15 @@ const Header = () => {
                   </Link>
                 </div>
 
-                {/* CUSTOM */}
+                {/* CUSTOM - Updated with new image */}
                 <div className="flex items-center space-x-3 py-2">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                  <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
+                    <img 
+                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/6ACB04DC-1C32-49D1-996D-DFF4B862DA7D.webp"
+                      alt="Custom"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   <Link 
                     to="/custom"
                     className="text-sm font-medium text-gray-700 hover:text-black"
