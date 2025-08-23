@@ -7,11 +7,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 
-// Mock data for engagement rings
+// Interface for engagement ring products
 interface EngagementRingProduct {
   id: string;
   name: string;
@@ -55,8 +57,25 @@ const EngagementRings = () => {
   const [inStockOnly, setInStockOnly] = useState(false);
   const [shipsToday, setShipsToday] = useState(false);
 
-  // Mock products data
-  const allProducts: EngagementRingProduct[] = [];
+  // Fetch engagement ring products from Supabase
+  const { data: allProducts = [], isLoading, error } = useQuery({
+    queryKey: ['engagement-ring-products'],
+    queryFn: async () => {
+      console.log('Fetching engagement ring products...');
+      const { data, error } = await supabase
+        .from('engagement_ring_products')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching engagement ring products:', error);
+        throw error;
+      }
+      
+      console.log('Fetched engagement ring products:', data);
+      return data as EngagementRingProduct[];
+    }
+  });
 
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
@@ -123,33 +142,30 @@ const EngagementRings = () => {
     return filtered;
   })();
 
-  // Filter options
-  const colors = [
-    { name: "Yellow Gold", count: 0 },
-    { name: "White Gold", count: 0 },
-    { name: "Rose Gold", count: 0 },
-    { name: "Silver", count: 0 }
-  ];
+  // Generate dynamic filter options based on actual products
+  const colors = Array.from(new Set(allProducts.map(p => p.color)))
+    .map(color => ({
+      name: color,
+      count: allProducts.filter(p => p.color === color).length
+    }));
 
-  const materials = [
-    { name: "925 Silver", count: 0 },
-    { name: "14K Gold", count: 0 },
-    { name: "18K Gold", count: 0 },
-    { name: "Platinum", count: 0 }
-  ];
+  const materials = Array.from(new Set(allProducts.map(p => p.material)))
+    .map(material => ({
+      name: material,
+      count: allProducts.filter(p => p.material === material).length
+    }));
 
-  const gemstones = [
-    { name: "Moissanite", count: 0 },
-    { name: "VVS Diamond Simulants (CZ)", count: 0 },
-    { name: "VVS Moissanite", count: 0 }
-  ];
+  const gemstones = Array.from(new Set(allProducts.map(p => p.gemstone).filter(Boolean)))
+    .map(gemstone => ({
+      name: gemstone!,
+      count: allProducts.filter(p => p.gemstone === gemstone).length
+    }));
 
-  const diamondCuts = [
-    { name: "Round Cut", count: 0 },
-    { name: "Princess Cut", count: 0 },
-    { name: "Emerald Cut", count: 0 },
-    { name: "Oval Cut", count: 0 }
-  ];
+  const diamondCuts = Array.from(new Set(allProducts.map(p => p.diamond_cut).filter(Boolean)))
+    .map(cut => ({
+      name: cut!,
+      count: allProducts.filter(p => p.diamond_cut === cut).length
+    }));
 
   const handleColorChange = (color: string, checked: boolean) => {
     if (checked) {
@@ -215,92 +231,100 @@ const EngagementRings = () => {
       </div>
 
       {/* Color */}
-      <div className="mb-8">
-        <h3 className="font-medium text-gray-900 mb-4 uppercase">COLOR</h3>
-        <div className="space-y-3">
-          {colors.map((color) => (
-            <div key={color.name} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id={`desktop-${color.name}`}
-                  checked={selectedColors.includes(color.name)}
-                  onCheckedChange={(checked) => handleColorChange(color.name, checked as boolean)}
-                />
-                <label htmlFor={`desktop-${color.name}`} className="text-sm text-gray-700">
-                  {color.name}
-                </label>
+      {colors.length > 0 && (
+        <div className="mb-8">
+          <h3 className="font-medium text-gray-900 mb-4 uppercase">COLOR</h3>
+          <div className="space-y-3">
+            {colors.map((color) => (
+              <div key={color.name} className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`desktop-${color.name}`}
+                    checked={selectedColors.includes(color.name)}
+                    onCheckedChange={(checked) => handleColorChange(color.name, checked as boolean)}
+                  />
+                  <label htmlFor={`desktop-${color.name}`} className="text-sm text-gray-700">
+                    {color.name}
+                  </label>
+                </div>
+                <span className="text-sm text-gray-500">({color.count})</span>
               </div>
-              <span className="text-sm text-gray-500">({color.count})</span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Material */}
-      <div className="mb-8">
-        <h3 className="font-medium text-gray-900 mb-4 uppercase">MATERIAL</h3>
-        <div className="space-y-3">
-          {materials.map((material) => (
-            <div key={material.name} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id={`desktop-${material.name}`}
-                  checked={selectedMaterials.includes(material.name)}
-                  onCheckedChange={(checked) => handleMaterialChange(material.name, checked as boolean)}
-                />
-                <label htmlFor={`desktop-${material.name}`} className="text-sm text-gray-700">
-                  {material.name}
-                </label>
+      {materials.length > 0 && (
+        <div className="mb-8">
+          <h3 className="font-medium text-gray-900 mb-4 uppercase">MATERIAL</h3>
+          <div className="space-y-3">
+            {materials.map((material) => (
+              <div key={material.name} className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`desktop-${material.name}`}
+                    checked={selectedMaterials.includes(material.name)}
+                    onCheckedChange={(checked) => handleMaterialChange(material.name, checked as boolean)}
+                  />
+                  <label htmlFor={`desktop-${material.name}`} className="text-sm text-gray-700">
+                    {material.name}
+                  </label>
+                </div>
+                <span className="text-sm text-gray-500">({material.count})</span>
               </div>
-              <span className="text-sm text-gray-500">({material.count})</span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Gemstone */}
-      <div className="mb-8">
-        <h3 className="font-medium text-gray-900 mb-4 uppercase">GEMSTONE</h3>
-        <div className="space-y-3">
-          {gemstones.map((gemstone) => (
-            <div key={gemstone.name} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id={`desktop-${gemstone.name}`}
-                  checked={selectedGemstones.includes(gemstone.name)}
-                  onCheckedChange={(checked) => handleGemstoneChange(gemstone.name, checked as boolean)}
-                />
-                <label htmlFor={`desktop-${gemstone.name}`} className="text-sm text-gray-700">
-                  {gemstone.name}
-                </label>
+      {gemstones.length > 0 && (
+        <div className="mb-8">
+          <h3 className="font-medium text-gray-900 mb-4 uppercase">GEMSTONE</h3>
+          <div className="space-y-3">
+            {gemstones.map((gemstone) => (
+              <div key={gemstone.name} className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`desktop-${gemstone.name}`}
+                    checked={selectedGemstones.includes(gemstone.name)}
+                    onCheckedChange={(checked) => handleGemstoneChange(gemstone.name, checked as boolean)}
+                  />
+                  <label htmlFor={`desktop-${gemstone.name}`} className="text-sm text-gray-700">
+                    {gemstone.name}
+                  </label>
+                </div>
+                <span className="text-sm text-gray-500">({gemstone.count})</span>
               </div>
-              <span className="text-sm text-gray-500">({gemstone.count})</span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Diamond Cut */}
-      <div className="mb-8">
-        <h3 className="font-medium text-gray-900 mb-4 uppercase">DIAMOND CUT</h3>
-        <div className="space-y-3">
-          {diamondCuts.map((cut) => (
-            <div key={cut.name} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id={`desktop-${cut.name}`}
-                  checked={selectedDiamondCuts.includes(cut.name)}
-                  onCheckedChange={(checked) => handleDiamondCutChange(cut.name, checked as boolean)}
-                />
-                <label htmlFor={`desktop-${cut.name}`} className="text-sm text-gray-700">
-                  {cut.name}
-                </label>
+      {diamondCuts.length > 0 && (
+        <div className="mb-8">
+          <h3 className="font-medium text-gray-900 mb-4 uppercase">DIAMOND CUT</h3>
+          <div className="space-y-3">
+            {diamondCuts.map((cut) => (
+              <div key={cut.name} className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`desktop-${cut.name}`}
+                    checked={selectedDiamondCuts.includes(cut.name)}
+                    onCheckedChange={(checked) => handleDiamondCutChange(cut.name, checked as boolean)}
+                  />
+                  <label htmlFor={`desktop-${cut.name}`} className="text-sm text-gray-700">
+                    {cut.name}
+                  </label>
+                </div>
+                <span className="text-sm text-gray-500">({cut.count})</span>
               </div>
-              <span className="text-sm text-gray-500">({cut.count})</span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Availability */}
       <div className="mb-8">
@@ -384,112 +408,120 @@ const EngagementRings = () => {
       </Collapsible>
 
       {/* Color Filter */}
-      <Collapsible open={openSections.color} onOpenChange={() => toggleSection('color')}>
-        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
-          <span className="font-medium">COLOR</span>
-          <ChevronDown className={`w-4 h-4 transition-transform ${openSections.color ? 'rotate-180' : ''}`} />
-        </CollapsibleTrigger>
-        <CollapsibleContent className="p-4 border-b">
-          <div className="space-y-3">
-            {colors.map((color) => (
-              <div key={color.name} className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id={color.name}
-                    checked={selectedColors.includes(color.name)}
-                    onCheckedChange={(checked) => handleColorChange(color.name, checked as boolean)}
-                  />
-                  <label htmlFor={color.name} className="text-sm text-gray-700">
-                    {color.name}
-                  </label>
+      {colors.length > 0 && (
+        <Collapsible open={openSections.color} onOpenChange={() => toggleSection('color')}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+            <span className="font-medium">COLOR</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.color ? 'rotate-180' : ''}`} />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="p-4 border-b">
+            <div className="space-y-3">
+              {colors.map((color) => (
+                <div key={color.name} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={color.name}
+                      checked={selectedColors.includes(color.name)}
+                      onCheckedChange={(checked) => handleColorChange(color.name, checked as boolean)}
+                    />
+                    <label htmlFor={color.name} className="text-sm text-gray-700">
+                      {color.name}
+                    </label>
+                  </div>
+                  <span className="text-sm text-gray-500">({color.count})</span>
                 </div>
-                <span className="text-sm text-gray-500">({color.count})</span>
-              </div>
-            ))}
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
+              ))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
 
       {/* Material Filter */}
-      <Collapsible open={openSections.material} onOpenChange={() => toggleSection('material')}>
-        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
-          <span className="font-medium">MATERIAL</span>
-          <ChevronDown className={`w-4 h-4 transition-transform ${openSections.material ? 'rotate-180' : ''}`} />
-        </CollapsibleTrigger>
-        <CollapsibleContent className="p-4 border-b">
-          <div className="space-y-3">
-            {materials.map((material) => (
-              <div key={material.name} className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id={material.name}
-                    checked={selectedMaterials.includes(material.name)}
-                    onCheckedChange={(checked) => handleMaterialChange(material.name, checked as boolean)}
-                  />
-                  <label htmlFor={material.name} className="text-sm text-gray-700">
-                    {material.name}
-                  </label>
+      {materials.length > 0 && (
+        <Collapsible open={openSections.material} onOpenChange={() => toggleSection('material')}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+            <span className="font-medium">MATERIAL</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.material ? 'rotate-180' : ''}`} />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="p-4 border-b">
+            <div className="space-y-3">
+              {materials.map((material) => (
+                <div key={material.name} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={material.name}
+                      checked={selectedMaterials.includes(material.name)}
+                      onCheckedChange={(checked) => handleMaterialChange(material.name, checked as boolean)}
+                    />
+                    <label htmlFor={material.name} className="text-sm text-gray-700">
+                      {material.name}
+                    </label>
+                  </div>
+                  <span className="text-sm text-gray-500">({material.count})</span>
                 </div>
-                <span className="text-sm text-gray-500">({material.count})</span>
-              </div>
-            ))}
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
+              ))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
 
       {/* Gemstone Filter */}
-      <Collapsible open={openSections.gemstone} onOpenChange={() => toggleSection('gemstone')}>
-        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
-          <span className="font-medium">GEMSTONE</span>
-          <ChevronDown className={`w-4 h-4 transition-transform ${openSections.gemstone ? 'rotate-180' : ''}`} />
-        </CollapsibleTrigger>
-        <CollapsibleContent className="p-4 border-b">
-          <div className="space-y-3">
-            {gemstones.map((gemstone) => (
-              <div key={gemstone.name} className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id={gemstone.name}
-                    checked={selectedGemstones.includes(gemstone.name)}
-                    onCheckedChange={(checked) => handleGemstoneChange(gemstone.name, checked as boolean)}
-                  />
-                  <label htmlFor={gemstone.name} className="text-sm text-gray-700">
-                    {gemstone.name}
-                  </label>
+      {gemstones.length > 0 && (
+        <Collapsible open={openSections.gemstone} onOpenChange={() => toggleSection('gemstone')}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+            <span className="font-medium">GEMSTONE</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.gemstone ? 'rotate-180' : ''}`} />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="p-4 border-b">
+            <div className="space-y-3">
+              {gemstones.map((gemstone) => (
+                <div key={gemstone.name} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={gemstone.name}
+                      checked={selectedGemstones.includes(gemstone.name)}
+                      onCheckedChange={(checked) => handleGemstoneChange(gemstone.name, checked as boolean)}
+                    />
+                    <label htmlFor={gemstone.name} className="text-sm text-gray-700">
+                      {gemstone.name}
+                    </label>
+                  </div>
+                  <span className="text-sm text-gray-500">({gemstone.count})</span>
                 </div>
-                <span className="text-sm text-gray-500">({gemstone.count})</span>
-              </div>
-            ))}
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
+              ))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
 
       {/* Diamond Cut Filter */}
-      <Collapsible open={openSections.diamondCut} onOpenChange={() => toggleSection('diamondCut')}>
-        <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
-          <span className="font-medium">DIAMOND CUT</span>
-          <ChevronDown className={`w-4 h-4 transition-transform ${openSections.diamondCut ? 'rotate-180' : ''}`} />
-        </CollapsibleTrigger>
-        <CollapsibleContent className="p-4 border-b">
-          <div className="space-y-3">
-            {diamondCuts.map((cut) => (
-              <div key={cut.name} className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id={cut.name}
-                    checked={selectedDiamondCuts.includes(cut.name)}
-                    onCheckedChange={(checked) => handleDiamondCutChange(cut.name, checked as boolean)}
-                  />
-                  <label htmlFor={cut.name} className="text-sm text-gray-700">
-                    {cut.name}
-                  </label>
+      {diamondCuts.length > 0 && (
+        <Collapsible open={openSections.diamondCut} onOpenChange={() => toggleSection('diamondCut')}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+            <span className="font-medium">DIAMOND CUT</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.diamondCut ? 'rotate-180' : ''}`} />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="p-4 border-b">
+            <div className="space-y-3">
+              {diamondCuts.map((cut) => (
+                <div key={cut.name} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id={cut.name}
+                      checked={selectedDiamondCuts.includes(cut.name)}
+                      onCheckedChange={(checked) => handleDiamondCutChange(cut.name, checked as boolean)}
+                    />
+                    <label htmlFor={cut.name} className="text-sm text-gray-700">
+                      {cut.name}
+                    </label>
+                  </div>
+                  <span className="text-sm text-gray-500">({cut.count})</span>
                 </div>
-                <span className="text-sm text-gray-500">({cut.count})</span>
-              </div>
-            ))}
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
+              ))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
 
       {/* Availability Filter */}
       <Collapsible open={openSections.availability} onOpenChange={() => toggleSection('availability')}>
@@ -525,6 +557,10 @@ const EngagementRings = () => {
     </div>
   );
 
+  if (error) {
+    console.error('Error loading engagement ring products:', error);
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <PromoBar />
@@ -551,7 +587,9 @@ const EngagementRings = () => {
         <div className={`flex-1 ${isMobile ? 'py-4 px-4' : 'py-8 px-8'}`}>
           {/* Product count and controls */}
           <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-semibold">{filteredAndSortedProducts.length} Products</span>
+            <span className="text-lg font-semibold">
+              {isLoading ? 'Loading...' : `${filteredAndSortedProducts.length} Products`}
+            </span>
             <div className="flex items-center space-x-4">
               {!isMobile && (
                 <Select value={sortBy} onValueChange={setSortBy}>
@@ -586,17 +624,87 @@ const EngagementRings = () => {
 
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
-            {filteredAndSortedProducts.length === 0 ? (
+            {isLoading ? (
               <div className="col-span-full text-center py-12">
-                <p className="text-gray-500 text-lg">No products available yet.</p>
+                <p className="text-gray-500 text-lg">Loading products...</p>
+              </div>
+            ) : error ? (
+              <div className="col-span-full text-center py-12">
+                <p className="text-red-500 text-lg">Error loading products. Please try again.</p>
+              </div>
+            ) : filteredAndSortedProducts.length === 0 ? (
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-500 text-lg">No products found matching your filters.</p>
               </div>
             ) : (
               filteredAndSortedProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
+                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer overflow-hidden"
                 >
-                  {/* Product content would go here */}
+                  <div className="relative aspect-square">
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                    {product.discount_percentage && product.discount_percentage > 0 && (
+                      <Badge className="absolute top-2 left-2 bg-red-500 text-white">
+                        -{product.discount_percentage}%
+                      </Badge>
+                    )}
+                    {product.ships_today && (
+                      <Badge className="absolute top-2 right-2 bg-green-500 text-white">
+                        Ships Today
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                      {product.name}
+                    </h3>
+                    <div className="flex items-center mb-2">
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-4 h-4 ${
+                              i < Math.floor(product.rating)
+                                ? 'text-yellow-400 fill-current'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-sm text-gray-600 ml-2">
+                        ({product.review_count})
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <span className="font-bold text-lg">
+                          ${(product.price / 100).toFixed(2)}
+                        </span>
+                        {product.original_price && product.original_price > product.price && (
+                          <span className="text-sm text-gray-500 line-through">
+                            ${(product.original_price / 100).toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {product.in_stock ? (
+                          <span className="text-green-600">In Stock</span>
+                        ) : (
+                          <span className="text-red-600">Out of Stock</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="mt-2 text-xs text-gray-500">
+                      {product.material} • {product.color}
+                      {product.gemstone && ` • ${product.gemstone}`}
+                      {product.diamond_cut && ` • ${product.diamond_cut}`}
+                    </div>
+                  </div>
                 </div>
               ))
             )}
