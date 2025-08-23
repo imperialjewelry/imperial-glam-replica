@@ -354,10 +354,16 @@ const Header = () => {
                   </Link>
                 </div>
 
-                {/* RINGS */}
+                {/* RINGS - Updated with new image */}
                 <div className="space-y-2">
                   <div className="flex items-center space-x-3 py-2">
-                    <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                    <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
+                      <img 
+                        src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Fat_Fuq.webp"
+                        alt="Rings"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                     <span className="text-sm font-medium text-gray-700">RINGS</span>
                   </div>
                   <div className="ml-15 space-y-2">
