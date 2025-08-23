@@ -36,7 +36,7 @@ const CategorySection = () => {
     },
     {
       name: "GLASSES",
-      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=400&q=80"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/glasses.webp"
     }
   ];
 
