@@ -8,7 +8,7 @@ const CategorySection = () => {
     },
     {
       name: "BRACELETS", 
-      image: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=400&q=80"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/bracelet.webp"
     },
     {
       name: "CUSTOM",
