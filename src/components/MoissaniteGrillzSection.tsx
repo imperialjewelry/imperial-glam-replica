@@ -7,17 +7,21 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 const MoissaniteGrillzSection = () => {
-  const { data: grillzProducts = [], isLoading } = useQuery({
+  const { data: grillzProducts = [], isLoading, error } = useQuery({
     queryKey: ['grillz-products-homepage'],
     queryFn: async () => {
+      console.log('Fetching grillz products...');
       const { data, error } = await supabase
         .from('grillz_products')
         .select('*')
-        .eq('featured', true)
         .limit(5);
       
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error('Error fetching grillz products:', error);
+        throw error;
+      }
+      console.log('Grillz products fetched:', data);
+      return data || [];
     }
   });
 
@@ -26,6 +30,17 @@ const MoissaniteGrillzSection = () => {
       <section className="py-16 bg-white">
         <div className="flex items-center justify-center">
           <div className="text-lg">Loading grillz...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    console.error('Grillz products error:', error);
+    return (
+      <section className="py-16 bg-white">
+        <div className="flex items-center justify-center">
+          <div className="text-lg text-red-500">Error loading grillz</div>
         </div>
       </section>
     );
@@ -53,59 +68,69 @@ const MoissaniteGrillzSection = () => {
         <div className="flex-1 overflow-hidden">
           <div className="overflow-x-auto">
             <div className="flex space-x-4 px-4 pb-4">
-              {grillzProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="flex-shrink-0 w-64 group relative bg-white overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg"
-                >
-                  {/* Product image */}
-                  <div className="relative aspect-square overflow-hidden bg-gray-100">
-                    <img
-                      src={product.image_url}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    
-                    {/* Discount badge - positioned on left side */}
-                    {product.discount_percentage > 0 && (
-                      <div className="absolute top-3 left-3">
-                        <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
-                          {product.discount_percentage}% OFF
-                        </Badge>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Product info */}
-                  <div className="p-4">
-                    <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
-                      {product.material} / UNISEX
-                    </div>
-                    
-                    <h3 className="font-medium text-gray-900 mb-2 text-sm leading-tight line-clamp-2">
-                      {product.name}
-                    </h3>
-                    
-                    <div className="flex items-center space-x-1 mb-2">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`w-3 h-3 ${i < product.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                        ))}
-                      </div>
-                      <span className="text-xs text-gray-500">({product.review_count})</span>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
-                      {product.original_price && (
-                        <span className="text-sm text-gray-400 line-through">
-                          ${(product.original_price / 100).toFixed(2)}
-                        </span>
+              {grillzProducts.length > 0 ? (
+                grillzProducts.map((product) => (
+                  <div
+                    key={product.id}
+                    className="flex-shrink-0 w-64 group relative bg-white overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg"
+                  >
+                    {/* Product image */}
+                    <div className="relative aspect-square overflow-hidden bg-gray-100">
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          console.log('Image failed to load:', product.image_url);
+                          e.currentTarget.src = '/placeholder.svg';
+                        }}
+                      />
+                      
+                      {/* Discount badge - positioned on left side */}
+                      {product.discount_percentage > 0 && (
+                        <div className="absolute top-3 left-3">
+                          <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                            {product.discount_percentage}% OFF
+                          </Badge>
+                        </div>
                       )}
                     </div>
+
+                    {/* Product info */}
+                    <div className="p-4">
+                      <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
+                        {product.material} / UNISEX
+                      </div>
+                      
+                      <h3 className="font-medium text-gray-900 mb-2 text-sm leading-tight line-clamp-2">
+                        {product.name}
+                      </h3>
+                      
+                      <div className="flex items-center space-x-1 mb-2">
+                        <div className="flex">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className={`w-3 h-3 ${i < product.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                          ))}
+                        </div>
+                        <span className="text-xs text-gray-500">({product.review_count})</span>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
+                        {product.original_price && (
+                          <span className="text-sm text-gray-400 line-through">
+                            ${(product.original_price / 100).toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="flex items-center justify-center w-full py-8">
+                  <div className="text-gray-500">No grillz available</div>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
