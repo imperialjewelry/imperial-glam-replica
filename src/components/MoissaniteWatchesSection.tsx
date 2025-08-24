@@ -3,65 +3,33 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const MoissaniteWatchesSection = () => {
-  const watchProducts = [
-    {
-      id: 1,
-      image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "VVS Moissanite Presidential Watch | 14K Gold",
-      material: "14K GOLD / UNISEX",
-      currentPrice: "$2,499",
-      originalPrice: "$2,999",
-      rating: 5,
-      reviews: 87,
-      discount: "17% OFF"
-    },
-    {
-      id: 2,
-      image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "Moissanite Day-Date Watch | Rose Gold",
-      material: "14K ROSE GOLD / UNISEX",
-      currentPrice: "$2,199",
-      originalPrice: "$2,699",
-      rating: 4,
-      reviews: 56,
-      discount: "19% OFF"
-    },
-    {
-      id: 3,
-      image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "VVS Moissanite Oyster Watch | White Gold",
-      material: "14K WHITE GOLD / UNISEX",
-      currentPrice: "$2,799",
-      originalPrice: "$3,399",
-      rating: 5,
-      reviews: 102,
-      discount: "18% OFF"
-    },
-    {
-      id: 4,
-      image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "Moissanite GMT Watch | Yellow Gold",
-      material: "14K YELLOW GOLD / UNISEX",
-      currentPrice: "$3,199",
-      originalPrice: "$3,899",
-      rating: 5,
-      reviews: 73,
-      discount: "18% OFF"
-    },
-    {
-      id: 5,
-      image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "VVS Moissanite Skeleton Watch | Platinum",
-      material: "PLATINUM / UNISEX",
-      currentPrice: "$4,299",
-      originalPrice: "$5,199",
-      rating: 5,
-      reviews: 41,
-      discount: "17% OFF"
+  const { data: watchProducts = [], isLoading } = useQuery({
+    queryKey: ['watch-products-homepage'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('watch_products')
+        .select('*')
+        .eq('featured', true)
+        .limit(5);
+      
+      if (error) throw error;
+      return data;
     }
-  ];
+  });
+
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="flex items-center justify-center">
+          <div className="text-lg">Loading watches...</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-16 bg-white">
@@ -93,27 +61,29 @@ const MoissaniteWatchesSection = () => {
                   {/* Product image */}
                   <div className="relative aspect-square overflow-hidden bg-gray-100">
                     <img
-                      src={product.image}
-                      alt={product.title}
+                      src={product.image_url}
+                      alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     
                     {/* Discount badge - positioned on left side */}
-                    <div className="absolute top-3 left-3">
-                      <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
-                        {product.discount}
-                      </Badge>
-                    </div>
+                    {product.discount_percentage > 0 && (
+                      <div className="absolute top-3 left-3">
+                        <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                          {product.discount_percentage}% OFF
+                        </Badge>
+                      </div>
+                    )}
                   </div>
 
                   {/* Product info */}
                   <div className="p-4">
                     <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
-                      {product.material}
+                      {product.material} / UNISEX
                     </div>
                     
                     <h3 className="font-medium text-gray-900 mb-2 text-sm leading-tight line-clamp-2">
-                      {product.title}
+                      {product.name}
                     </h3>
                     
                     <div className="flex items-center space-x-1 mb-2">
@@ -122,14 +92,16 @@ const MoissaniteWatchesSection = () => {
                           <Star key={i} className={`w-3 h-3 ${i < product.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
                         ))}
                       </div>
-                      <span className="text-xs text-gray-500">({product.reviews})</span>
+                      <span className="text-xs text-gray-500">({product.review_count})</span>
                     </div>
                     
                     <div className="flex items-center space-x-2">
-                      <span className="text-lg font-bold text-blue-600">{product.currentPrice}</span>
-                      <span className="text-sm text-gray-400 line-through">
-                        {product.originalPrice}
-                      </span>
+                      <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
+                      {product.original_price && (
+                        <span className="text-sm text-gray-400 line-through">
+                          ${(product.original_price / 100).toFixed(2)}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -1,72 +1,35 @@
-import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const ChainsSection = () => {
-  const chainProducts = [
-    {
-      id: 1,
-      image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "VVS Moissanite Cuban Link Chain | 14K Gold",
-      material: "14K GOLD / UNISEX",
-      currentPrice: "$1,899",
-      originalPrice: "$2,299",
-      rating: 5,
-      reviews: 156,
-      discount: "17% OFF",
-      sizes: ["20MM", "18MM", "16MM"]
-    },
-    {
-      id: 2,
-      image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "Moissanite Tennis Chain | White Gold",
-      material: "14K WHITE GOLD / UNISEX",
-      currentPrice: "$1,299",
-      originalPrice: "$1,599",
-      rating: 4,
-      reviews: 89,
-      discount: "19% OFF",
-      sizes: ["7.5MM", "5MM", "3MM"]
-    },
-    {
-      id: 3,
-      image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "VVS Moissanite Rope Chain | Yellow Gold",
-      material: "14K YELLOW GOLD / UNISEX",
-      currentPrice: "$999",
-      originalPrice: "$1,199",
-      rating: 5,
-      reviews: 203,
-      discount: "17% OFF",
-      sizes: ["8MM", "6MM", "4MM"]
-    },
-    {
-      id: 4,
-      image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "Moissanite Franco Chain | Rose Gold",
-      material: "14K ROSE GOLD / UNISEX",
-      currentPrice: "$1,599",
-      originalPrice: "$1,899",
-      rating: 4,
-      reviews: 74,
-      discount: "16% OFF",
-      sizes: ["10MM", "8MM", "6MM"]
-    },
-    {
-      id: 5,
-      image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "VVS Moissanite Figaro Chain | White Gold",
-      material: "14K WHITE GOLD / UNISEX",
-      currentPrice: "$1,799",
-      originalPrice: "$2,199",
-      rating: 5,
-      reviews: 127,
-      discount: "18% OFF",
-      sizes: ["12MM", "10MM", "8MM"]
+  const { data: chainProducts = [], isLoading } = useQuery({
+    queryKey: ['chain-products-homepage'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('chain_products')
+        .select('*')
+        .eq('featured', true)
+        .limit(5);
+      
+      if (error) throw error;
+      return data;
     }
-  ];
+  });
+
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="flex items-center justify-center">
+          <div className="text-lg">Loading chains...</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-16 bg-white">
@@ -98,20 +61,22 @@ const ChainsSection = () => {
                   {/* Product image */}
                   <div className="relative aspect-square overflow-hidden bg-gray-100">
                     <img
-                      src={product.image}
-                      alt={product.title}
+                      src={product.image_url}
+                      alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     
                     {/* Discount badge - positioned on left side */}
-                    <div className="absolute top-3 left-3">
-                      <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
-                        {product.discount}
-                      </Badge>
-                    </div>
+                    {product.discount_percentage > 0 && (
+                      <div className="absolute top-3 left-3">
+                        <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                          {product.discount_percentage}% OFF
+                        </Badge>
+                      </div>
+                    )}
 
                     {/* Size options */}
-                    {product.sizes && (
+                    {product.sizes && product.sizes.length > 0 && (
                       <div className="absolute bottom-3 left-3 flex flex-wrap gap-1">
                         {product.sizes.slice(0, 2).map((size, index) => (
                           <Badge key={index} className="bg-gray-800 text-white text-xs px-1 py-0.5">
@@ -125,11 +90,11 @@ const ChainsSection = () => {
                   {/* Product info */}
                   <div className="p-4">
                     <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
-                      {product.material}
+                      {product.material} / UNISEX
                     </div>
                     
                     <h3 className="font-medium text-gray-900 mb-2 text-sm leading-tight line-clamp-2">
-                      {product.title}
+                      {product.name}
                     </h3>
                     
                     <div className="flex items-center space-x-1 mb-2">
@@ -138,14 +103,16 @@ const ChainsSection = () => {
                           <Star key={i} className={`w-3 h-3 ${i < product.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
                         ))}
                       </div>
-                      <span className="text-xs text-gray-500">({product.reviews})</span>
+                      <span className="text-xs text-gray-500">({product.review_count})</span>
                     </div>
                     
                     <div className="flex items-center space-x-2">
-                      <span className="text-lg font-bold text-blue-600">{product.currentPrice}</span>
-                      <span className="text-sm text-gray-400 line-through">
-                        {product.originalPrice}
-                      </span>
+                      <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
+                      {product.original_price && (
+                        <span className="text-sm text-gray-400 line-through">
+                          ${(product.original_price / 100).toFixed(2)}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -1,66 +1,35 @@
+
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const MoissaniteGrillzSection = () => {
-  const grillzProducts = [
-    {
-      id: 1,
-      image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "8 on 8 VVS Moissanite Diamond Grillz",
-      material: "925 SILVER / UNISEX",
-      currentPrice: "$1,159",
-      originalPrice: "$1,288",
-      rating: 4,
-      reviews: 24,
-      discount: "9% OFF"
-    },
-    {
-      id: 2,
-      image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "8 on 8 VVS Baguette Moissanite Diamond Grillz",
-      material: "925 SILVER / UNISEX",
-      currentPrice: "$1,829",
-      originalPrice: "$2,032",
-      rating: 4,
-      reviews: 28,
-      discount: "9% OFF"
-    },
-    {
-      id: 3,
-      image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "Custom Moissanite Diamond Grillz 14K Yellow Gold",
-      material: "925 SILVER / UNISEX",
-      currentPrice: "$1,209",
-      originalPrice: "$1,343",
-      rating: 5,
-      reviews: 1,
-      discount: "10% OFF"
-    },
-    {
-      id: 4,
-      image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "10 on 10 VVS Moissanite Prong Diamond Grillz",
-      material: "925 SILVER / UNISEX",
-      currentPrice: "$1,829",
-      originalPrice: "$2,032",
-      rating: 5,
-      reviews: 1,
-      discount: "10% OFF"
-    },
-    {
-      id: 5,
-      image: "/lovable-uploads/bf68e291-8e46-4cdf-8bc1-9ace2278650d.png",
-      title: "10 on 10 VVS Moissanite Diamond Grillz",
-      material: "925 SILVER / UNISEX",
-      currentPrice: "$1,829",
-      originalPrice: "$2,032",
-      rating: 4,
-      reviews: 29,
-      discount: "10% OFF"
+  const { data: grillzProducts = [], isLoading } = useQuery({
+    queryKey: ['grillz-products-homepage'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('grillz_products')
+        .select('*')
+        .eq('featured', true)
+        .limit(5);
+      
+      if (error) throw error;
+      return data;
     }
-  ];
+  });
+
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="flex items-center justify-center">
+          <div className="text-lg">Loading grillz...</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-16 bg-white">
@@ -92,27 +61,29 @@ const MoissaniteGrillzSection = () => {
                   {/* Product image */}
                   <div className="relative aspect-square overflow-hidden bg-gray-100">
                     <img
-                      src={product.image}
-                      alt={product.title}
+                      src={product.image_url}
+                      alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     
                     {/* Discount badge - positioned on left side */}
-                    <div className="absolute top-3 left-3">
-                      <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
-                        {product.discount}
-                      </Badge>
-                    </div>
+                    {product.discount_percentage > 0 && (
+                      <div className="absolute top-3 left-3">
+                        <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                          {product.discount_percentage}% OFF
+                        </Badge>
+                      </div>
+                    )}
                   </div>
 
                   {/* Product info */}
                   <div className="p-4">
                     <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
-                      {product.material}
+                      {product.material} / UNISEX
                     </div>
                     
                     <h3 className="font-medium text-gray-900 mb-2 text-sm leading-tight line-clamp-2">
-                      {product.title}
+                      {product.name}
                     </h3>
                     
                     <div className="flex items-center space-x-1 mb-2">
@@ -121,14 +92,16 @@ const MoissaniteGrillzSection = () => {
                           <Star key={i} className={`w-3 h-3 ${i < product.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
                         ))}
                       </div>
-                      <span className="text-xs text-gray-500">({product.reviews})</span>
+                      <span className="text-xs text-gray-500">({product.review_count})</span>
                     </div>
                     
                     <div className="flex items-center space-x-2">
-                      <span className="text-lg font-bold text-blue-600">{product.currentPrice}</span>
-                      <span className="text-sm text-gray-400 line-through">
-                        {product.originalPrice}
-                      </span>
+                      <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
+                      {product.original_price && (
+                        <span className="text-sm text-gray-400 line-through">
+                          ${(product.original_price / 100).toFixed(2)}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
