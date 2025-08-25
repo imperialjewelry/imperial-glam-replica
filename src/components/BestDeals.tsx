@@ -10,21 +10,25 @@ const BestDeals = () => {
   const { data: dealProducts = [], isLoading, error } = useQuery({
     queryKey: ['best-deals-homepage'],
     queryFn: async () => {
-      console.log('Fetching best deals products from products table...');
+      console.log('Fetching diverse products from products table...');
       const { data, error } = await supabase
         .from('products')
         .select('*')
         .eq('in_stock', true)
-        .gt('discount_percentage', 0)
-        .order('discount_percentage', { ascending: false })
-        .limit(5);
+        .order('created_at', { ascending: false })
+        .limit(10);
       
       if (error) {
-        console.error('Error fetching best deals products:', error);
+        console.error('Error fetching products:', error);
         throw error;
       }
-      console.log('Best deals products fetched from products table:', data);
-      return data || [];
+      
+      // Shuffle and pick 5 random products for variety
+      const shuffled = data?.sort(() => 0.5 - Math.random()) || [];
+      const selectedProducts = shuffled.slice(0, 5);
+      
+      console.log('Diverse products fetched from products table:', selectedProducts);
+      return selectedProducts;
     }
   });
 
@@ -142,7 +146,7 @@ const BestDeals = () => {
                 ))
               ) : (
                 <div className="flex items-center justify-center w-full py-8">
-                  <div className="text-gray-500">No deals available at the moment</div>
+                  <div className="text-gray-500">No products available at the moment</div>
                 </div>
               )}
             </div>
