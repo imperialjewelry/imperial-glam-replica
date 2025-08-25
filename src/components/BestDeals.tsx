@@ -57,7 +57,7 @@ const BestDeals = () => {
           <div 
             className="absolute inset-0 bg-cover bg-center opacity-30"
             style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80')`
+              backgroundImage: `url('https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/bestdeals.webp')`
             }}
           />
           <div className="relative z-10 text-center text-white p-4 md:p-8">
