@@ -10,7 +10,7 @@ const BestDeals = () => {
   const { data: dealProducts = [], isLoading, error } = useQuery({
     queryKey: ['best-deals-homepage'],
     queryFn: async () => {
-      console.log('Fetching best deals products...');
+      console.log('Fetching best deals products from products table...');
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -23,7 +23,7 @@ const BestDeals = () => {
         console.error('Error fetching best deals products:', error);
         throw error;
       }
-      console.log('Best deals products fetched:', data);
+      console.log('Best deals products fetched from products table:', data);
       return data || [];
     }
   });
