@@ -1,187 +1,161 @@
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star } from 'lucide-react';
+import { Star, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const BestDeals = () => {
-  const isMobile = useIsMobile();
-
-  const deals = [
-    {
-      id: 1,
-      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80",
-      title: "VVS Moissanite Cuban Link Bracelet",
-      category: "BRACELETS",
-      currentPrice: "$599",
-      originalPrice: "$799",
-      rating: 5,
-      reviews: 124,
-      discount: "25% OFF",
-      link: "/bracelets"
-    },
-    {
-      id: 2,
-      image: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=800&q=80",
-      title: "Moissanite Tennis Chain Set",
-      category: "CHAINS",
-      currentPrice: "$1,299",
-      originalPrice: "$1,699",
-      rating: 5,
-      reviews: 89,
-      discount: "24% OFF",
-      link: "/chains"
-    },
-    {
-      id: 3,
-      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=800&q=80",
-      title: "VVS Moissanite Stud Earrings",
-      category: "EARRINGS",
-      currentPrice: "$399",
-      originalPrice: "$599",
-      rating: 4,
-      reviews: 203,
-      discount: "33% OFF",
-      link: "/earrings"
-    },
-    {
-      id: 4,
-      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80",
-      title: "Moissanite Presidential Watch",
-      category: "WATCHES",
-      currentPrice: "$2,499",
-      originalPrice: "$3,299",
-      rating: 5,
-      reviews: 67,
-      discount: "24% OFF",
-      link: "/watches"
+  const { data: dealProducts = [], isLoading, error } = useQuery({
+    queryKey: ['best-deals-homepage'],
+    queryFn: async () => {
+      console.log('Fetching best deals products...');
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('in_stock', true)
+        .order('discount_percentage', { ascending: false })
+        .limit(5);
+      
+      if (error) {
+        console.error('Error fetching best deals products:', error);
+        throw error;
+      }
+      console.log('Best deals products fetched:', data);
+      return data || [];
     }
-  ];
+  });
+
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="flex items-center justify-center">
+          <div className="text-lg">Loading best deals...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    console.error('Best deals products error:', error);
+    return (
+      <section className="py-16 bg-white">
+        <div className="flex items-center justify-center">
+          <div className="text-lg text-red-500">Error loading best deals</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">BEST DEALS</h2>
-          <p className="text-gray-600 text-lg">Limited time offers on premium moissanite jewelry</p>
+    <section className="py-16 bg-white">
+      <div className="flex flex-col md:flex-row">
+        {/* Title section with background image - smaller on mobile */}
+        <div className="w-full md:w-64 h-32 md:h-auto bg-gradient-to-br from-red-500 to-red-600 relative overflow-hidden flex items-center justify-center">
+          <div 
+            className="absolute inset-0 bg-cover bg-center opacity-30"
+            style={{
+              backgroundImage: `url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80')`
+            }}
+          />
+          <div className="relative z-10 text-center text-white p-4 md:p-8">
+            <h2 className="text-lg md:text-xl font-bold mb-1 md:mb-2">BEST</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-2 md:mb-4">DEALS</h2>
+            <ArrowRight className="w-6 h-6 md:w-8 md:h-8 mx-auto text-white" />
+          </div>
         </div>
 
-        {/* Mobile: Horizontal scroll, Desktop: Grid */}
-        {isMobile ? (
+        {/* Products horizontal scroll */}
+        <div className="flex-1 overflow-hidden">
           <div className="overflow-x-auto">
-            <div className="flex space-x-4 pb-4">
-              {deals.map((deal) => (
-                <Link key={deal.id} to={deal.link} className="group flex-shrink-0 w-64">
-                  <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
+            <div className="flex space-x-4 px-4 pb-4">
+              {dealProducts.length > 0 ? (
+                dealProducts.map((product) => (
+                  <div
+                    key={product.id}
+                    className="flex-shrink-0 w-64 group relative bg-white overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg"
+                  >
                     {/* Product image */}
-                    <div className="relative aspect-square overflow-hidden">
+                    <div className="relative aspect-square overflow-hidden bg-gray-100">
                       <img
-                        src={deal.image}
-                        alt={deal.title}
+                        src={product.image_url}
+                        alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          console.log('Image failed to load:', product.image_url);
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80';
+                        }}
                       />
                       
-                      {/* Discount badge */}
-                      <div className="absolute top-4 left-4">
-                        <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
-                          {deal.discount}
-                        </Badge>
-                      </div>
+                      {/* Discount badge - positioned on left side */}
+                      {product.discount_percentage > 0 && (
+                        <div className="absolute top-3 left-3">
+                          <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                            {product.discount_percentage}% OFF
+                          </Badge>
+                        </div>
+                      )}
+
+                      {/* Size options */}
+                      {product.sizes && product.sizes.length > 0 && (
+                        <div className="absolute bottom-3 left-3 flex flex-wrap gap-1">
+                          {product.sizes.slice(0, 2).map((size, index) => (
+                            <Badge key={index} className="bg-gray-800 text-white text-xs px-1 py-0.5">
+                              {size}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     {/* Product info */}
                     <div className="p-4">
                       <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
-                        {deal.category}
+                        {product.category} • {product.material}
                       </div>
                       
-                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                        {deal.title}
+                      <h3 className="font-medium text-gray-900 mb-2 text-sm leading-tight line-clamp-2">
+                        {product.name}
                       </h3>
                       
                       <div className="flex items-center space-x-1 mb-2">
                         <div className="flex">
                           {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-4 h-4 ${i < deal.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                            <Star key={i} className={`w-3 h-3 ${i < product.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
                           ))}
                         </div>
-                        <span className="text-sm text-gray-500">({deal.reviews})</span>
+                        <span className="text-xs text-gray-500">({product.review_count})</span>
                       </div>
                       
                       <div className="flex items-center space-x-2">
-                        <span className="text-xl font-bold text-blue-600">{deal.currentPrice}</span>
-                        <span className="text-sm text-gray-400 line-through">
-                          {deal.originalPrice}
-                        </span>
+                        <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
+                        {product.original_price && (
+                          <span className="text-sm text-gray-400 line-through">
+                            ${(product.original_price / 100).toFixed(2)}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
-                </Link>
-              ))}
+                ))
+              ) : (
+                <div className="flex items-center justify-center w-full py-8">
+                  <div className="text-gray-500">No deals available</div>
+                </div>
+              )}
             </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {deals.map((deal) => (
-              <Link key={deal.id} to={deal.link} className="group">
-                <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
-                  {/* Product image */}
-                  <div className="relative aspect-square overflow-hidden">
-                    <img
-                      src={deal.image}
-                      alt={deal.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    
-                    {/* Discount badge */}
-                    <div className="absolute top-4 left-4">
-                      <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
-                        {deal.discount}
-                      </Badge>
-                    </div>
-                  </div>
-
-                  {/* Product info */}
-                  <div className="p-4">
-                    <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
-                      {deal.category}
-                    </div>
-                    
-                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                      {deal.title}
-                    </h3>
-                    
-                    <div className="flex items-center space-x-1 mb-2">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`w-4 h-4 ${i < deal.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                        ))}
-                      </div>
-                      <span className="text-sm text-gray-500">({deal.reviews})</span>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xl font-bold text-blue-600">{deal.currentPrice}</span>
-                      <span className="text-sm text-gray-400 line-through">
-                        {deal.originalPrice}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-
-        {/* Shop All Deals Button */}
-        <div className="text-center mt-12">
-          <Link to="/vvs-diamond-simulants">
-            <Button className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 text-lg font-medium">
-              SHOP ALL DEALS →
-            </Button>
-          </Link>
         </div>
+      </div>
+
+      {/* Shop All Deals Button */}
+      <div className="text-center mt-8 px-4">
+        <Link to="/best-deals">
+          <Button className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 font-medium">
+            SHOP ALL DEALS →
+          </Button>
+        </Link>
       </div>
     </section>
   );
