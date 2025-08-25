@@ -15,6 +15,7 @@ const BestDeals = () => {
         .from('products')
         .select('*')
         .eq('in_stock', true)
+        .gt('discount_percentage', 0)
         .order('discount_percentage', { ascending: false })
         .limit(5);
       
@@ -79,11 +80,11 @@ const BestDeals = () => {
                     {/* Product image */}
                     <div className="relative aspect-square overflow-hidden bg-gray-100">
                       <img
-                        src={product.image_url}
+                        src={product.image_url || 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80'}
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
-                          console.log('Image failed to load:', product.image_url);
+                          console.log('Image failed to load for product:', product.name, product.image_url);
                           e.currentTarget.src = 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80';
                         }}
                       />
@@ -112,7 +113,7 @@ const BestDeals = () => {
                     {/* Product info */}
                     <div className="p-4">
                       <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
-                        {product.category} • {product.material}
+                        {product.category || 'JEWELRY'} • {product.material || 'MOISSANITE'}
                       </div>
                       
                       <h3 className="font-medium text-gray-900 mb-2 text-sm leading-tight line-clamp-2">
@@ -122,15 +123,15 @@ const BestDeals = () => {
                       <div className="flex items-center space-x-1 mb-2">
                         <div className="flex">
                           {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-3 h-3 ${i < product.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                            <Star key={i} className={`w-3 h-3 ${i < Math.floor(product.rating || 5) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
                           ))}
                         </div>
-                        <span className="text-xs text-gray-500">({product.review_count})</span>
+                        <span className="text-xs text-gray-500">({product.review_count || 0})</span>
                       </div>
                       
                       <div className="flex items-center space-x-2">
                         <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
-                        {product.original_price && (
+                        {product.original_price && product.original_price > product.price && (
                           <span className="text-sm text-gray-400 line-through">
                             ${(product.original_price / 100).toFixed(2)}
                           </span>
@@ -141,7 +142,7 @@ const BestDeals = () => {
                 ))
               ) : (
                 <div className="flex items-center justify-center w-full py-8">
-                  <div className="text-gray-500">No deals available</div>
+                  <div className="text-gray-500">No deals available at the moment</div>
                 </div>
               )}
             </div>
