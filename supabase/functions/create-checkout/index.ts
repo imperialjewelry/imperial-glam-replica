@@ -14,9 +14,9 @@ serve(async (req) => {
   }
 
   try {
-    const { line_items, customerEmail } = await req.json();
+    const { line_items, customerEmail, promoCode, discountPercentage } = await req.json();
 
-    console.log('Received checkout request:', { line_items, customerEmail });
+    console.log('Received checkout request:', { line_items, customerEmail, promoCode, discountPercentage });
 
     if (!line_items || !Array.isArray(line_items) || line_items.length === 0) {
       throw new Error("line_items is required and must be a non-empty array");
@@ -25,6 +25,12 @@ serve(async (req) => {
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
     });
+
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
 
     // Validate that all price IDs exist in Stripe
     console.log('Validating price IDs...');
@@ -42,32 +48,60 @@ serve(async (req) => {
       }
     }
 
-    // Create checkout session with multiple line items
-    const session = await stripe.checkout.sessions.create({
+    // Create checkout session configuration
+    const sessionConfig: any = {
       customer_email: customerEmail,
       line_items: line_items,
       mode: "payment",
       success_url: `${req.headers.get("origin")}/payment-success`,
       cancel_url: `${req.headers.get("origin")}/`,
-    });
+    };
+
+    // Add discount if promo code is applied
+    if (promoCode && discountPercentage > 0) {
+      console.log(`Applying ${discountPercentage}% discount with promo code: ${promoCode}`);
+      
+      // Create a coupon for this discount
+      const coupon = await stripe.coupons.create({
+        percent_off: discountPercentage,
+        duration: 'once',
+        name: `Promo code: ${promoCode}`,
+      });
+
+      sessionConfig.discounts = [{
+        coupon: coupon.id,
+      }];
+
+      // Update promo code usage count
+      await supabaseClient
+        .from("promo_codes")
+        .update({ 
+          usage_count: supabaseClient.sql`usage_count + 1`,
+          updated_at: new Date().toISOString()
+        })
+        .eq("code", promoCode.toUpperCase());
+    }
+
+    // Create checkout session
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     console.log('Created checkout session:', session.id);
 
-    // Store order information in Supabase
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-      { auth: { persistSession: false } }
-    );
-
-    const totalAmount = line_items.reduce((total: number, item: any) => {
+    // Calculate total amount after discount
+    const subtotalAmount = line_items.reduce((total: number, item: any) => {
       return total + (item.quantity || 1);
     }, 0);
 
+    const discountAmount = discountPercentage > 0 ? Math.round((subtotalAmount * discountPercentage) / 100) : 0;
+    const finalAmount = subtotalAmount - discountAmount;
+
+    // Store order information in Supabase
     await supabaseClient.from("orders").insert({
       stripe_session_id: session.id,
-      amount: totalAmount * 100, // Convert to cents
+      amount: finalAmount * 100, // Convert to cents
       guest_email: customerEmail,
+      promo_code: promoCode || null,
+      discount_percentage: discountPercentage || 0,
       status: "pending",
       created_at: new Date().toISOString()
     });

@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { X, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
+import { X, Minus, Plus, ShoppingBag, Trash2, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,6 +18,9 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
   const { toast } = useToast();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [customerEmail, setCustomerEmail] = useState('');
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<{code: string, discount: number} | null>(null);
+  const [isValidatingPromo, setIsValidatingPromo] = useState(false);
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
     if (newQuantity < 1) {
@@ -25,6 +28,71 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
     } else {
       updateQuantity(id, newQuantity);
     }
+  };
+
+  const validatePromoCode = async () => {
+    if (!promoCode.trim()) {
+      toast({
+        title: "Enter a promo code",
+        description: "Please enter a promo code to validate.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsValidatingPromo(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('validate-promo-code', {
+        body: { code: promoCode.trim() },
+      });
+
+      if (error) throw error;
+
+      if (data.valid) {
+        setAppliedPromo({
+          code: promoCode.trim().toUpperCase(),
+          discount: data.discountPercentage
+        });
+        toast({
+          title: "Promo code applied!",
+          description: data.message,
+        });
+      } else {
+        toast({
+          title: "Invalid promo code",
+          description: data.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error validating promo code:', error);
+      toast({
+        title: "Error",
+        description: "Failed to validate promo code. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsValidatingPromo(false);
+    }
+  };
+
+  const removePromoCode = () => {
+    setAppliedPromo(null);
+    setPromoCode('');
+    toast({
+      title: "Promo code removed",
+      description: "The promo code has been removed from your order.",
+    });
+  };
+
+  const getDiscountAmount = () => {
+    if (!appliedPromo) return 0;
+    return (getTotalPrice() * appliedPromo.discount) / 100;
+  };
+
+  const getFinalTotal = () => {
+    return getTotalPrice() - getDiscountAmount();
   };
 
   const handleCheckout = async () => {
@@ -60,6 +128,8 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
         body: {
           line_items,
           customerEmail: customerEmail.trim(),
+          promoCode: appliedPromo?.code || null,
+          discountPercentage: appliedPromo?.discount || 0,
         },
       });
 
@@ -182,9 +252,61 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
           {/* Footer */}
           {state.items.length > 0 && (
             <div className="border-t px-4 py-4 space-y-4">
-              <div className="flex items-center justify-between text-lg font-semibold">
-                <span>Total:</span>
-                <span>${(getTotalPrice() / 100).toFixed(2)}</span>
+              {/* Promo Code Section */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Promo Code</Label>
+                {appliedPromo ? (
+                  <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-md p-3">
+                    <div className="flex items-center space-x-2">
+                      <Tag className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-800">{appliedPromo.code}</span>
+                      <span className="text-sm text-green-600">({appliedPromo.discount}% off)</span>
+                    </div>
+                    <button
+                      onClick={removePromoCode}
+                      className="text-green-600 hover:text-green-800"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex space-x-2">
+                    <Input
+                      placeholder="Enter promo code"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={validatePromoCode}
+                      disabled={isValidatingPromo}
+                      variant="outline"
+                      size="sm"
+                    >
+                      {isValidatingPromo ? 'Validating...' : 'Apply'}
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {/* Order Summary */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Subtotal:</span>
+                  <span>${(getTotalPrice() / 100).toFixed(2)}</span>
+                </div>
+                
+                {appliedPromo && (
+                  <div className="flex items-center justify-between text-sm text-green-600">
+                    <span>Discount ({appliedPromo.discount}%):</span>
+                    <span>-${(getDiscountAmount() / 100).toFixed(2)}</span>
+                  </div>
+                )}
+                
+                <div className="flex items-center justify-between text-lg font-semibold border-t pt-2">
+                  <span>Total:</span>
+                  <span>${(getFinalTotal() / 100).toFixed(2)}</span>
+                </div>
               </div>
 
               {/* Customer Email Input */}

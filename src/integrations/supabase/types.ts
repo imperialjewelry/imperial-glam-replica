@@ -967,6 +967,42 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_codes: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          discount_percentage: number
+          expires_at: string | null
+          id: string
+          updated_at: string
+          usage_count: number
+          usage_limit: number | null
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          discount_percentage: number
+          expires_at?: string | null
+          id?: string
+          updated_at?: string
+          usage_count?: number
+          usage_limit?: number | null
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          discount_percentage?: number
+          expires_at?: string | null
+          id?: string
+          updated_at?: string
+          usage_count?: number
+          usage_limit?: number | null
+        }
+        Relationships: []
+      }
       vvs_simulant_products: {
         Row: {
           carat_weight: string | null
