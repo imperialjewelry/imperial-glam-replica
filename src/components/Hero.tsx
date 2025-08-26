@@ -6,7 +6,7 @@ const Hero = () => {
     <section className="relative h-[500px] md:h-[600px] flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110 md:scale-100"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110 md:scale-75"
         style={{
           backgroundImage: 'url(https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/backimage.webp)',
           backgroundSize: 'cover',
