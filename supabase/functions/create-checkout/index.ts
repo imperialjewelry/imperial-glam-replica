@@ -72,14 +72,28 @@ serve(async (req) => {
         coupon: coupon.id,
       }];
 
-      // Update promo code usage count
-      await supabaseClient
+      // First get the current promo code to increment its usage count
+      const { data: promoData, error: fetchError } = await supabaseClient
         .from("promo_codes")
-        .update({ 
-          usage_count: supabaseClient.sql`usage_count + 1`,
-          updated_at: new Date().toISOString()
-        })
-        .eq("code", promoCode.toUpperCase());
+        .select("usage_count")
+        .eq("code", promoCode.toUpperCase())
+        .single();
+
+      if (!fetchError && promoData) {
+        // Update promo code usage count
+        const { error: updateError } = await supabaseClient
+          .from("promo_codes")
+          .update({ 
+            usage_count: promoData.usage_count + 1,
+            updated_at: new Date().toISOString()
+          })
+          .eq("code", promoCode.toUpperCase());
+
+        if (updateError) {
+          console.error('Error updating promo code usage:', updateError);
+          // Don't fail the checkout for this, just log the error
+        }
+      }
     }
 
     // Create checkout session
