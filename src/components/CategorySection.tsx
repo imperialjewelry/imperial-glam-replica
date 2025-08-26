@@ -1,42 +1,53 @@
+
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const CategorySection = () => {
   const categories = [
     {
       name: "CHAINS",
-      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/chains//infinitylink.webp"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/chains//infinitylink.webp",
+      path: "/chains"
     },
     {
       name: "BRACELETS", 
-      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/bracelet.webp"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/bracelet.webp",
+      path: "/bracelets"
     },
     {
       name: "CUSTOM",
-      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/6ACB04DC-1C32-49D1-996D-DFF4B862DA7D.webp"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/6ACB04DC-1C32-49D1-996D-DFF4B862DA7D.webp",
+      path: "/custom"
     },
     {
       name: "EARRINGS",
-      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/earrings//dart.webp"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/earrings//dart.webp",
+      path: "/earrings"
     },
     {
       name: "WATCHES",
-      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/watches//rolexoysterperpetuasl.webp"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/watches//rolexoysterperpetuasl.webp",
+      path: "/watches"
     },
     {
       name: "GRILLZ",
-      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/grillz//IMG_5019%20(1).webp"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/grillz//IMG_5019%20(1).webp",
+      path: "/grillz"
     },
     {
       name: "RINGS",
-      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Fat_Fuq.webp"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Fat_Fuq.webp",
+      path: "/rings/hip-hop"
     },
     {
       name: "PENDANTS",
-      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/earrings//skullpendanyt.webp"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/earrings//skullpendanyt.webp",
+      path: "/pendants"
     },
     {
       name: "GLASSES",
-      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/glasses.webp"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/glasses.webp",
+      path: "/glasses"
     }
   ];
 
@@ -50,8 +61,9 @@ const CategorySection = () => {
 
         <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-4 mb-8">
           {categories.map((category) => (
-            <div
+            <Link
               key={category.name}
+              to={category.path}
               className="group cursor-pointer text-center"
             >
               <div className="relative aspect-square mb-3 overflow-hidden rounded-lg bg-white shadow-sm group-hover:shadow-md transition-shadow">
@@ -64,7 +76,7 @@ const CategorySection = () => {
               <p className="text-sm font-semibold text-gray-900 uppercase">
                 {category.name}
               </p>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
