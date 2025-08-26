@@ -8,7 +8,7 @@ const Hero = () => {
       <div 
       className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110 md:scale-100"
         style={{
-          backgroundImage: 'url(https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Imperial_Jewelery_Logo_Edit_50percent.webp)',
+          backgroundImage: 'url(https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Untitled%20-%202025-08-26T001322.168.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center center'
         }}
