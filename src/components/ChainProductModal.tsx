@@ -1,15 +1,9 @@
 
 import { useState } from 'react';
-import { X, ShoppingCart } from 'lucide-react';
+import { X, Star, ShoppingCart, Check, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { Tables } from '@/integrations/supabase/types';
@@ -103,7 +97,6 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
       return;
     }
 
-    // For chains, we don't use selectedSize or selectedColor
     addToCart({
       id: product.id,
       name: product.name,
@@ -140,95 +133,164 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
 
   const lengthsAndPrices = getLengthsAndPrices();
 
+  const qualityFeatures = [
+    { text: "Doesn't fade", subtext: "or tarnish" },
+    { text: "Passes the", subtext: "diamond tester" },
+    { text: "Shines better", subtext: "than diamonds" },
+    { text: "GRA Certificate", subtext: "included" },
+    { text: "10x cheaper", subtext: "than real diamond jewelry" },
+    { text: "Imperial", subtext: "Warranty" }
+  ];
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" onClick={onClose}>
-      <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 rounded-full bg-white/80 p-2 hover:bg-white"
-        >
-          <X className="h-4 w-4" />
-        </button>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="relative">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100"
+          >
+            <X className="w-5 h-5" />
+          </button>
 
-        <div className="grid md:grid-cols-2 gap-6 p-6">
-          {/* Product Image */}
-          <div className="space-y-4">
-            <img
-              src={product.image_url}
-              alt={product.name}
-              className="w-full h-96 object-cover rounded-lg"
-            />
-          </div>
-
-          {/* Product Details */}
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{product.name}</h2>
-              {product.description && (
-                <p className="text-gray-600">{product.description}</p>
-              )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+            {/* Product Image */}
+            <div className="aspect-square overflow-hidden rounded-lg">
+              <img
+                src={product.image_url}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
             </div>
 
-            {/* Price Display */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <span className="text-3xl font-bold text-blue-600">
-                  ${(getCurrentPriceInfo().price / 100).toFixed(2)}
-                </span>
-                {product.original_price && product.original_price > getCurrentPriceInfo().price && (
-                  <span className="text-lg text-gray-500 line-through">
-                    ${(product.original_price / 100).toFixed(2)}
+            {/* Product Details */}
+            <div className="space-y-6">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge className="bg-blue-500 text-white">{product.category}</Badge>
+                  <Badge className="bg-green-500 text-white">IN STOCK</Badge>
+                  <Badge className="bg-green-500 text-white flex items-center gap-1">
+                    <Gift className="w-3 h-3" />
+                    FREE gift included
+                  </Badge>
+                </div>
+
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
+                
+                <div className="flex items-center space-x-1 mb-4">
+                  <div className="flex">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <span className="text-sm text-gray-500">({product.review_count} reviews)</span>
+                </div>
+
+                <div className="flex items-center space-x-4 mb-6">
+                  <span className="text-3xl font-bold text-blue-600">
+                    ${(getCurrentPriceInfo().price / 100).toFixed(2)}
                   </span>
+                  {product.original_price && product.original_price > getCurrentPriceInfo().price && (
+                    <span className="text-xl text-gray-500 line-through">
+                      ${(product.original_price / 100).toFixed(2)}
+                    </span>
+                  )}
+                </div>
+
+                {product.description && (
+                  <p className="text-gray-600 mb-6">{product.description}</p>
                 )}
               </div>
-              
-              {lengthsAndPrices.length > 0 && (
-                <p className="text-sm text-gray-600">
-                  Price varies by length selection
-                </p>
-              )}
-            </div>
 
-            {/* Product Info */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-4">
-                <Badge variant="secondary">{product.color}</Badge>
-                <Badge variant="outline">{product.material}</Badge>
-              </div>
-            </div>
-
-            {/* Length Selection */}
-            {lengthsAndPrices.length > 0 && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Length *
-                  </label>
-                  <Select value={selectedLength} onValueChange={setSelectedLength}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select length" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {lengthsAndPrices.map((option) => (
-                        <SelectItem key={option.length} value={option.length}>
-                          {option.length} - ${(option.price / 100).toFixed(2)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              {/* Quality Features */}
+              <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                <div className="grid grid-cols-3 gap-4">
+                  {qualityFeatures.map((feature, index) => (
+                    <div key={index} className="flex items-start space-x-2">
+                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div className="text-sm">
+                        <div className="font-medium text-gray-900">{feature.text}</div>
+                        <div className="text-gray-600">{feature.subtext}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            )}
 
-            {/* Add to Cart Button */}
-            <Button
-              onClick={handleAddToCart}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-              size="lg"
-            >
-              <ShoppingCart className="mr-2 h-5 w-5" />
-              Add to Cart - ${(getCurrentPriceInfo().price / 100).toFixed(2)}
-            </Button>
+              {/* Product Info Display */}
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg">
+                  <div>
+                    <span className="font-medium text-gray-700">Color:</span>
+                    <div className="text-gray-900 font-semibold">{product.color}</div>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-700">Material:</span>
+                    <div className="text-gray-900 font-semibold">{product.material}</div>
+                  </div>
+                </div>
+
+                {/* Length Selection */}
+                {lengthsAndPrices.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Length *
+                    </label>
+                    <Select value={selectedLength} onValueChange={setSelectedLength}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Length" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {lengthsAndPrices.map((option) => (
+                          <SelectItem key={option.length} value={option.length}>
+                            {option.length} - ${(option.price / 100).toFixed(2)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
+
+              {/* Add to Cart Button */}
+              <Button
+                onClick={handleAddToCart}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 text-lg"
+                disabled={!getCurrentPriceInfo().stripe_price_id}
+              >
+                <ShoppingCart className="w-5 h-5 mr-2" />
+                Add to Cart - ${(getCurrentPriceInfo().price / 100).toFixed(2)}
+              </Button>
+
+              {/* Free gift banner */}
+              <div className="bg-gray-100 p-3 rounded flex items-center gap-2">
+                <Gift className="w-5 h-5 text-orange-500" />
+                <span className="font-medium">FREE gift included</span>
+              </div>
+
+              {/* Product Specifications */}
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold mb-4">Product Specifications</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium">Product Type:</span>
+                    <span className="ml-2 text-gray-600">{product.product_type}</span>
+                  </div>
+                  <div>
+                    <span className="font-medium">Material:</span>
+                    <span className="ml-2 text-gray-600">{product.material}</span>
+                  </div>
+                  <div>
+                    <span className="font-medium">Color:</span>
+                    <span className="ml-2 text-gray-600">{product.color}</span>
+                  </div>
+                  <div>
+                    <span className="font-medium">Category:</span>
+                    <span className="ml-2 text-gray-600">{product.category}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
