@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter, Check, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -449,92 +448,24 @@ const Chains = () => {
           {/* Mobile Collapsible Filters */}
           {isMobile && renderMobileFilters()}
 
-          {/* Products Grid - Updated to match watch design */}
+          {/* Products Grid - Clean design without badges or overlays */}
           <div className={`grid ${isMobile ? 'grid-cols-2 gap-2' : 'grid-cols-4 gap-4'}`}>
             {filteredProducts
               .filter(product => product.stripe_price_id)
               .map((product) => (
                 <div 
                   key={product.id} 
-                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer group relative"
+                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer group"
                   onClick={() => setSelectedProduct(product)}
                 >
                   
-                  {/* Product Image */}
+                  {/* Product Image - Clean without overlays or badges */}
                   <div className="relative aspect-square overflow-hidden rounded-t-lg">
                     <img
                       src={product.image_url}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    
-                    {/* Top Right Badges - Green checkmark for in stock */}
-                    <div className="absolute top-2 right-2 flex flex-col space-y-1">
-                      {product.in_stock && (
-                        <div className="bg-green-500 rounded-full p-1">
-                          <Check className="w-3 h-3 text-white" />
-                        </div>
-                      )}
-                      <div className="bg-blue-500 rounded-full p-1">
-                        <Info className="w-3 h-3 text-white" />
-                      </div>
-                    </div>
-
-                    {/* Top Left Badges */}
-                    <div className="absolute top-2 left-2 flex flex-col space-y-1">
-                      {product.discount_percentage > 0 && (
-                        <Badge className={`bg-red-500 text-white font-semibold ${isMobile ? 'text-xs px-1.5 py-0.5' : 'text-xs'}`}>
-                          {product.discount_percentage}% OFF
-                        </Badge>
-                      )}
-                      {product.ships_today && (
-                        <Badge className={`bg-green-500 text-white font-semibold ${isMobile ? 'text-xs px-1.5 py-0.5' : 'text-xs'}`}>
-                          SHIPS TODAY
-                        </Badge>
-                      )}
-                    </div>
-
-                    {/* Bottom badges for material/color */}
-                    <div className="absolute bottom-2 left-2 flex flex-wrap gap-1">
-                      <Badge variant="secondary" className={`${isMobile ? 'text-xs px-1 py-0.5' : 'text-xs'} bg-gray-800 text-white`}>
-                        {product.material}
-                      </Badge>
-                      <Badge variant="secondary" className={`${isMobile ? 'text-xs px-1 py-0.5' : 'text-xs'} bg-gray-600 text-white`}>
-                        {product.color}
-                      </Badge>
-                    </div>
-
-                    {/* Hover overlay with product features - same as watches */}
-                    <div className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-lg">
-                      <div className="text-white text-center space-y-2 px-4">
-                        <div className="text-sm font-medium">
-                          <div className="flex items-center justify-center space-x-1 mb-1">
-                            <Check className="w-3 h-3 text-green-500" />
-                            <span>Doesn't fade or tarnish</span>
-                          </div>
-                          <div className="flex items-center justify-center space-x-1 mb-1">
-                            <Check className="w-3 h-3 text-green-500" />
-                            <span>Passes the diamond tester</span>
-                          </div>
-                          <div className="flex items-center justify-center space-x-1 mb-1">
-                            <Check className="w-3 h-3 text-green-500" />
-                            <span>Shines better than diamonds</span>
-                          </div>
-                          <div className="flex items-center justify-center space-x-1 mb-1">
-                            <Check className="w-3 h-3 text-green-500" />
-                            <span>GRA Certificate included</span>
-                          </div>
-                          <div className="flex items-center justify-center space-x-1 mb-1">
-                            <Check className="w-3 h-3 text-green-500" />
-                            <span>10x cheaper than real diamond jewelry</span>
-                          </div>
-                          <div className="flex items-center justify-center space-x-1">
-                            <Check className="w-3 h-3 text-green-500" />
-                            <span>Imperial Warranty</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
 
                   {/* Product Info */}
