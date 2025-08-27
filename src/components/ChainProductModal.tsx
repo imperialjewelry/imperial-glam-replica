@@ -23,8 +23,6 @@ interface ChainProductModalProps {
 
 const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
   const [selectedSize, setSelectedSize] = useState('');
-  const [selectedColor, setSelectedColor] = useState(product.color || 'Yellow Gold');
-  const [selectedMaterial, setSelectedMaterial] = useState(product.material || 'Solid Gold');
   const [selectedLength, setSelectedLength] = useState('');
   const { addToCart, dispatch } = useCart();
   const { toast } = useToast();
@@ -95,7 +93,7 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
       price: currentPriceInfo.price,
       image_url: product.image_url,
       selectedSize,
-      selectedColor,
+      selectedColor: product.color,
       selectedLength,
       stripe_price_id: currentPriceInfo.stripe_price_id,
     });
@@ -242,40 +240,6 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
                     </Select>
                   </div>
                 )}
-
-                {/* Color Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Color
-                  </label>
-                  <Select value={selectedColor} onValueChange={setSelectedColor}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="yellow-gold">Yellow Gold</SelectItem>
-                      <SelectItem value="white-gold">White Gold</SelectItem>
-                      <SelectItem value="rose-gold">Rose Gold</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Material Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Material
-                  </label>
-                  <Select value={selectedMaterial} onValueChange={setSelectedMaterial}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="solid-gold">Solid Gold</SelectItem>
-                      <SelectItem value="925-silver">925 Silver</SelectItem>
-                      <SelectItem value="14k-gold">14K Gold</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
 
               {/* Add to Cart Button */}
