@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter, Check, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -455,7 +456,7 @@ const Chains = () => {
               .map((product) => (
                 <div 
                   key={product.id} 
-                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer group"
+                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer group relative"
                   onClick={() => setSelectedProduct(product)}
                 >
                   
@@ -501,6 +502,38 @@ const Chains = () => {
                       <Badge variant="secondary" className={`${isMobile ? 'text-xs px-1 py-0.5' : 'text-xs'} bg-gray-600 text-white`}>
                         {product.color}
                       </Badge>
+                    </div>
+
+                    {/* Hover overlay with product features - same as watches */}
+                    <div className="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-lg">
+                      <div className="text-white text-center space-y-2 px-4">
+                        <div className="text-sm font-medium">
+                          <div className="flex items-center justify-center space-x-1 mb-1">
+                            <Check className="w-3 h-3 text-green-500" />
+                            <span>Doesn't fade or tarnish</span>
+                          </div>
+                          <div className="flex items-center justify-center space-x-1 mb-1">
+                            <Check className="w-3 h-3 text-green-500" />
+                            <span>Passes the diamond tester</span>
+                          </div>
+                          <div className="flex items-center justify-center space-x-1 mb-1">
+                            <Check className="w-3 h-3 text-green-500" />
+                            <span>Shines better than diamonds</span>
+                          </div>
+                          <div className="flex items-center justify-center space-x-1 mb-1">
+                            <Check className="w-3 h-3 text-green-500" />
+                            <span>GRA Certificate included</span>
+                          </div>
+                          <div className="flex items-center justify-center space-x-1 mb-1">
+                            <Check className="w-3 h-3 text-green-500" />
+                            <span>10x cheaper than real diamond jewelry</span>
+                          </div>
+                          <div className="flex items-center justify-center space-x-1">
+                            <Check className="w-3 h-3 text-green-500" />
+                            <span>Imperial Warranty</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
