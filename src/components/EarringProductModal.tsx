@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { X, Star, ShoppingCart } from 'lucide-react';
+import { X, Star, ShoppingCart, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -62,6 +62,15 @@ const EarringProductModal = ({ product, onClose }: EarringProductModalProps) => 
     onClose();
   };
 
+  const qualityFeatures = [
+    { text: "Doesn't fade", subtext: "or tarnish" },
+    { text: "Passes the", subtext: "diamond tester" },
+    { text: "Shines better", subtext: "than diamonds" },
+    { text: "GRA Certificate", subtext: "included" },
+    { text: "10x cheaper", subtext: "than real diamond jewelry" },
+    { text: "Imperial", subtext: "Warranty" }
+  ];
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
@@ -96,6 +105,9 @@ const EarringProductModal = ({ product, onClose }: EarringProductModalProps) => 
                       {product.discount_percentage}% OFF
                     </Badge>
                   )}
+                  {product.ships_today && (
+                    <Badge className="bg-blue-500 text-white">SHIPS TODAY</Badge>
+                  )}
                 </div>
 
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
@@ -125,8 +137,34 @@ const EarringProductModal = ({ product, onClose }: EarringProductModalProps) => 
                 )}
               </div>
 
-              {/* Product Options */}
+              {/* Quality Features */}
+              <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                <div className="grid grid-cols-3 gap-4">
+                  {qualityFeatures.map((feature, index) => (
+                    <div key={index} className="flex items-start space-x-2">
+                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div className="text-sm">
+                        <div className="font-medium text-gray-900">{feature.text}</div>
+                        <div className="text-gray-600">{feature.subtext}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Product Info Display */}
               <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg">
+                  <div>
+                    <span className="font-medium text-gray-700">Color:</span>
+                    <div className="text-gray-900 font-semibold">{product.color}</div>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-700">Material:</span>
+                    <div className="text-gray-900 font-semibold">{product.material}</div>
+                  </div>
+                </div>
+
                 {/* Size Selection */}
                 {product.sizes && product.sizes.length > 0 && (
                   <div>
@@ -247,6 +285,10 @@ const EarringProductModal = ({ product, onClose }: EarringProductModalProps) => 
                   <div>
                     <span className="font-medium">Color:</span>
                     <span className="ml-2 text-gray-600">{product.color}</span>
+                  </div>
+                  <div>
+                    <span className="font-medium">Category:</span>
+                    <span className="ml-2 text-gray-600">{product.category}</span>
                   </div>
                   {product.gemstone && (
                     <div>
