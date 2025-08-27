@@ -1,5 +1,6 @@
+
 import { useState } from 'react';
-import { X, Minus, Plus, ShoppingCart } from 'lucide-react';
+import { X, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -11,25 +12,10 @@ import {
 } from '@/components/ui/select';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
+import { Tables } from '@/integrations/supabase/types';
 
-interface ChainProduct {
-  id: string;
-  name: string;
-  description?: string;
-  price: number;
-  original_price?: number;
-  color: string;
-  material: string;
-  image_url: string;
-  stripe_product_id: string;
-  stripe_price_id?: string;
-  lengths_and_prices?: Array<{
-    length: string;
-    price: number;
-    stripe_price_id: string;
-  }>;
-  sizes?: string[];
-}
+// Use the actual Supabase table type
+type ChainProduct = Tables<'chain_products'>;
 
 interface ChainProductModalProps {
   product: ChainProduct;
@@ -43,8 +29,30 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
   const { toast } = useToast();
 
   const getCurrentPriceInfo = () => {
-    if (product.lengths_and_prices && product.lengths_and_prices.length > 0 && selectedLength) {
-      const selectedLengthInfo = product.lengths_and_prices.find(lp => lp.length === selectedLength);
+    // Parse lengths_and_prices from JSON
+    let lengthsAndPrices: Array<{
+      length: string;
+      price: number;
+      stripe_price_id: string;
+    }> = [];
+
+    if (product.lengths_and_prices) {
+      try {
+        // Handle the case where lengths_and_prices might be a string or already parsed
+        const parsed = typeof product.lengths_and_prices === 'string' 
+          ? JSON.parse(product.lengths_and_prices) 
+          : product.lengths_and_prices;
+        
+        if (Array.isArray(parsed)) {
+          lengthsAndPrices = parsed;
+        }
+      } catch (error) {
+        console.error('Error parsing lengths_and_prices:', error);
+      }
+    }
+
+    if (lengthsAndPrices.length > 0 && selectedLength) {
+      const selectedLengthInfo = lengthsAndPrices.find(lp => lp.length === selectedLength);
       if (selectedLengthInfo) {
         return {
           price: selectedLengthInfo.price,
@@ -59,6 +67,27 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
   };
 
   const handleAddToCart = () => {
+    // Parse lengths_and_prices to check if length selection is required
+    let lengthsAndPrices: Array<{
+      length: string;
+      price: number;
+      stripe_price_id: string;
+    }> = [];
+
+    if (product.lengths_and_prices) {
+      try {
+        const parsed = typeof product.lengths_and_prices === 'string' 
+          ? JSON.parse(product.lengths_and_prices) 
+          : product.lengths_and_prices;
+        
+        if (Array.isArray(parsed)) {
+          lengthsAndPrices = parsed;
+        }
+      } catch (error) {
+        console.error('Error parsing lengths_and_prices:', error);
+      }
+    }
+
     // Validation for required selections
     if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       toast({
@@ -69,7 +98,7 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
       return;
     }
 
-    if (product.lengths_and_prices && product.lengths_and_prices.length > 0 && !selectedLength) {
+    if (lengthsAndPrices.length > 0 && !selectedLength) {
       toast({
         title: "Length Required", 
         description: "Please select a length before adding to cart.",
@@ -107,6 +136,24 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
 
     dispatch({ type: 'TOGGLE_CART' });
   };
+
+  // Parse lengths_and_prices for rendering
+  const getLengthsAndPrices = () => {
+    if (!product.lengths_and_prices) return [];
+    
+    try {
+      const parsed = typeof product.lengths_and_prices === 'string' 
+        ? JSON.parse(product.lengths_and_prices) 
+        : product.lengths_and_prices;
+      
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      console.error('Error parsing lengths_and_prices:', error);
+      return [];
+    }
+  };
+
+  const lengthsAndPrices = getLengthsAndPrices();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" onClick={onClose}>
@@ -150,7 +197,7 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
                 )}
               </div>
               
-              {product.lengths_and_prices && product.lengths_and_prices.length > 0 && (
+              {lengthsAndPrices.length > 0 && (
                 <p className="text-sm text-gray-600">
                   Price varies by length selection
                 </p>
@@ -168,7 +215,7 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
             {/* Selection Options */}
             <div className="space-y-4">
               {/* Length Selection */}
-              {product.lengths_and_prices && product.lengths_and_prices.length > 0 && (
+              {lengthsAndPrices.length > 0 && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Length *
@@ -178,7 +225,7 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
                       <SelectValue placeholder="Select length" />
                     </SelectTrigger>
                     <SelectContent>
-                      {product.lengths_and_prices.map((option) => (
+                      {lengthsAndPrices.map((option) => (
                         <SelectItem key={option.length} value={option.length}>
                           {option.length} - ${(option.price / 100).toFixed(2)}
                         </SelectItem>

@@ -14,6 +14,7 @@ import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import ChainProductModal from '../components/ChainProductModal';
 
+// Use the actual Supabase table type
 type ChainProduct = Tables<'chain_products'>;
 
 const Chains = () => {
