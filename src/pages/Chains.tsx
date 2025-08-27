@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Star, ChevronDown, Filter } from 'lucide-react';
+import { Star, ChevronDown, Filter, Check, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -14,7 +14,6 @@ import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import ChainProductModal from '../components/ChainProductModal';
 
-// Use the actual Supabase table type
 type ChainProduct = Tables<'chain_products'>;
 
 const Chains = () => {
@@ -73,28 +72,24 @@ const Chains = () => {
   const applyFilters = () => {
     let filtered = [...products];
 
-    // Apply product type filter
     if (selectedFilters.productType.length > 0) {
       filtered = filtered.filter(product => 
         selectedFilters.productType.includes(product.product_type)
       );
     }
 
-    // Apply color filter
     if (selectedFilters.color.length > 0) {
       filtered = filtered.filter(product => 
         selectedFilters.color.includes(product.color)
       );
     }
 
-    // Apply material filter
     if (selectedFilters.material.length > 0) {
       filtered = filtered.filter(product => 
         selectedFilters.material.includes(product.material)
       );
     }
 
-    // Apply price range filter
     if (priceFrom || priceTo) {
       filtered = filtered.filter(product => {
         const price = product.price / 100;
@@ -104,7 +99,6 @@ const Chains = () => {
       });
     }
 
-    // Apply sorting
     switch (sortBy) {
       case 'price-low':
         filtered.sort((a, b) => a.price - b.price);
@@ -116,7 +110,6 @@ const Chains = () => {
         filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         break;
       default:
-        // Keep original order for featured
         break;
     }
 
@@ -144,7 +137,6 @@ const Chains = () => {
     }));
   };
 
-  // Get unique values and counts from products
   const getFilterOptions = (field: keyof ChainProduct) => {
     const counts: { [key: string]: number } = {};
     products.forEach(product => {
@@ -189,7 +181,6 @@ const Chains = () => {
     <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
       <h2 className="text-lg font-semibold mb-6">Filters</h2>
       
-      {/* Product Type */}
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">PRODUCT TYPE</h3>
         <div className="space-y-3">
@@ -197,7 +188,6 @@ const Chains = () => {
         </div>
       </div>
 
-      {/* Price */}
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">PRICE</h3>
         <div className="flex space-x-2">
@@ -224,7 +214,6 @@ const Chains = () => {
         </div>
       </div>
 
-      {/* Color */}
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">COLOR</h3>
         <div className="space-y-3">
@@ -232,7 +221,6 @@ const Chains = () => {
         </div>
       </div>
 
-      {/* Material */}
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">MATERIAL</h3>
         <div className="space-y-3">
@@ -246,7 +234,6 @@ const Chains = () => {
     showFilters && (
       <div className="bg-white border rounded-lg mb-6 overflow-hidden">
         
-        {/* Sort By */}
         <div className="p-4 border-b">
           <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
           <Select value={sortBy} onValueChange={setSortBy}>
@@ -262,7 +249,6 @@ const Chains = () => {
           </Select>
         </div>
 
-        {/* Product Type Filter */}
         <Collapsible open={openSections.productType} onOpenChange={() => toggleSection('productType')}>
           <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
             <span className="font-medium">PRODUCT TYPE</span>
@@ -275,7 +261,6 @@ const Chains = () => {
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Price Filter */}
         <Collapsible open={openSections.price} onOpenChange={() => toggleSection('price')}>
           <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
             <span className="font-medium">PRICE</span>
@@ -307,7 +292,6 @@ const Chains = () => {
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Color Filter */}
         <Collapsible open={openSections.color} onOpenChange={() => toggleSection('color')}>
           <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
             <span className="font-medium">COLOR</span>
@@ -320,7 +304,6 @@ const Chains = () => {
           </CollapsibleContent>
         </Collapsible>
 
-        {/* Material Filter */}
         <Collapsible open={openSections.material} onOpenChange={() => toggleSection('material')}>
           <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left hover:bg-gray-50">
             <span className="font-medium">MATERIAL</span>
@@ -375,7 +358,6 @@ const Chains = () => {
                 All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Chains
               </p>
               
-              {/* Chain Types Navigation */}
               <div className="flex justify-center space-x-8 text-sm text-gray-500">
                 {chainTypes.map((type, index) => (
                   <span key={index} className="border-r border-gray-300 pr-8 last:border-r-0">
@@ -388,11 +370,10 @@ const Chains = () => {
         </section>
       )}
 
-      {/* Mobile Hero Section - Fixed spacing and margins */}
+      {/* Mobile Hero Section */}
       {isMobile && (
         <section className="bg-gray-50 py-6 px-3">
           <div className="max-w-sm mx-auto">
-            {/* Hero Images */}
             <div className="grid grid-cols-4 gap-1.5 mb-4">
               {filteredProducts.slice(0, 4).map((product, index) => (
                 <img 
@@ -412,7 +393,6 @@ const Chains = () => {
                 All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Chains
               </p>
               
-              {/* Chain Types Navigation */}
               <div className="flex justify-center space-x-3 mb-4 text-xs">
                 {chainTypes.map((type, index) => (
                   <span key={index} className="text-gray-500 border-r border-gray-300 pr-3 last:border-r-0">
@@ -430,7 +410,7 @@ const Chains = () => {
         {/* Desktop Sidebar Filters */}
         {!isMobile && renderDesktopFilters()}
 
-        {/* Products Section - Fixed mobile spacing */}
+        {/* Products Section */}
         <div className={`flex-1 ${isMobile ? 'py-3 px-3' : 'py-8 px-8'}`}>
           {/* Product count and controls */}
           <div className="flex items-center justify-between mb-4">
@@ -468,14 +448,14 @@ const Chains = () => {
           {/* Mobile Collapsible Filters */}
           {isMobile && renderMobileFilters()}
 
-          {/* Products Grid - Fixed mobile spacing and button sizing */}
+          {/* Products Grid - Updated to match watch design */}
           <div className={`grid ${isMobile ? 'grid-cols-2 gap-2' : 'grid-cols-4 gap-4'}`}>
             {filteredProducts
               .filter(product => product.stripe_price_id)
               .map((product) => (
                 <div 
                   key={product.id} 
-                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
+                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer group"
                   onClick={() => setSelectedProduct(product)}
                 >
                   
@@ -484,16 +464,23 @@ const Chains = () => {
                     <img
                       src={product.image_url}
                       alt={product.name}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     
-                    {/* Badges - Smaller on mobile */}
-                    <div className="absolute top-1.5 left-1.5 flex flex-col space-y-1">
+                    {/* Top Right Badges - Green checkmark for in stock */}
+                    <div className="absolute top-2 right-2 flex flex-col space-y-1">
                       {product.in_stock && (
-                        <Badge className={`bg-blue-500 text-white font-semibold ${isMobile ? 'text-xs px-1.5 py-0.5' : 'text-xs'}`}>
-                          IN STOCK
-                        </Badge>
+                        <div className="bg-green-500 rounded-full p-1">
+                          <Check className="w-3 h-3 text-white" />
+                        </div>
                       )}
+                      <div className="bg-blue-500 rounded-full p-1">
+                        <Info className="w-3 h-3 text-white" />
+                      </div>
+                    </div>
+
+                    {/* Top Left Badges */}
+                    <div className="absolute top-2 left-2 flex flex-col space-y-1">
                       {product.discount_percentage > 0 && (
                         <Badge className={`bg-red-500 text-white font-semibold ${isMobile ? 'text-xs px-1.5 py-0.5' : 'text-xs'}`}>
                           {product.discount_percentage}% OFF
@@ -506,26 +493,20 @@ const Chains = () => {
                       )}
                     </div>
 
-                    {/* Size options */}
-                    {product.sizes && product.sizes.length > 0 && (
-                      <div className="absolute bottom-1.5 left-1.5 flex flex-wrap gap-1">
-                        {product.sizes.slice(0, 2).map((size, index) => (
-                          <Badge key={index} variant="secondary" className={`${isMobile ? 'text-xs px-1 py-0.5' : 'text-xs'}`}>
-                            {size}
-                          </Badge>
-                        ))}
-                        {product.sizes.length > 2 && (
-                          <Badge variant="secondary" className={`${isMobile ? 'text-xs px-1 py-0.5' : 'text-xs'}`}>
-                            +{product.sizes.length - 2}
-                          </Badge>
-                        )}
-                      </div>
-                    )}
+                    {/* Bottom badges for material/color */}
+                    <div className="absolute bottom-2 left-2 flex flex-wrap gap-1">
+                      <Badge variant="secondary" className={`${isMobile ? 'text-xs px-1 py-0.5' : 'text-xs'} bg-gray-800 text-white`}>
+                        {product.material}
+                      </Badge>
+                      <Badge variant="secondary" className={`${isMobile ? 'text-xs px-1 py-0.5' : 'text-xs'} bg-gray-600 text-white`}>
+                        {product.color}
+                      </Badge>
+                    </div>
                   </div>
 
-                  {/* Product Info - Adjusted mobile spacing */}
+                  {/* Product Info */}
                   <div className={`${isMobile ? 'p-2 space-y-1.5' : 'p-3 space-y-2'}`}>
-                    <div className={`text-gray-500 uppercase ${isMobile ? 'text-xs' : 'text-xs'}`}>
+                    <div className={`text-gray-500 uppercase ${isMobile ? 'text-xs' : 'text-xs'} font-medium`}>
                       {product.category}
                     </div>
                     

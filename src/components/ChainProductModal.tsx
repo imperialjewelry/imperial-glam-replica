@@ -14,7 +14,6 @@ import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { Tables } from '@/integrations/supabase/types';
 
-// Use the actual Supabase table type
 type ChainProduct = Tables<'chain_products'>;
 
 interface ChainProductModalProps {
@@ -23,13 +22,11 @@ interface ChainProductModalProps {
 }
 
 const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
-  const [selectedSize, setSelectedSize] = useState('');
   const [selectedLength, setSelectedLength] = useState('');
   const { addToCart, dispatch } = useCart();
   const { toast } = useToast();
 
   const getCurrentPriceInfo = () => {
-    // Parse lengths_and_prices from JSON
     let lengthsAndPrices: Array<{
       length: string;
       price: number;
@@ -38,7 +35,6 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
 
     if (product.lengths_and_prices) {
       try {
-        // Handle the case where lengths_and_prices might be a string or already parsed
         const parsed = typeof product.lengths_and_prices === 'string' 
           ? JSON.parse(product.lengths_and_prices) 
           : product.lengths_and_prices;
@@ -67,7 +63,6 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
   };
 
   const handleAddToCart = () => {
-    // Parse lengths_and_prices to check if length selection is required
     let lengthsAndPrices: Array<{
       length: string;
       price: number;
@@ -86,16 +81,6 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
       } catch (error) {
         console.error('Error parsing lengths_and_prices:', error);
       }
-    }
-
-    // Validation for required selections
-    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
-      toast({
-        title: "Size Required",
-        description: "Please select a size before adding to cart.",
-        variant: "destructive",
-      });
-      return;
     }
 
     if (lengthsAndPrices.length > 0 && !selectedLength) {
@@ -118,13 +103,14 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
       return;
     }
 
+    // For chains, we don't use selectedSize or selectedColor
     addToCart({
       id: product.id,
       name: product.name,
       price: currentPriceInfo.price,
       image_url: product.image_url,
-      selectedSize,
-      selectedColor: product.color || '',
+      selectedSize: '',
+      selectedColor: '',
       selectedLength,
       stripe_price_id: currentPriceInfo.stripe_price_id,
     });
@@ -137,7 +123,6 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
     dispatch({ type: 'TOGGLE_CART' });
   };
 
-  // Parse lengths_and_prices for rendering
   const getLengthsAndPrices = () => {
     if (!product.lengths_and_prices) return [];
     
@@ -212,10 +197,9 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
               </div>
             </div>
 
-            {/* Selection Options */}
-            <div className="space-y-4">
-              {/* Length Selection */}
-              {lengthsAndPrices.length > 0 && (
+            {/* Length Selection */}
+            {lengthsAndPrices.length > 0 && (
+              <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Length *
@@ -233,29 +217,8 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
                     </SelectContent>
                   </Select>
                 </div>
-              )}
-
-              {/* Size Selection */}
-              {product.sizes && product.sizes.length > 0 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Size *
-                  </label>
-                  <Select value={selectedSize} onValueChange={setSelectedSize}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select size" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {product.sizes.map((size) => (
-                        <SelectItem key={size} value={size}>
-                          {size}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Add to Cart Button */}
             <Button
