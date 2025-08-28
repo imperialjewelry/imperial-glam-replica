@@ -15,19 +15,19 @@ const CustomerReviews = () => {
       id: 1,
       title: "Top Quality!",
       content: "Naa cartel came in clutch I'll definitely be so real!! Literally the best",
-      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=400&q=80"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/review1.webp"
     },
     {
       id: 2,
       title: "Nonstop Compliments",
       content: "Just received my custom pendant from cartel and I",
-      image: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=400&q=80"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/review2.webp"
     },
     {
       id: 3,
       title: "Outstanding Attention to Detail",
       content: "My chain from ICE Cartel is impressive, but the shipping",
-      image: "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?auto=format&fit=crop&w=400&q=80"
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/review3.webp"
     },
     {
       id: 4,
