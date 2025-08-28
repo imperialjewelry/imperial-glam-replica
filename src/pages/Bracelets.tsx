@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,12 @@ import ProductCheckout from '@/components/ProductCheckout';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
+
+interface LengthPrice {
+  length: string;
+  price: number;
+  stripe_price_id: string;
+}
 
 interface Product {
   id: string;
@@ -37,6 +44,7 @@ interface Product {
   updated_at: string;
   stripe_product_id: string;
   stripe_price_id?: string;
+  lengths_and_prices: LengthPrice[];
 }
 
 const Bracelets = () => {
@@ -64,8 +72,19 @@ const Bracelets = () => {
     },
   });
 
-  // Filter products that have stripe_price_id
-  const validProducts = products.filter(product => product.stripe_price_id);
+  // Filter products that have either stripe_price_id or lengths_and_prices
+  const validProducts = products.filter(product => 
+    product.stripe_price_id || (product.lengths_and_prices && product.lengths_and_prices.length > 0)
+  );
+
+  // Helper function to get starting price for products with multiple lengths
+  const getStartingPrice = (product: Product) => {
+    if (product.lengths_and_prices && product.lengths_and_prices.length > 0) {
+      const prices = product.lengths_and_prices.map(lp => lp.price);
+      return Math.min(...prices);
+    }
+    return product.price;
+  };
 
   if (isLoading) {
     return (
@@ -271,91 +290,104 @@ const Bracelets = () => {
 
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-6`}>
-            {validProducts.map((product) => (
-              <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
-                <div className="relative aspect-square overflow-hidden rounded-t-lg">
-                  <img
-                    src={product.image_url}
-                    alt={product.name}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                  
-                  <div className="absolute top-2 left-2 flex flex-col space-y-1">
-                    {product.in_stock && (
-                      <Badge className="text-xs font-semibold bg-blue-500 text-white">
-                        IN STOCK
-                      </Badge>
-                    )}
-                    {product.discount_percentage > 0 && (
-                      <Badge className="text-xs font-semibold bg-red-500 text-white">
-                        {product.discount_percentage}% OFF
-                      </Badge>
-                    )}
-                    {product.ships_today && (
-                      <Badge className="text-xs font-semibold bg-green-500 text-white">
-                        SHIPS TODAY
-                      </Badge>
-                    )}
-                  </div>
+            {validProducts.map((product) => {
+              const startingPrice = getStartingPrice(product);
+              const hasMultipleLengths = product.lengths_and_prices && product.lengths_and_prices.length > 0;
+              const availableSizes = hasMultipleLengths 
+                ? product.lengths_and_prices.map(lp => lp.length) 
+                : product.sizes;
 
-                  {/* Size options */}
-                  {product.sizes && product.sizes.length > 0 && (
-                    <div className="absolute bottom-2 left-2 flex flex-wrap gap-1">
-                      {product.sizes.slice(0, 3).map((size, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs bg-white/90 text-gray-800">
-                          {size}
+              return (
+                <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
+                  <div className="relative aspect-square overflow-hidden rounded-t-lg">
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                    
+                    <div className="absolute top-2 left-2 flex flex-col space-y-1">
+                      {product.in_stock && (
+                        <Badge className="text-xs font-semibold bg-blue-500 text-white">
+                          IN STOCK
                         </Badge>
-                      ))}
-                      {product.sizes.length > 3 && (
-                        <Badge variant="secondary" className="text-xs bg-white/90 text-gray-800">
-                          +{product.sizes.length - 3}
+                      )}
+                      {product.discount_percentage > 0 && (
+                        <Badge className="text-xs font-semibold bg-red-500 text-white">
+                          {product.discount_percentage}% OFF
+                        </Badge>
+                      )}
+                      {product.ships_today && (
+                        <Badge className="text-xs font-semibold bg-green-500 text-white">
+                          SHIPS TODAY
                         </Badge>
                       )}
                     </div>
-                  )}
-                </div>
 
-                <div className="p-4 space-y-2">
-                  <div className="text-xs text-gray-500 uppercase">
-                    {product.material} / {product.category}
-                  </div>
-                  
-                  <h3 className="font-medium text-gray-900 line-clamp-2 text-sm leading-tight">
-                    {product.name}
-                  </h3>
-                  
-                  <div className="flex items-center space-x-1">
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`w-3 h-3 ${i < Math.floor(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
-                      ))}
-                    </div>
-                    <span className="text-xs text-gray-500">({product.review_count})</span>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2 mb-3">
-                    <span className="text-lg font-bold text-blue-600">
-                      ${(product.price / 100).toFixed(2)}
-                    </span>
-                    {product.original_price && product.original_price > product.price && (
-                      <span className="text-sm text-gray-500 line-through">
-                        ${(product.original_price / 100).toFixed(2)}
-                      </span>
+                    {/* Size options */}
+                    {availableSizes && availableSizes.length > 0 && (
+                      <div className="absolute bottom-2 left-2 flex flex-wrap gap-1">
+                        {availableSizes.slice(0, 3).map((size, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs bg-white/90 text-gray-800">
+                            {size}
+                          </Badge>
+                        ))}
+                        {availableSizes.length > 3 && (
+                          <Badge variant="secondary" className="text-xs bg-white/90 text-gray-800">
+                            +{availableSizes.length - 3}
+                          </Badge>
+                        )}
+                      </div>
                     )}
                   </div>
 
-                  <ProductCheckout product={{
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    image_url: product.image_url,
-                    stripe_product_id: product.stripe_product_id,
-                    stripe_price_id: product.stripe_price_id,
-                    sizes: product.sizes
-                  }} />
+                  <div className="p-4 space-y-2">
+                    <div className="text-xs text-gray-500 uppercase">
+                      {product.material} / {product.category}
+                    </div>
+                    
+                    <h3 className="font-medium text-gray-900 line-clamp-2 text-sm leading-tight">
+                      {product.name}
+                    </h3>
+                    
+                    <div className="flex items-center space-x-1">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`w-3 h-3 ${i < Math.floor(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                        ))}
+                      </div>
+                      <span className="text-xs text-gray-500">({product.review_count})</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2 mb-3">
+                      <span className="text-lg font-bold text-blue-600">
+                        {hasMultipleLengths ? 'FROM ' : ''}${(startingPrice / 100).toFixed(2)}
+                      </span>
+                      {product.original_price && product.original_price > startingPrice && (
+                        <span className="text-sm text-gray-500 line-through">
+                          ${(product.original_price / 100).toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+
+                    <ProductCheckout 
+                      product={{
+                        id: product.id,
+                        name: product.name,
+                        price: startingPrice,
+                        image_url: product.image_url,
+                        stripe_product_id: product.stripe_product_id,
+                        stripe_price_id: hasMultipleLengths 
+                          ? product.lengths_and_prices[0]?.stripe_price_id 
+                          : product.stripe_price_id,
+                        sizes: availableSizes,
+                        lengths_and_prices: hasMultipleLengths ? product.lengths_and_prices : undefined
+                      }} 
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
