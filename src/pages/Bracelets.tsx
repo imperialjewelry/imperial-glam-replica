@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -26,7 +27,7 @@ interface Product extends Omit<Tables<'bracelet_products'>, 'lengths_and_prices'
 
 const Bracelets = () => {
   const isMobile = useIsMobile();
-  const [activeTab, setActiveTab] = useState('TENNIS BRACELETS');
+  const [activeTab, setActiveTab] = useState('ALL BRACELETS');
   const [sortBy, setSortBy] = useState('featured');
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
@@ -79,22 +80,33 @@ const Bracelets = () => {
 
   // Apply filters
   const filteredProducts = validProducts.filter(product => {
-    // Category filter based on active tab
-    if (activeTab === 'TENNIS BRACELETS' && !product.name.toLowerCase().includes('tennis')) {
-      return false;
+    // Category filter based on active tab - more inclusive
+    if (activeTab === 'TENNIS BRACELETS') {
+      const isTennis = product.name?.toLowerCase().includes('tennis') || 
+                      product.product_type?.toLowerCase().includes('tennis') ||
+                      product.category?.toLowerCase().includes('tennis');
+      if (!isTennis) return false;
     }
-    if (activeTab === 'CUBAN LINK BRACELETS' && !product.name.toLowerCase().includes('cuban')) {
-      return false;
+    if (activeTab === 'CUBAN LINK BRACELETS') {
+      const isCuban = product.name?.toLowerCase().includes('cuban') || 
+                      product.product_type?.toLowerCase().includes('cuban') ||
+                      product.category?.toLowerCase().includes('cuban');
+      if (!isCuban) return false;
     }
-    if (activeTab === 'BAGUETTE BRACELETS' && !product.name.toLowerCase().includes('baguette')) {
-      return false;
+    if (activeTab === 'BAGUETTE BRACELETS') {
+      const isBaguette = product.name?.toLowerCase().includes('baguette') || 
+                         product.product_type?.toLowerCase().includes('baguette') ||
+                         product.category?.toLowerCase().includes('baguette');
+      if (!isBaguette) return false;
     }
+    // 'ALL BRACELETS' shows everything, no filtering needed
 
     // Product type filter
     if (selectedProductTypes.length > 0) {
       const productTypeMatch = selectedProductTypes.some(type => 
         product.product_type?.toLowerCase().includes(type.toLowerCase()) ||
-        product.name?.toLowerCase().includes(type.toLowerCase())
+        product.name?.toLowerCase().includes(type.toLowerCase()) ||
+        product.category?.toLowerCase().includes(type.toLowerCase())
       );
       if (!productTypeMatch) return false;
     }
@@ -217,7 +229,7 @@ const Bracelets = () => {
             
             {/* Category Tabs */}
             <div className="flex justify-center space-x-8 mb-8">
-              {['TENNIS BRACELETS', 'CUBAN LINK BRACELETS', 'BAGUETTE BRACELETS'].map((tab) => (
+              {['ALL BRACELETS', 'TENNIS BRACELETS', 'CUBAN LINK BRACELETS', 'BAGUETTE BRACELETS'].map((tab) => (
                 <Button
                   key={tab}
                   variant={activeTab === tab ? "default" : "ghost"}
@@ -265,6 +277,14 @@ const Bracelets = () => {
                     onCheckedChange={(checked) => handleProductTypeChange('cuban', checked as boolean)}
                   />
                   <label htmlFor="cuban-bracelets" className="text-sm">Cuban Bracelets</label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="baguette-bracelets" 
+                    checked={selectedProductTypes.includes('baguette')}
+                    onCheckedChange={(checked) => handleProductTypeChange('baguette', checked as boolean)}
+                  />
+                  <label htmlFor="baguette-bracelets" className="text-sm">Baguette Bracelets</label>
                 </div>
               </CollapsibleContent>
             </Collapsible>
@@ -397,6 +417,9 @@ const Bracelets = () => {
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-6`}>
             {sortedProducts.map((product) => {
+              const startingPrice = getStartingPrice(product);
+              const displayPrice = startingPrice > 0 ? startingPrice : product.price;
+              
               return (
                 <div 
                   key={product.id} 
@@ -445,6 +468,17 @@ const Bracelets = () => {
                         ))}
                       </div>
                       <span className="text-xs text-gray-500">({product.review_count})</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg font-bold text-blue-600">
+                        ${(displayPrice / 100).toFixed(2)}
+                      </span>
+                      {product.original_price && product.original_price > displayPrice && (
+                        <span className="text-sm text-gray-400 line-through">
+                          ${(product.original_price / 100).toFixed(2)}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
