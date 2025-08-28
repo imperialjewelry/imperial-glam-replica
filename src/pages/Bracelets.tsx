@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -39,6 +38,18 @@ const Bracelets = () => {
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
 
+  // Helper function to get starting price for products with multiple lengths
+  function getStartingPrice(product: Product): number {
+    if (product.lengths_and_prices && Array.isArray(product.lengths_and_prices)) {
+      const lengthsAndPrices = product.lengths_and_prices;
+      if (lengthsAndPrices.length > 0) {
+        const prices = lengthsAndPrices.map(lp => lp.price);
+        return Math.min(...prices);
+      }
+    }
+    return product.price || 0;
+  }
+
   const { data: products = [], isLoading, error } = useQuery({
     queryKey: ['bracelet-products'],
     queryFn: async (): Promise<Product[]> => {
@@ -60,18 +71,6 @@ const Bracelets = () => {
       }));
     },
   });
-
-  // Helper function to get starting price for products with multiple lengths
-  const getStartingPrice = (product: Product): number => {
-    if (product.lengths_and_prices && Array.isArray(product.lengths_and_prices)) {
-      const lengthsAndPrices = product.lengths_and_prices;
-      if (lengthsAndPrices.length > 0) {
-        const prices = lengthsAndPrices.map(lp => lp.price);
-        return Math.min(...prices);
-      }
-    }
-    return product.price || 0;
-  };
 
   // Filter products that have either stripe_price_id or lengths_and_prices
   const validProducts = products.filter(product => 
