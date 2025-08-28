@@ -283,7 +283,7 @@ const Bracelets = () => {
             
             {/* Category Tabs */}
             <div className="flex justify-center space-x-8 mb-8">
-              {['ALL BRACELETS', 'TENNIS BRACELETS', 'CUBAN LINK BRACELETS', 'BAGUETTE BRACELETS'].map((tab) => (
+              {['TENNIS BRACELETS', 'CUBAN LINK BRACELETS', 'BAGUETTE BRACELETS'].map((tab) => (
                 <Button
                   key={tab}
                   variant={activeTab === tab ? "default" : "ghost"}
