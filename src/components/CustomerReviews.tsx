@@ -13,38 +13,38 @@ const CustomerReviews = () => {
   const reviews = [
     {
       id: 1,
-      title: "Top Quality!",
-      content: "Naa cartel came in clutch I'll definitely be so real!! Literally the best",
+      title: "Blinding Shine",
+      content: "Feels heavy, solid, and way more expensive than what I paid.",
       image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/review1.webp"
     },
     {
       id: 2,
-      title: "Nonstop Compliments",
-      content: "Just received my custom pendant from cartel and I",
+      title: "Always Asked About It",
+      content: "The bracelet fits perfectly and catches light from every angle.",
       image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/review2.webp"
     },
     {
       id: 3,
-      title: "Outstanding Attention to Detail",
-      content: "My chain from ICE Cartel is impressive, but the shipping",
+      title: "Craftsmanship on Point",
+      content: "Every stone is placed with no gaps."
       image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/review3.webp"
     },
     {
       id: 4,
-      title: "Just how I wanted",
-      content: "Exactly how I imagined it, thank you! I love it, definitely",
+      title: "Better Than I Imagined",
+      content: "Heavy, flawless, and it sparkles even in low light.",
       image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/review4.webp"
     },
     {
       id: 5,
-      title: "So Happy!",
-      content: "Just received my custom pendant from cartel and I",
+      title: "Worth Every Penny",
+      content: "Came in pristine condition and very smooth movement",
       image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/review5.webp"
     },
     {
       id: 6,
-      title: "Impressive Chain",
-      content: "My chain from ICE Cartel is impressive, but the shipping",
+      title: "Stunning in Person",
+      content: "My fiancé couldn’t believe the quality for the price. 10/10 purchase.",
       image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/review6.webp"
     }
   ];
