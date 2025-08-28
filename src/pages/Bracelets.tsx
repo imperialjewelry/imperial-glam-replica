@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,11 @@ const Bracelets = () => {
   const [priceTo, setPriceTo] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  
+  // Filter states
+  const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
 
   const { data: products = [], isLoading, error } = useQuery({
     queryKey: ['bracelet-products'],
@@ -60,6 +66,67 @@ const Bracelets = () => {
     product.stripe_price_id || (product.lengths_and_prices && Array.isArray(product.lengths_and_prices))
   );
 
+  // Apply filters
+  const filteredProducts = validProducts.filter(product => {
+    // Category filter based on active tab
+    if (activeTab === 'TENNIS BRACELETS' && !product.name.toLowerCase().includes('tennis')) {
+      return false;
+    }
+    if (activeTab === 'CUBAN LINK BRACELETS' && !product.name.toLowerCase().includes('cuban')) {
+      return false;
+    }
+    if (activeTab === 'BAGUETTE BRACELETS' && !product.name.toLowerCase().includes('baguette')) {
+      return false;
+    }
+
+    // Product type filter
+    if (selectedProductTypes.length > 0) {
+      const productTypeMatch = selectedProductTypes.some(type => 
+        product.product_type.toLowerCase().includes(type.toLowerCase()) ||
+        product.name.toLowerCase().includes(type.toLowerCase())
+      );
+      if (!productTypeMatch) return false;
+    }
+
+    // Color filter
+    if (selectedColors.length > 0) {
+      const colorMatch = selectedColors.some(color => 
+        product.color.toLowerCase().includes(color.toLowerCase())
+      );
+      if (!colorMatch) return false;
+    }
+
+    // Material filter
+    if (selectedMaterials.length > 0) {
+      const materialMatch = selectedMaterials.some(material => 
+        product.material.toLowerCase().includes(material.toLowerCase())
+      );
+      if (!materialMatch) return false;
+    }
+
+    // Price filter
+    const productPrice = getStartingPrice(product);
+    if (priceFrom && productPrice < parseInt(priceFrom) * 100) return false;
+    if (priceTo && productPrice > parseInt(priceTo) * 100) return false;
+
+    return true;
+  });
+
+  // Sort products
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    switch (sortBy) {
+      case 'price-low':
+        return getStartingPrice(a) - getStartingPrice(b);
+      case 'price-high':
+        return getStartingPrice(b) - getStartingPrice(a);
+      case 'newest':
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      case 'featured':
+      default:
+        return b.featured === a.featured ? 0 : b.featured ? 1 : -1;
+    }
+  });
+
   // Helper function to get starting price for products with multiple lengths
   const getStartingPrice = (product: Product) => {
     if (product.lengths_and_prices && Array.isArray(product.lengths_and_prices)) {
@@ -78,6 +145,31 @@ const Bracelets = () => {
 
   const handleCloseModal = () => {
     setSelectedProduct(null);
+  };
+
+  // Filter handlers
+  const handleProductTypeChange = (type: string, checked: boolean) => {
+    if (checked) {
+      setSelectedProductTypes([...selectedProductTypes, type]);
+    } else {
+      setSelectedProductTypes(selectedProductTypes.filter(t => t !== type));
+    }
+  };
+
+  const handleColorChange = (color: string, checked: boolean) => {
+    if (checked) {
+      setSelectedColors([...selectedColors, color]);
+    } else {
+      setSelectedColors(selectedColors.filter(c => c !== color));
+    }
+  };
+
+  const handleMaterialChange = (material: string, checked: boolean) => {
+    if (checked) {
+      setSelectedMaterials([...selectedMaterials, material]);
+    } else {
+      setSelectedMaterials(selectedMaterials.filter(m => m !== material));
+    }
   };
 
   if (isLoading) {
@@ -160,14 +252,20 @@ const Bracelets = () => {
               </CollapsibleTrigger>
               <CollapsibleContent className="mt-2 space-y-2">
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="tennis-bracelets" />
+                  <Checkbox 
+                    id="tennis-bracelets" 
+                    checked={selectedProductTypes.includes('tennis')}
+                    onCheckedChange={(checked) => handleProductTypeChange('tennis', checked as boolean)}
+                  />
                   <label htmlFor="tennis-bracelets" className="text-sm">Tennis Bracelets</label>
-                  <span className="text-xs text-gray-500">(2)</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="cuban-bracelets" />
+                  <Checkbox 
+                    id="cuban-bracelets" 
+                    checked={selectedProductTypes.includes('cuban')}
+                    onCheckedChange={(checked) => handleProductTypeChange('cuban', checked as boolean)}
+                  />
                   <label htmlFor="cuban-bracelets" className="text-sm">Cuban Bracelets</label>
-                  <span className="text-xs text-gray-500">(1)</span>
                 </div>
               </CollapsibleContent>
             </Collapsible>
@@ -212,19 +310,28 @@ const Bracelets = () => {
               </CollapsibleTrigger>
               <CollapsibleContent className="mt-2 space-y-2">
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="yellow-gold" />
+                  <Checkbox 
+                    id="yellow-gold" 
+                    checked={selectedColors.includes('yellow')}
+                    onCheckedChange={(checked) => handleColorChange('yellow', checked as boolean)}
+                  />
                   <label htmlFor="yellow-gold" className="text-sm">Yellow Gold</label>
-                  <span className="text-xs text-gray-500">(1)</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="rose-gold" />
+                  <Checkbox 
+                    id="rose-gold" 
+                    checked={selectedColors.includes('rose')}
+                    onCheckedChange={(checked) => handleColorChange('rose', checked as boolean)}
+                  />
                   <label htmlFor="rose-gold" className="text-sm">Rose Gold</label>
-                  <span className="text-xs text-gray-500">(1)</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="white-gold" />
+                  <Checkbox 
+                    id="white-gold" 
+                    checked={selectedColors.includes('white')}
+                    onCheckedChange={(checked) => handleColorChange('white', checked as boolean)}
+                  />
                   <label htmlFor="white-gold" className="text-sm">White Gold</label>
-                  <span className="text-xs text-gray-500">(1)</span>
                 </div>
               </CollapsibleContent>
             </Collapsible>
@@ -237,14 +344,20 @@ const Bracelets = () => {
               </CollapsibleTrigger>
               <CollapsibleContent className="mt-2 space-y-2">
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="925-silver" />
+                  <Checkbox 
+                    id="925-silver" 
+                    checked={selectedMaterials.includes('925')}
+                    onCheckedChange={(checked) => handleMaterialChange('925', checked as boolean)}
+                  />
                   <label htmlFor="925-silver" className="text-sm">925 Silver</label>
-                  <span className="text-xs text-gray-500">(2)</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="14k-gold" />
-                  <label htmlFor="14k-gold" className="text-sm">14K Gold Gold</label>
-                  <span className="text-xs text-gray-500">(1)</span>
+                  <Checkbox 
+                    id="14k-gold" 
+                    checked={selectedMaterials.includes('14k')}
+                    onCheckedChange={(checked) => handleMaterialChange('14k', checked as boolean)}
+                  />
+                  <label htmlFor="14k-gold" className="text-sm">14K Gold</label>
                 </div>
               </CollapsibleContent>
             </Collapsible>
@@ -254,7 +367,7 @@ const Bracelets = () => {
         {/* Products Section */}
         <div className={`flex-1 ${isMobile ? 'py-4 px-4' : 'py-8 px-8'}`}>
           <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-semibold">{validProducts.length} Products</span>
+            <span className="text-lg font-semibold">{sortedProducts.length} Products</span>
             
             <div className="flex items-center space-x-4">
               {isMobile && (
@@ -284,9 +397,8 @@ const Bracelets = () => {
 
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-6`}>
-            {validProducts.map((product) => {
+            {sortedProducts.map((product) => {
               const startingPrice = getStartingPrice(product);
-              const hasMultipleLengths = product.lengths_and_prices && Array.isArray(product.lengths_and_prices) && product.lengths_and_prices.length > 0;
 
               return (
                 <div 
@@ -340,7 +452,7 @@ const Bracelets = () => {
                     
                     <div className="flex items-center space-x-2">
                       <span className="text-lg font-bold text-blue-600">
-                        {hasMultipleLengths ? 'FROM ' : ''}${(startingPrice / 100).toFixed(2)}
+                        ${(startingPrice / 100).toFixed(2)}
                       </span>
                       {product.original_price && product.original_price > startingPrice && (
                         <span className="text-sm text-gray-500 line-through">
