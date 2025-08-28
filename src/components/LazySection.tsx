@@ -44,7 +44,13 @@ const LazySection = ({
 
   return (
     <div ref={ref}>
-      {isVisible ? children : fallback}
+      {isVisible ? (
+        <div className="animate-fade-in opacity-0 animate-fill-forwards">
+          {children}
+        </div>
+      ) : (
+        fallback
+      )}
     </div>
   );
 };
