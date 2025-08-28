@@ -12,6 +12,8 @@ import MoissanitePendantsSection from '../components/MoissanitePendantsSection';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import CategoryNavigation from '../components/CategoryNavigation';
+import LazySection from '../components/LazySection';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Index = () => {
   return (
@@ -20,15 +22,42 @@ const Index = () => {
       <Header />
       <Hero />
       <CategoryNavigation />
-      <ProductShowcase />
-      <CategorySection />
-      <CustomerReviews />
-      <BestDeals />
-      <ChainsSection />
-      <MoissaniteGrillzSection />
-      <MoissaniteWatchesSection />
-      <MoissanitePendantsSection />
-      <Footer />
+      
+      <LazySection fallback={<Skeleton className="w-full h-96" />}>
+        <ProductShowcase />
+      </LazySection>
+      
+      <LazySection fallback={<Skeleton className="w-full h-80" />}>
+        <CategorySection />
+      </LazySection>
+      
+      <LazySection fallback={<Skeleton className="w-full h-96" />}>
+        <CustomerReviews />
+      </LazySection>
+      
+      <LazySection fallback={<Skeleton className="w-full h-80" />}>
+        <BestDeals />
+      </LazySection>
+      
+      <LazySection fallback={<Skeleton className="w-full h-80" />}>
+        <ChainsSection />
+      </LazySection>
+      
+      <LazySection fallback={<Skeleton className="w-full h-80" />}>
+        <MoissaniteGrillzSection />
+      </LazySection>
+      
+      <LazySection fallback={<Skeleton className="w-full h-80" />}>
+        <MoissaniteWatchesSection />
+      </LazySection>
+      
+      <LazySection fallback={<Skeleton className="w-full h-80" />}>
+        <MoissanitePendantsSection />
+      </LazySection>
+      
+      <LazySection fallback={<Skeleton className="w-full h-64" />}>
+        <Footer />
+      </LazySection>
     </div>
   );
 };
