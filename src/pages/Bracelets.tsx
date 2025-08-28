@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -77,60 +78,53 @@ const Bracelets = () => {
     product.stripe_price_id || (product.lengths_and_prices && Array.isArray(product.lengths_and_prices))
   );
 
-  // Calculate filter counts
-  const filterCounts = useMemo(() => {
+  // Calculate dynamic filter options and counts
+  const filterOptions = useMemo(() => {
+    const productTypes = new Set<string>();
+    const colors = new Set<string>();
+    const materials = new Set<string>();
+    
     const productTypeCounts: Record<string, number> = {};
     const colorCounts: Record<string, number> = {};
     const materialCounts: Record<string, number> = {};
 
     validProducts.forEach(product => {
-      // Count product types
+      // Extract unique product types
       if (product.product_type) {
-        const type = product.product_type.toLowerCase();
-        if (type.includes('tennis')) {
-          productTypeCounts['tennis'] = (productTypeCounts['tennis'] || 0) + 1;
-        }
-        if (type.includes('cuban')) {
-          productTypeCounts['cuban'] = (productTypeCounts['cuban'] || 0) + 1;
-        }
-        if (type.includes('baguette')) {
-          productTypeCounts['baguette'] = (productTypeCounts['baguette'] || 0) + 1;
-        }
-        if (type.includes('chain')) {
-          productTypeCounts['chain'] = (productTypeCounts['chain'] || 0) + 1;
-        }
-        if (type.includes('link')) {
-          productTypeCounts['link'] = (productTypeCounts['link'] || 0) + 1;
+        const type = product.product_type.trim();
+        if (type) {
+          productTypes.add(type);
+          productTypeCounts[type] = (productTypeCounts[type] || 0) + 1;
         }
       }
 
-      // Count colors
+      // Extract unique colors
       if (product.color) {
-        const color = product.color.toLowerCase();
-        if (color.includes('yellow')) {
-          colorCounts['yellow'] = (colorCounts['yellow'] || 0) + 1;
-        }
-        if (color.includes('rose')) {
-          colorCounts['rose'] = (colorCounts['rose'] || 0) + 1;
-        }
-        if (color.includes('white')) {
-          colorCounts['white'] = (colorCounts['white'] || 0) + 1;
+        const color = product.color.trim();
+        if (color) {
+          colors.add(color);
+          colorCounts[color] = (colorCounts[color] || 0) + 1;
         }
       }
 
-      // Count materials
+      // Extract unique materials
       if (product.material) {
-        const material = product.material.toLowerCase();
-        if (material.includes('925')) {
-          materialCounts['925'] = (materialCounts['925'] || 0) + 1;
-        }
-        if (material.includes('14k')) {
-          materialCounts['14k'] = (materialCounts['14k'] || 0) + 1;
+        const material = product.material.trim();
+        if (material) {
+          materials.add(material);
+          materialCounts[material] = (materialCounts[material] || 0) + 1;
         }
       }
     });
 
-    return { productTypeCounts, colorCounts, materialCounts };
+    return {
+      productTypes: Array.from(productTypes).sort(),
+      colors: Array.from(colors).sort(),
+      materials: Array.from(materials).sort(),
+      productTypeCounts,
+      colorCounts,
+      materialCounts
+    };
   }, [validProducts]);
 
   // Apply filters
@@ -158,9 +152,7 @@ const Bracelets = () => {
     // Product type filter
     if (selectedProductTypes.length > 0) {
       const productTypeMatch = selectedProductTypes.some(type => 
-        product.product_type?.toLowerCase().includes(type.toLowerCase()) ||
-        product.name?.toLowerCase().includes(type.toLowerCase()) ||
-        product.category?.toLowerCase().includes(type.toLowerCase())
+        product.product_type === type
       );
       if (!productTypeMatch) return false;
     }
@@ -168,7 +160,7 @@ const Bracelets = () => {
     // Color filter
     if (selectedColors.length > 0) {
       const colorMatch = selectedColors.some(color => 
-        product.color?.toLowerCase().includes(color.toLowerCase())
+        product.color === color
       );
       if (!colorMatch) return false;
     }
@@ -176,7 +168,7 @@ const Bracelets = () => {
     // Material filter
     if (selectedMaterials.length > 0) {
       const materialMatch = selectedMaterials.some(material => 
-        product.material?.toLowerCase().includes(material.toLowerCase())
+        product.material === material
       );
       if (!materialMatch) return false;
     }
@@ -283,7 +275,7 @@ const Bracelets = () => {
             
             {/* Category Tabs */}
             <div className="flex justify-center space-x-8 mb-8">
-              {['TENNIS BRACELETS', 'CUBAN LINK BRACELETS', 'BAGUETTE BRACELETS'].map((tab) => (
+              {['ALL BRACELETS', 'TENNIS BRACELETS', 'CUBAN LINK BRACELETS', 'BAGUETTE BRACELETS'].map((tab) => (
                 <Button
                   key={tab}
                   variant={activeTab === tab ? "default" : "ghost"}
@@ -310,69 +302,29 @@ const Bracelets = () => {
             <h3 className="font-semibold mb-4">Filters</h3>
             
             {/* Product Type */}
-            <Collapsible defaultOpen className="mb-6">
-              <CollapsibleTrigger className="flex items-center justify-between w-full font-medium">
-                PRODUCT TYPE
-                <ChevronDown className="h-4 w-4" />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-2 space-y-2">
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="tennis-bracelets" 
-                      checked={selectedProductTypes.includes('tennis')}
-                      onCheckedChange={(checked) => handleProductTypeChange('tennis', checked as boolean)}
-                    />
-                    <label htmlFor="tennis-bracelets" className="text-sm">Tennis Bracelets</label>
-                  </div>
-                  <span className="text-xs text-gray-500">({filterCounts.productTypeCounts['tennis'] || 0})</span>
-                </div>
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="cuban-bracelets" 
-                      checked={selectedProductTypes.includes('cuban')}
-                      onCheckedChange={(checked) => handleProductTypeChange('cuban', checked as boolean)}
-                    />
-                    <label htmlFor="cuban-bracelets" className="text-sm">Cuban Bracelets</label>
-                  </div>
-                  <span className="text-xs text-gray-500">({filterCounts.productTypeCounts['cuban'] || 0})</span>
-                </div>
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="baguette-bracelets" 
-                      checked={selectedProductTypes.includes('baguette')}
-                      onCheckedChange={(checked) => handleProductTypeChange('baguette', checked as boolean)}
-                    />
-                    <label htmlFor="baguette-bracelets" className="text-sm">Baguette Bracelets</label>
-                  </div>
-                  <span className="text-xs text-gray-500">({filterCounts.productTypeCounts['baguette'] || 0})</span>
-                </div>
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="chain-bracelets" 
-                      checked={selectedProductTypes.includes('chain')}
-                      onCheckedChange={(checked) => handleProductTypeChange('chain', checked as boolean)}
-                    />
-                    <label htmlFor="chain-bracelets" className="text-sm">Chain Bracelets</label>
-                  </div>
-                  <span className="text-xs text-gray-500">({filterCounts.productTypeCounts['chain'] || 0})</span>
-                </div>
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="link-bracelets" 
-                      checked={selectedProductTypes.includes('link')}
-                      onCheckedChange={(checked) => handleProductTypeChange('link', checked as boolean)}
-                    />
-                    <label htmlFor="link-bracelets" className="text-sm">Link Bracelets</label>
-                  </div>
-                  <span className="text-xs text-gray-500">({filterCounts.productTypeCounts['link'] || 0})</span>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+            {filterOptions.productTypes.length > 0 && (
+              <Collapsible defaultOpen className="mb-6">
+                <CollapsibleTrigger className="flex items-center justify-between w-full font-medium">
+                  PRODUCT TYPE
+                  <ChevronDown className="h-4 w-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-2 space-y-2">
+                  {filterOptions.productTypes.map((type) => (
+                    <div key={type} className="flex items-center justify-between w-full">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={`product-type-${type}`} 
+                          checked={selectedProductTypes.includes(type)}
+                          onCheckedChange={(checked) => handleProductTypeChange(type, checked as boolean)}
+                        />
+                        <label htmlFor={`product-type-${type}`} className="text-sm">{type}</label>
+                      </div>
+                      <span className="text-xs text-gray-500">({filterOptions.productTypeCounts[type] || 0})</span>
+                    </div>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
+            )}
 
             {/* Price Range */}
             <Collapsible defaultOpen className="mb-6">
@@ -407,79 +359,54 @@ const Bracelets = () => {
             </Collapsible>
 
             {/* Color */}
-            <Collapsible defaultOpen className="mb-6">
-              <CollapsibleTrigger className="flex items-center justify-between w-full font-medium">
-                COLOR
-                <ChevronDown className="h-4 w-4" />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-2 space-y-2">
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="yellow-gold" 
-                      checked={selectedColors.includes('yellow')}
-                      onCheckedChange={(checked) => handleColorChange('yellow', checked as boolean)}
-                    />
-                    <label htmlFor="yellow-gold" className="text-sm">Yellow Gold</label>
-                  </div>
-                  <span className="text-xs text-gray-500">({filterCounts.colorCounts['yellow'] || 0})</span>
-                </div>
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="rose-gold" 
-                      checked={selectedColors.includes('rose')}
-                      onCheckedChange={(checked) => handleColorChange('rose', checked as boolean)}
-                    />
-                    <label htmlFor="rose-gold" className="text-sm">Rose Gold</label>
-                  </div>
-                  <span className="text-xs text-gray-500">({filterCounts.colorCounts['rose'] || 0})</span>
-                </div>
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="white-gold" 
-                      checked={selectedColors.includes('white')}
-                      onCheckedChange={(checked) => handleColorChange('white', checked as boolean)}
-                    />
-                    <label htmlFor="white-gold" className="text-sm">White Gold</label>
-                  </div>
-                  <span className="text-xs text-gray-500">({filterCounts.colorCounts['white'] || 0})</span>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+            {filterOptions.colors.length > 0 && (
+              <Collapsible defaultOpen className="mb-6">
+                <CollapsibleTrigger className="flex items-center justify-between w-full font-medium">
+                  COLOR
+                  <ChevronDown className="h-4 w-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-2 space-y-2">
+                  {filterOptions.colors.map((color) => (
+                    <div key={color} className="flex items-center justify-between w-full">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={`color-${color}`} 
+                          checked={selectedColors.includes(color)}
+                          onCheckedChange={(checked) => handleColorChange(color, checked as boolean)}
+                        />
+                        <label htmlFor={`color-${color}`} className="text-sm">{color}</label>
+                      </div>
+                      <span className="text-xs text-gray-500">({filterOptions.colorCounts[color] || 0})</span>
+                    </div>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
+            )}
 
             {/* Material */}
-            <Collapsible defaultOpen className="mb-6">
-              <CollapsibleTrigger className="flex items-center justify-between w-full font-medium">
-                MATERIAL
-                <ChevronDown className="h-4 w-4" />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-2 space-y-2">
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="925-silver" 
-                      checked={selectedMaterials.includes('925')}
-                      onCheckedChange={(checked) => handleMaterialChange('925', checked as boolean)}
-                    />
-                    <label htmlFor="925-silver" className="text-sm">925 Silver</label>
-                  </div>
-                  <span className="text-xs text-gray-500">({filterCounts.materialCounts['925'] || 0})</span>
-                </div>
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="14k-gold" 
-                      checked={selectedMaterials.includes('14k')}
-                      onCheckedChange={(checked) => handleMaterialChange('14k', checked as boolean)}
-                    />
-                    <label htmlFor="14k-gold" className="text-sm">14K Gold</label>
-                  </div>
-                  <span className="text-xs text-gray-500">({filterCounts.materialCounts['14k'] || 0})</span>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+            {filterOptions.materials.length > 0 && (
+              <Collapsible defaultOpen className="mb-6">
+                <CollapsibleTrigger className="flex items-center justify-between w-full font-medium">
+                  MATERIAL
+                  <ChevronDown className="h-4 w-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-2 space-y-2">
+                  {filterOptions.materials.map((material) => (
+                    <div key={material} className="flex items-center justify-between w-full">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={`material-${material}`} 
+                          checked={selectedMaterials.includes(material)}
+                          onCheckedChange={(checked) => handleMaterialChange(material, checked as boolean)}
+                        />
+                        <label htmlFor={`material-${material}`} className="text-sm">{material}</label>
+                      </div>
+                      <span className="text-xs text-gray-500">({filterOptions.materialCounts[material] || 0})</span>
+                    </div>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
+            )}
           </div>
         )}
 
