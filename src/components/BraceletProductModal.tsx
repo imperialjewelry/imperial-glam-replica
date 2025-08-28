@@ -8,10 +8,18 @@ import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { Tables } from '@/integrations/supabase/types';
 
-type BraceletProduct = Tables<'bracelet_products'>;
+interface LengthPrice {
+  length: string;
+  price: number;
+  stripe_price_id: string;
+}
+
+interface Product extends Omit<Tables<'bracelet_products'>, 'lengths_and_prices'> {
+  lengths_and_prices?: LengthPrice[];
+}
 
 interface BraceletProductModalProps {
-  product: BraceletProduct;
+  product: Product;
   onClose: () => void;
 }
 
@@ -21,25 +29,7 @@ const BraceletProductModal = ({ product, onClose }: BraceletProductModalProps) =
   const { toast } = useToast();
 
   const getCurrentPriceInfo = () => {
-    let lengthsAndPrices: Array<{
-      length: string;
-      price: number;
-      stripe_price_id: string;
-    }> = [];
-
-    if (product.lengths_and_prices) {
-      try {
-        const parsed = typeof product.lengths_and_prices === 'string' 
-          ? JSON.parse(product.lengths_and_prices) 
-          : product.lengths_and_prices;
-        
-        if (Array.isArray(parsed)) {
-          lengthsAndPrices = parsed;
-        }
-      } catch (error) {
-        console.error('Error parsing lengths_and_prices:', error);
-      }
-    }
+    const lengthsAndPrices = product.lengths_and_prices || [];
 
     if (lengthsAndPrices.length > 0 && selectedLength) {
       const selectedLengthInfo = lengthsAndPrices.find(lp => lp.length === selectedLength);
@@ -57,25 +47,7 @@ const BraceletProductModal = ({ product, onClose }: BraceletProductModalProps) =
   };
 
   const handleAddToCart = () => {
-    let lengthsAndPrices: Array<{
-      length: string;
-      price: number;
-      stripe_price_id: string;
-    }> = [];
-
-    if (product.lengths_and_prices) {
-      try {
-        const parsed = typeof product.lengths_and_prices === 'string' 
-          ? JSON.parse(product.lengths_and_prices) 
-          : product.lengths_and_prices;
-        
-        if (Array.isArray(parsed)) {
-          lengthsAndPrices = parsed;
-        }
-      } catch (error) {
-        console.error('Error parsing lengths_and_prices:', error);
-      }
-    }
+    const lengthsAndPrices = product.lengths_and_prices || [];
 
     if (lengthsAndPrices.length > 0 && !selectedLength) {
       toast({
@@ -116,22 +88,7 @@ const BraceletProductModal = ({ product, onClose }: BraceletProductModalProps) =
     dispatch({ type: 'TOGGLE_CART' });
   };
 
-  const getLengthsAndPrices = () => {
-    if (!product.lengths_and_prices) return [];
-    
-    try {
-      const parsed = typeof product.lengths_and_prices === 'string' 
-        ? JSON.parse(product.lengths_and_prices) 
-        : product.lengths_and_prices;
-      
-      return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-      console.error('Error parsing lengths_and_prices:', error);
-      return [];
-    }
-  };
-
-  const lengthsAndPrices = getLengthsAndPrices();
+  const lengthsAndPrices = product.lengths_and_prices || [];
 
   const qualityFeatures = [
     { text: "Doesn't fade", subtext: "or tarnish" },
