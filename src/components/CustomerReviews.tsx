@@ -1,4 +1,3 @@
-
 import { Star } from 'lucide-react';
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
@@ -26,7 +25,7 @@ const CustomerReviews = () => {
     {
       id: 3,
       title: "Craftsmanship on Point",
-      content: "Every stone is placed with no gaps."
+      content: "Every stone is placed with no gaps.",
       image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/review3.webp"
     },
     {
@@ -94,6 +93,7 @@ const CustomerReviews = () => {
                           src={review.image}
                           alt={review.title}
                           className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                       </div>
                       <div className="p-4">
@@ -118,6 +118,7 @@ const CustomerReviews = () => {
                     src={review.image}
                     alt={review.title}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                 </div>
                 <div className="p-4">
@@ -152,30 +153,31 @@ const CustomerReviews = () => {
                   alt="PayPal Pay Later"
                   className="h-8"
                 />
-                <span className="text-xs text-gray-600 whitespace-nowrap">Payment plans for 12–36 months</span>
-                <span className="text-xl font-bold text-black whitespace-nowrap">BUY NOW PAY LATER</span>
+                <span className="text-xs text-gray-600 whitespace-nowrap">
+                  Payment plans for 12–36 months
+                </span>
+                <span className="text-xl font-bold text-black whitespace-nowrap">
+                  BUY NOW PAY LATER
+                </span>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
           @keyframes scroll-payment {
-            0% {
-              transform: translateX(0);
-            }
-            100% {
-              transform: translateX(-50%);
-            }
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
           }
-          
           .animate-scroll-payment {
             animation: scroll-payment 17s linear infinite;
           }
-        `
-      }} />
+        `,
+        }}
+      />
     </section>
   );
 };
