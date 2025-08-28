@@ -61,6 +61,18 @@ const Bracelets = () => {
     },
   });
 
+  // Helper function to get starting price for products with multiple lengths
+  const getStartingPrice = (product: Product): number => {
+    if (product.lengths_and_prices && Array.isArray(product.lengths_and_prices)) {
+      const lengthsAndPrices = product.lengths_and_prices;
+      if (lengthsAndPrices.length > 0) {
+        const prices = lengthsAndPrices.map(lp => lp.price);
+        return Math.min(...prices);
+      }
+    }
+    return product.price || 0;
+  };
+
   // Filter products that have either stripe_price_id or lengths_and_prices
   const validProducts = products.filter(product => 
     product.stripe_price_id || (product.lengths_and_prices && Array.isArray(product.lengths_and_prices))
@@ -82,8 +94,8 @@ const Bracelets = () => {
     // Product type filter
     if (selectedProductTypes.length > 0) {
       const productTypeMatch = selectedProductTypes.some(type => 
-        product.product_type.toLowerCase().includes(type.toLowerCase()) ||
-        product.name.toLowerCase().includes(type.toLowerCase())
+        product.product_type?.toLowerCase().includes(type.toLowerCase()) ||
+        product.name?.toLowerCase().includes(type.toLowerCase())
       );
       if (!productTypeMatch) return false;
     }
@@ -91,7 +103,7 @@ const Bracelets = () => {
     // Color filter
     if (selectedColors.length > 0) {
       const colorMatch = selectedColors.some(color => 
-        product.color.toLowerCase().includes(color.toLowerCase())
+        product.color?.toLowerCase().includes(color.toLowerCase())
       );
       if (!colorMatch) return false;
     }
@@ -99,7 +111,7 @@ const Bracelets = () => {
     // Material filter
     if (selectedMaterials.length > 0) {
       const materialMatch = selectedMaterials.some(material => 
-        product.material.toLowerCase().includes(material.toLowerCase())
+        product.material?.toLowerCase().includes(material.toLowerCase())
       );
       if (!materialMatch) return false;
     }
@@ -123,21 +135,9 @@ const Bracelets = () => {
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       case 'featured':
       default:
-        return b.featured === a.featured ? 0 : b.featured ? 1 : -1;
+        return (b.featured === a.featured) ? 0 : (b.featured ? 1 : -1);
     }
   });
-
-  // Helper function to get starting price for products with multiple lengths
-  const getStartingPrice = (product: Product) => {
-    if (product.lengths_and_prices && Array.isArray(product.lengths_and_prices)) {
-      const lengthsAndPrices = product.lengths_and_prices;
-      if (lengthsAndPrices.length > 0) {
-        const prices = lengthsAndPrices.map(lp => lp.price);
-        return Math.min(...prices);
-      }
-    }
-    return product.price;
-  };
 
   const handleProductClick = (product: Product) => {
     setSelectedProduct(product);
@@ -150,25 +150,25 @@ const Bracelets = () => {
   // Filter handlers
   const handleProductTypeChange = (type: string, checked: boolean) => {
     if (checked) {
-      setSelectedProductTypes([...selectedProductTypes, type]);
+      setSelectedProductTypes(prev => [...prev, type]);
     } else {
-      setSelectedProductTypes(selectedProductTypes.filter(t => t !== type));
+      setSelectedProductTypes(prev => prev.filter(t => t !== type));
     }
   };
 
   const handleColorChange = (color: string, checked: boolean) => {
     if (checked) {
-      setSelectedColors([...selectedColors, color]);
+      setSelectedColors(prev => [...prev, color]);
     } else {
-      setSelectedColors(selectedColors.filter(c => c !== color));
+      setSelectedColors(prev => prev.filter(c => c !== color));
     }
   };
 
   const handleMaterialChange = (material: string, checked: boolean) => {
     if (checked) {
-      setSelectedMaterials([...selectedMaterials, material]);
+      setSelectedMaterials(prev => [...prev, material]);
     } else {
-      setSelectedMaterials(selectedMaterials.filter(m => m !== material));
+      setSelectedMaterials(prev => prev.filter(m => m !== material));
     }
   };
 
@@ -398,8 +398,6 @@ const Bracelets = () => {
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-6`}>
             {sortedProducts.map((product) => {
-              const startingPrice = getStartingPrice(product);
-
               return (
                 <div 
                   key={product.id} 
@@ -448,17 +446,6 @@ const Bracelets = () => {
                         ))}
                       </div>
                       <span className="text-xs text-gray-500">({product.review_count})</span>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg font-bold text-blue-600">
-                        ${(startingPrice / 100).toFixed(2)}
-                      </span>
-                      {product.original_price && product.original_price > startingPrice && (
-                        <span className="text-sm text-gray-500 line-through">
-                          ${(product.original_price / 100).toFixed(2)}
-                        </span>
-                      )}
                     </div>
                   </div>
                 </div>
