@@ -286,7 +286,7 @@ const Header = () => {
                 <div className="flex items-center space-x-3 py-2">
                   <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
                     <img 
-                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/earrings//skullpendanyt.webp"
+                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/pendants/skullpendanyt.webp"
                       alt="Pendants"
                       className="w-full h-full object-cover"
                     />
