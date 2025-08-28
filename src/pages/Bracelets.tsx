@@ -9,9 +9,11 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import ProductCheckout from '@/components/ProductCheckout';
+import BraceletProductModal from '@/components/BraceletProductModal';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
+import { Tables } from '@/integrations/supabase/types';
 
 interface LengthPrice {
   length: string;
@@ -19,32 +21,7 @@ interface LengthPrice {
   stripe_price_id: string;
 }
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  original_price: number;
-  category: string;
-  product_type: string;
-  color: string;
-  material: string;
-  gemstone: string;
-  diamond_cut: string;
-  sizes: string[];
-  image_url: string;
-  rating: number;
-  review_count: number;
-  discount_percentage: number;
-  in_stock: boolean;
-  ships_today: boolean;
-  featured: boolean;
-  created_at: string;
-  updated_at: string;
-  stripe_product_id: string;
-  stripe_price_id?: string;
-  lengths_and_prices: LengthPrice[];
-}
+type BraceletProduct = Tables<'bracelet_products'>;
 
 const Bracelets = () => {
   const isMobile = useIsMobile();
@@ -53,10 +30,11 @@ const Bracelets = () => {
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<BraceletProduct | null>(null);
 
   const { data: products = [], isLoading, error } = useQuery({
     queryKey: ['bracelet-products'],
-    queryFn: async (): Promise<Product[]> => {
+    queryFn: async (): Promise<BraceletProduct[]> => {
       const { data, error } = await supabase
         .from('bracelet_products')
         .select('*')
@@ -67,27 +45,42 @@ const Bracelets = () => {
         throw error;
       }
       
-      return (data || []).map(product => ({
-        ...product,
-        lengths_and_prices: Array.isArray(product.lengths_and_prices) 
-          ? (product.lengths_and_prices as unknown as LengthPrice[])
-          : []
-      }));
+      return data || [];
     },
   });
 
   // Filter products that have either stripe_price_id or lengths_and_prices
   const validProducts = products.filter(product => 
-    product.stripe_price_id || (product.lengths_and_prices && product.lengths_and_prices.length > 0)
+    product.stripe_price_id || (product.lengths_and_prices && Array.isArray(product.lengths_and_prices))
   );
 
   // Helper function to get starting price for products with multiple lengths
-  const getStartingPrice = (product: Product) => {
-    if (product.lengths_and_prices && product.lengths_and_prices.length > 0) {
-      const prices = product.lengths_and_prices.map(lp => lp.price);
-      return Math.min(...prices);
+  const getStartingPrice = (product: BraceletProduct) => {
+    if (product.lengths_and_prices && Array.isArray(product.lengths_and_prices)) {
+      const lengthsAndPrices = product.lengths_and_prices as unknown as LengthPrice[];
+      if (lengthsAndPrices.length > 0) {
+        const prices = lengthsAndPrices.map(lp => lp.price);
+        return Math.min(...prices);
+      }
     }
     return product.price;
+  };
+
+  // Helper function to get available sizes
+  const getAvailableSizes = (product: BraceletProduct) => {
+    if (product.lengths_and_prices && Array.isArray(product.lengths_and_prices)) {
+      const lengthsAndPrices = product.lengths_and_prices as unknown as LengthPrice[];
+      return lengthsAndPrices.map(lp => lp.length);
+    }
+    return product.sizes || [];
+  };
+
+  const handleProductClick = (product: BraceletProduct) => {
+    setSelectedProduct(product);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProduct(null);
   };
 
   if (isLoading) {
@@ -296,14 +289,15 @@ const Bracelets = () => {
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-6`}>
             {validProducts.map((product) => {
               const startingPrice = getStartingPrice(product);
-              const hasMultipleLengths = product.lengths_and_prices && product.lengths_and_prices.length > 0;
-              const availableSizes = hasMultipleLengths 
-                ? product.lengths_and_prices.map(lp => lp.length) 
-                : product.sizes;
+              const availableSizes = getAvailableSizes(product);
+              const hasMultipleLengths = product.lengths_and_prices && Array.isArray(product.lengths_and_prices) && product.lengths_and_prices.length > 0;
 
               return (
                 <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
-                  <div className="relative aspect-square overflow-hidden rounded-t-lg">
+                  <div 
+                    className="relative aspect-square overflow-hidden rounded-t-lg cursor-pointer"
+                    onClick={() => handleProductClick(product)}
+                  >
                     <img
                       src={product.image_url}
                       alt={product.name}
@@ -381,11 +375,10 @@ const Bracelets = () => {
                         price: startingPrice,
                         image_url: product.image_url,
                         stripe_product_id: product.stripe_product_id,
-                        stripe_price_id: hasMultipleLengths 
-                          ? product.lengths_and_prices[0]?.stripe_price_id 
-                          : product.stripe_price_id,
+                        stripe_price_id: hasMultipleLengths ? undefined : product.stripe_price_id,
                         sizes: availableSizes,
                       }} 
+                      onViewDetails={hasMultipleLengths ? () => handleProductClick(product) : undefined}
                     />
                   </div>
                 </div>
@@ -394,6 +387,14 @@ const Bracelets = () => {
           </div>
         </div>
       </div>
+
+      {/* Product Modal */}
+      {selectedProduct && (
+        <BraceletProductModal
+          product={selectedProduct}
+          onClose={handleCloseModal}
+        />
+      )}
 
       <Footer />
     </div>
