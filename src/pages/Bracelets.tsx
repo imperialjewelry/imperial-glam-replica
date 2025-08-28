@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -68,7 +67,12 @@ const Bracelets = () => {
         throw error;
       }
       
-      return data || [];
+      return (data || []).map(product => ({
+        ...product,
+        lengths_and_prices: Array.isArray(product.lengths_and_prices) 
+          ? product.lengths_and_prices as LengthPrice[]
+          : []
+      }));
     },
   });
 
@@ -381,7 +385,6 @@ const Bracelets = () => {
                           ? product.lengths_and_prices[0]?.stripe_price_id 
                           : product.stripe_price_id,
                         sizes: availableSizes,
-                        lengths_and_prices: hasMultipleLengths ? product.lengths_and_prices : undefined
                       }} 
                     />
                   </div>
