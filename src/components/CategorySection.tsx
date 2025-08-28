@@ -41,7 +41,7 @@ const CategorySection = () => {
     },
     {
       name: "PENDANTS",
-      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/earrings//skullpendanyt.webp",
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/pendants/skullpendanyt.webp",
       path: "/pendants"
     },
     {
