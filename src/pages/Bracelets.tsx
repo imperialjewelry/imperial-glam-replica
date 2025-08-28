@@ -70,7 +70,7 @@ const Bracelets = () => {
       return (data || []).map(product => ({
         ...product,
         lengths_and_prices: Array.isArray(product.lengths_and_prices) 
-          ? product.lengths_and_prices as LengthPrice[]
+          ? (product.lengths_and_prices as unknown as LengthPrice[])
           : []
       }));
     },
