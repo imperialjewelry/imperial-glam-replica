@@ -25,7 +25,7 @@ const CustomerReviews = () => {
     {
       id: 3,
       title: "Craftsmanship on Point",
-      content: "Every stone is placed with no gaps.",
+      content: "Every stone is placed straight with no gaps.",
       image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/review3.webp"
     },
     {
