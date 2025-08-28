@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -442,7 +441,7 @@ const Bracelets = () => {
           </div>
 
           {/* Products Grid */}
-          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-6`}>
+          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-6`}>
             {sortedProducts.map((product) => {
               const startingPrice = getStartingPrice(product);
               const displayPrice = startingPrice > 0 ? startingPrice : product.price;
