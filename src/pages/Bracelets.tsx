@@ -8,7 +8,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
-import ProductCheckout from '@/components/ProductCheckout';
 import BraceletProductModal from '@/components/BraceletProductModal';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
@@ -21,7 +20,9 @@ interface LengthPrice {
   stripe_price_id: string;
 }
 
-type BraceletProduct = Tables<'bracelet_products'>;
+interface Product extends Omit<Tables<'bracelet_products'>, 'lengths_and_prices'> {
+  lengths_and_prices?: LengthPrice[];
+}
 
 const Bracelets = () => {
   const isMobile = useIsMobile();
@@ -30,11 +31,11 @@ const Bracelets = () => {
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<BraceletProduct | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const { data: products = [], isLoading, error } = useQuery({
     queryKey: ['bracelet-products'],
-    queryFn: async (): Promise<BraceletProduct[]> => {
+    queryFn: async (): Promise<Product[]> => {
       const { data, error } = await supabase
         .from('bracelet_products')
         .select('*')
@@ -45,7 +46,12 @@ const Bracelets = () => {
         throw error;
       }
       
-      return data || [];
+      return (data || []).map(product => ({
+        ...product,
+        lengths_and_prices: Array.isArray(product.lengths_and_prices) 
+          ? (product.lengths_and_prices as unknown as LengthPrice[])
+          : undefined
+      }));
     },
   });
 
@@ -55,9 +61,9 @@ const Bracelets = () => {
   );
 
   // Helper function to get starting price for products with multiple lengths
-  const getStartingPrice = (product: BraceletProduct) => {
+  const getStartingPrice = (product: Product) => {
     if (product.lengths_and_prices && Array.isArray(product.lengths_and_prices)) {
-      const lengthsAndPrices = product.lengths_and_prices as unknown as LengthPrice[];
+      const lengthsAndPrices = product.lengths_and_prices;
       if (lengthsAndPrices.length > 0) {
         const prices = lengthsAndPrices.map(lp => lp.price);
         return Math.min(...prices);
@@ -66,16 +72,7 @@ const Bracelets = () => {
     return product.price;
   };
 
-  // Helper function to get available sizes
-  const getAvailableSizes = (product: BraceletProduct) => {
-    if (product.lengths_and_prices && Array.isArray(product.lengths_and_prices)) {
-      const lengthsAndPrices = product.lengths_and_prices as unknown as LengthPrice[];
-      return lengthsAndPrices.map(lp => lp.length);
-    }
-    return product.sizes || [];
-  };
-
-  const handleProductClick = (product: BraceletProduct) => {
+  const handleProductClick = (product: Product) => {
     setSelectedProduct(product);
   };
 
@@ -289,15 +286,15 @@ const Bracelets = () => {
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-6`}>
             {validProducts.map((product) => {
               const startingPrice = getStartingPrice(product);
-              const availableSizes = getAvailableSizes(product);
               const hasMultipleLengths = product.lengths_and_prices && Array.isArray(product.lengths_and_prices) && product.lengths_and_prices.length > 0;
 
               return (
-                <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
-                  <div 
-                    className="relative aspect-square overflow-hidden rounded-t-lg cursor-pointer"
-                    onClick={() => handleProductClick(product)}
-                  >
+                <div 
+                  key={product.id} 
+                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => handleProductClick(product)}
+                >
+                  <div className="relative aspect-square overflow-hidden rounded-t-lg">
                     <img
                       src={product.image_url}
                       alt={product.name}
@@ -321,22 +318,6 @@ const Bracelets = () => {
                         </Badge>
                       )}
                     </div>
-
-                    {/* Size options */}
-                    {availableSizes && availableSizes.length > 0 && (
-                      <div className="absolute bottom-2 left-2 flex flex-wrap gap-1">
-                        {availableSizes.slice(0, 3).map((size, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs bg-white/90 text-gray-800">
-                            {size}
-                          </Badge>
-                        ))}
-                        {availableSizes.length > 3 && (
-                          <Badge variant="secondary" className="text-xs bg-white/90 text-gray-800">
-                            +{availableSizes.length - 3}
-                          </Badge>
-                        )}
-                      </div>
-                    )}
                   </div>
 
                   <div className="p-4 space-y-2">
@@ -357,7 +338,7 @@ const Bracelets = () => {
                       <span className="text-xs text-gray-500">({product.review_count})</span>
                     </div>
                     
-                    <div className="flex items-center space-x-2 mb-3">
+                    <div className="flex items-center space-x-2">
                       <span className="text-lg font-bold text-blue-600">
                         {hasMultipleLengths ? 'FROM ' : ''}${(startingPrice / 100).toFixed(2)}
                       </span>
@@ -367,19 +348,6 @@ const Bracelets = () => {
                         </span>
                       )}
                     </div>
-
-                    <ProductCheckout 
-                      product={{
-                        id: product.id,
-                        name: product.name,
-                        price: startingPrice,
-                        image_url: product.image_url,
-                        stripe_product_id: product.stripe_product_id,
-                        stripe_price_id: hasMultipleLengths ? undefined : product.stripe_price_id,
-                        sizes: availableSizes,
-                      }} 
-                      onViewDetails={hasMultipleLengths ? () => handleProductClick(product) : undefined}
-                    />
                   </div>
                 </div>
               );
