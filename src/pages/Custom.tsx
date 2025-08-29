@@ -11,7 +11,7 @@ import { Tables } from '@/integrations/supabase/types';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
-import PendantProductModal from '../components/PendantProductModal';
+import CustomProductModal from '../components/CustomProductModal';
 
 type CustomProduct = Tables<'custom_products'>;
 
@@ -506,12 +506,8 @@ const Custom = () => {
 
       {/* Product Modal */}
       {selectedProduct && (
-        <PendantProductModal 
-          product={{
-            ...selectedProduct,
-            gemstone: selectedProduct.material, // Use material as gemstone fallback
-            diamond_cut: 'Round' // Provide default diamond_cut
-          }}
+        <CustomProductModal 
+          product={selectedProduct}
           onClose={() => setSelectedProduct(null)}
         />
       )}
