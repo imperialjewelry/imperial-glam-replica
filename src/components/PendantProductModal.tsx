@@ -17,8 +17,6 @@ interface PendantProductModalProps {
 
 const PendantProductModal = ({ product, onClose }: PendantProductModalProps) => {
   const [selectedSize, setSelectedSize] = useState('');
-  const [selectedColor, setSelectedColor] = useState(product.color);
-  const [selectedMaterial, setSelectedMaterial] = useState(product.material);
   const [selectedGemstone, setSelectedGemstone] = useState(product.gemstone || '');
   const [selectedDiamondCut, setSelectedDiamondCut] = useState(product.diamond_cut || '');
   const { addToCart, dispatch } = useCart();
@@ -49,7 +47,7 @@ const PendantProductModal = ({ product, onClose }: PendantProductModalProps) => 
       price: product.price,
       image_url: product.image_url,
       selectedSize,
-      selectedColor,
+      selectedColor: product.color, // Use default product color
       stripe_price_id: product.stripe_price_id,
     });
 
@@ -139,41 +137,6 @@ const PendantProductModal = ({ product, onClose }: PendantProductModalProps) => 
                     </Select>
                   </div>
                 )}
-
-                {/* Color Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Color
-                  </label>
-                  <Select value={selectedColor} onValueChange={setSelectedColor}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Yellow Gold">Yellow Gold</SelectItem>
-                      <SelectItem value="White Gold">White Gold</SelectItem>
-                      <SelectItem value="Rose Gold">Rose Gold</SelectItem>
-                      <SelectItem value="Black Gold">Black Gold</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Material Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Material
-                  </label>
-                  <Select value={selectedMaterial} onValueChange={setSelectedMaterial}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="925 Silver">925 Silver</SelectItem>
-                      <SelectItem value="Solid Gold">Solid Gold</SelectItem>
-                      <SelectItem value="Brass">Brass</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
 
                 {/* Gemstone Selection */}
                 {product.gemstone && (
