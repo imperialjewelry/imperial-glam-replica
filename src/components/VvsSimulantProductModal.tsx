@@ -27,6 +27,7 @@ interface VvsSimulantProduct {
   cut_quality: string | null;
   clarity_grade: string | null;
   description: string | null;
+  stripe_price_id: string;
 }
 
 interface VvsSimulantProductModalProps {
@@ -63,10 +64,10 @@ const VvsSimulantProductModal = ({ product, onClose }: VvsSimulantProductModalPr
       id: product.id,
       name: product.name,
       price: product.price,
-      image: product.image_url,
+      image_url: product.image_url,
       selectedSize: selectedSize || 'Standard',
       quantity: 1,
-      category: product.category
+      stripe_price_id: product.stripe_price_id
     };
 
     dispatch({ type: 'ADD_ITEM', payload: cartItem });
