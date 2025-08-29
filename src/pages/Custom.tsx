@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,28 +11,40 @@ import { Tables } from '@/integrations/supabase/types';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
+import PendantProductModal from '../components/PendantProductModal';
 
 type CustomProduct = Tables<'custom_products'>;
 
 const Custom = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<CustomProduct[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<CustomProduct[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<CustomProduct | null>(null);
   const [sortBy, setSortBy] = useState('featured');
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState({
+    productType: [] as string[],
+    color: [] as string[],
+    material: [] as string[],
+    category: [] as string[]
+  });
   const [openSections, setOpenSections] = useState({
     productType: false,
     price: false,
     color: false,
     material: false,
-    shape: false,
-    gemstone: false
+    category: false
   });
 
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [products, selectedFilters, priceFrom, priceTo, sortBy]);
 
   const fetchProducts = async () => {
     const { data, error } = await supabase
@@ -48,6 +59,80 @@ const Custom = () => {
     }
   };
 
+  const applyFilters = () => {
+    let filtered = [...products];
+
+    // Apply product type filter
+    if (selectedFilters.productType.length > 0) {
+      filtered = filtered.filter(product => 
+        selectedFilters.productType.includes(product.product_type)
+      );
+    }
+
+    // Apply color filter
+    if (selectedFilters.color.length > 0) {
+      filtered = filtered.filter(product => 
+        selectedFilters.color.includes(product.color)
+      );
+    }
+
+    // Apply material filter
+    if (selectedFilters.material.length > 0) {
+      filtered = filtered.filter(product => 
+        selectedFilters.material.includes(product.material)
+      );
+    }
+
+    // Apply category filter
+    if (selectedFilters.category.length > 0) {
+      filtered = filtered.filter(product => 
+        selectedFilters.category.includes(product.category)
+      );
+    }
+
+    // Apply price range filter
+    if (priceFrom || priceTo) {
+      filtered = filtered.filter(product => {
+        const price = product.price / 100;
+        const fromPrice = priceFrom ? parseFloat(priceFrom) : 0;
+        const toPrice = priceTo ? parseFloat(priceTo) : Infinity;
+        return price >= fromPrice && price <= toPrice;
+      });
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+      default:
+        // Keep original order for featured
+        break;
+    }
+
+    setFilteredProducts(filtered);
+  };
+
+  const handleFilterChange = (filterType: keyof typeof selectedFilters, value: string) => {
+    setSelectedFilters(prev => {
+      const currentFilters = prev[filterType];
+      const newFilters = currentFilters.includes(value)
+        ? currentFilters.filter(item => item !== value)
+        : [...currentFilters, value];
+      
+      return {
+        ...prev,
+        [filterType]: newFilters
+      };
+    });
+  };
+
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
       ...prev,
@@ -55,40 +140,47 @@ const Custom = () => {
     }));
   };
 
-  const productTypes = [
-    { name: "Name Pendants", count: 1 },
-    { name: "Letter Pendants", count: 1 },
-    { name: "Logo Pendants", count: 1 },
-    { name: "Custom Rings", count: 2 },
-    { name: "Custom Chains", count: 3 },
-    { name: "Custom Bracelets", count: 2 }
-  ];
+  // Get unique values and counts from products
+  const getFilterOptions = (field: keyof CustomProduct) => {
+    const counts: { [key: string]: number } = {};
+    products.forEach(product => {
+      const value = product[field] as string;
+      if (value) {
+        counts[value] = (counts[value] || 0) + 1;
+      }
+    });
+    return Object.entries(counts).map(([name, count]) => ({ name, count }));
+  };
 
-  const colors = [
-    { name: "Yellow Gold", count: 5 },
-    { name: "White Gold", count: 4 },
-    { name: "Rose Gold", count: 3 }
-  ];
+  const productTypes = getFilterOptions('product_type');
+  const colors = getFilterOptions('color');
+  const materials = getFilterOptions('material');
+  const categories = getFilterOptions('category');
 
-  const materials = [
-    { name: "925 Silver", count: 6 },
-    { name: "Solid Gold", count: 4 },
-    { name: "14K Gold", count: 2 }
-  ];
-
-  const shapes = [
-    { name: "Letters", count: 2 },
-    { name: "Letter shape", count: 1 },
-    { name: "Logo", count: 1 },
-    { name: "Round", count: 3 },
-    { name: "Square", count: 2 }
-  ];
-
-  const gemstones = [
-    { name: "Moissanite", count: 4 },
-    { name: "VVS Diamond Simulants (CZ)", count: 3 },
-    { name: "VVS Moissanite", count: 2 }
-  ];
+  const renderFilterCheckbox = (
+    filterType: keyof typeof selectedFilters,
+    option: { name: string; count: number },
+    prefix: string = ''
+  ) => {
+    const isChecked = selectedFilters[filterType].includes(option.name);
+    const checkboxId = `${prefix}${option.name}`;
+    
+    return (
+      <div key={option.name} className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id={checkboxId}
+            checked={isChecked}
+            onCheckedChange={() => handleFilterChange(filterType, option.name)}
+          />
+          <label htmlFor={checkboxId} className="text-sm text-gray-700">
+            {option.name}
+          </label>
+        </div>
+        <span className="text-sm text-gray-500">({option.count})</span>
+      </div>
+    );
+  };
 
   const renderDesktopFilters = () => (
     <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
@@ -98,17 +190,7 @@ const Custom = () => {
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">PRODUCT TYPE</h3>
         <div className="space-y-3">
-          {productTypes.map((type) => (
-            <div key={type.name} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${type.name}`} />
-                <label htmlFor={`desktop-${type.name}`} className="text-sm text-gray-700">
-                  {type.name}
-                </label>
-              </div>
-              <span className="text-sm text-gray-500">({type.count})</span>
-            </div>
-          ))}
+          {productTypes.map((type) => renderFilterCheckbox('productType', type, 'desktop-'))}
         </div>
       </div>
 
@@ -139,21 +221,19 @@ const Custom = () => {
         </div>
       </div>
 
+      {/* Category */}
+      <div className="mb-8">
+        <h3 className="font-medium text-gray-900 mb-4 uppercase">CATEGORY</h3>
+        <div className="space-y-3">
+          {categories.map((category) => renderFilterCheckbox('category', category, 'desktop-'))}
+        </div>
+      </div>
+
       {/* Color */}
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">COLOR</h3>
         <div className="space-y-3">
-          {colors.map((color) => (
-            <div key={color.name} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${color.name}`} />
-                <label htmlFor={`desktop-${color.name}`} className="text-sm text-gray-700">
-                  {color.name}
-                </label>
-              </div>
-              <span className="text-sm text-gray-500">({color.count})</span>
-            </div>
-          ))}
+          {colors.map((color) => renderFilterCheckbox('color', color, 'desktop-'))}
         </div>
       </div>
 
@@ -161,53 +241,7 @@ const Custom = () => {
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">MATERIAL</h3>
         <div className="space-y-3">
-          {materials.map((material) => (
-            <div key={material.name} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${material.name}`} />
-                <label htmlFor={`desktop-${material.name}`} className="text-sm text-gray-700">
-                  {material.name}
-                </label>
-              </div>
-              <span className="text-sm text-gray-500">({material.count})</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Shape */}
-      <div className="mb-8">
-        <h3 className="font-medium text-gray-900 mb-4 uppercase">SHAPE</h3>
-        <div className="space-y-3">
-          {shapes.map((shape) => (
-            <div key={shape.name} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${shape.name}`} />
-                <label htmlFor={`desktop-${shape.name}`} className="text-sm text-gray-700">
-                  {shape.name}
-                </label>
-              </div>
-              <span className="text-sm text-gray-500">({shape.count})</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Gemstone */}
-      <div className="mb-8">
-        <h3 className="font-medium text-gray-900 mb-4 uppercase">GEMSTONE</h3>
-        <div className="space-y-3">
-          {gemstones.map((gemstone) => (
-            <div key={gemstone.name} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${gemstone.name}`} />
-                <label htmlFor={`desktop-${gemstone.name}`} className="text-sm text-gray-700">
-                  {gemstone.name}
-                </label>
-              </div>
-              <span className="text-sm text-gray-500">({gemstone.count})</span>
-            </div>
-          ))}
+          {materials.map((material) => renderFilterCheckbox('material', material, 'desktop-'))}
         </div>
       </div>
     </div>
@@ -241,17 +275,7 @@ const Custom = () => {
           </CollapsibleTrigger>
           <CollapsibleContent className="p-4 border-b">
             <div className="space-y-3">
-              {productTypes.map((type) => (
-                <div key={type.name} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id={type.name} />
-                    <label htmlFor={type.name} className="text-sm text-gray-700">
-                      {type.name}
-                    </label>
-                  </div>
-                  <span className="text-sm text-gray-500">({type.count})</span>
-                </div>
-              ))}
+              {productTypes.map((type) => renderFilterCheckbox('productType', type))}
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -288,6 +312,19 @@ const Custom = () => {
           </CollapsibleContent>
         </Collapsible>
 
+        {/* Category Filter */}
+        <Collapsible open={openSections.category} onOpenChange={() => toggleSection('category')}>
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+            <span className="font-medium">CATEGORY</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.category ? 'rotate-180' : ''}`} />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="p-4 border-b">
+            <div className="space-y-3">
+              {categories.map((category) => renderFilterCheckbox('category', category))}
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+
         {/* Color Filter */}
         <Collapsible open={openSections.color} onOpenChange={() => toggleSection('color')}>
           <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
@@ -296,86 +333,20 @@ const Custom = () => {
           </CollapsibleTrigger>
           <CollapsibleContent className="p-4 border-b">
             <div className="space-y-3">
-              {colors.map((color) => (
-                <div key={color.name} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id={color.name} />
-                    <label htmlFor={color.name} className="text-sm text-gray-700">
-                      {color.name}
-                    </label>
-                  </div>
-                  <span className="text-sm text-gray-500">({color.count})</span>
-                </div>
-              ))}
+              {colors.map((color) => renderFilterCheckbox('color', color))}
             </div>
           </CollapsibleContent>
         </Collapsible>
 
         {/* Material Filter */}
         <Collapsible open={openSections.material} onOpenChange={() => toggleSection('material')}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left hover:bg-gray-50">
             <span className="font-medium">MATERIAL</span>
             <ChevronDown className={`w-4 h-4 transition-transform ${openSections.material ? 'rotate-180' : ''}`} />
           </CollapsibleTrigger>
-          <CollapsibleContent className="p-4 border-b">
-            <div className="space-y-3">
-              {materials.map((material) => (
-                <div key={material.name} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id={material.name} />
-                    <label htmlFor={material.name} className="text-sm text-gray-700">
-                      {material.name}
-                    </label>
-                  </div>
-                  <span className="text-sm text-gray-500">({material.count})</span>
-                </div>
-              ))}
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-
-        {/* Shape Filter */}
-        <Collapsible open={openSections.shape} onOpenChange={() => toggleSection('shape')}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
-            <span className="font-medium">SHAPE</span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.shape ? 'rotate-180' : ''}`} />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="p-4 border-b">
-            <div className="space-y-3">
-              {shapes.map((shape) => (
-                <div key={shape.name} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id={shape.name} />
-                    <label htmlFor={shape.name} className="text-sm text-gray-700">
-                      {shape.name}
-                    </label>
-                  </div>
-                  <span className="text-sm text-gray-500">({shape.count})</span>
-                </div>
-              ))}
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-
-        {/* Gemstone Filter */}
-        <Collapsible open={openSections.gemstone} onOpenChange={() => toggleSection('gemstone')}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left hover:bg-gray-50">
-            <span className="font-medium">GEMSTONE</span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.gemstone ? 'rotate-180' : ''}`} />
-          </CollapsibleTrigger>
           <CollapsibleContent className="p-4">
             <div className="space-y-3">
-              {gemstones.map((gemstone) => (
-                <div key={gemstone.name} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id={gemstone.name} />
-                    <label htmlFor={gemstone.name} className="text-sm text-gray-700">
-                      {gemstone.name}
-                    </label>
-                  </div>
-                  <span className="text-sm text-gray-500">({gemstone.count})</span>
-                </div>
-              ))}
+              {materials.map((material) => renderFilterCheckbox('material', material))}
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -411,7 +382,7 @@ const Custom = () => {
         <div className={`flex-1 ${isMobile ? 'py-4 px-4' : 'py-8 px-8'}`}>
           {/* Product count and controls */}
           <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-semibold">{products.length} Products</span>
+            <span className="text-lg font-semibold">{filteredProducts.length} Products</span>
             <div className="flex items-center space-x-4">
               {!isMobile && (
                 <Select value={sortBy} onValueChange={setSortBy}>
@@ -445,70 +416,101 @@ const Custom = () => {
 
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
-            {products.map((product) => (
-              <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
-                
-                {/* Product Image */}
-                <div className="relative aspect-square overflow-hidden rounded-t-lg">
-                  <img
-                    src={product.image_url}
-                    alt={product.name}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
+            {filteredProducts
+              .filter(product => product.stripe_price_id)
+              .map((product) => (
+                <div 
+                  key={product.id} 
+                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => setSelectedProduct(product)}
+                >
                   
-                  {/* Badges */}
-                  <div className="absolute top-2 left-2 flex flex-col space-y-1">
-                    {product.in_stock && (
-                      <Badge className="text-xs font-semibold bg-blue-500 text-white">
-                        IN STOCK
-                      </Badge>
-                    )}
-                    {product.discount_percentage && product.discount_percentage > 0 && (
-                      <Badge className="text-xs font-semibold bg-red-500 text-white">
-                        {product.discount_percentage}% OFF
-                      </Badge>
-                    )}
-                    {product.customizable && (
+                  {/* Product Image */}
+                  <div className="relative aspect-square overflow-hidden rounded-t-lg">
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                    
+                    {/* Badges */}
+                    <div className="absolute top-2 left-2 flex flex-col space-y-1">
+                      {product.in_stock && (
+                        <Badge className="text-xs font-semibold bg-blue-500 text-white">
+                          IN STOCK
+                        </Badge>
+                      )}
+                      {product.discount_percentage && product.discount_percentage > 0 && (
+                        <Badge className="text-xs font-semibold bg-red-500 text-white">
+                          {product.discount_percentage}% OFF
+                        </Badge>
+                      )}
                       <Badge className="text-xs font-semibold bg-green-500 text-white">
                         CUSTOMIZABLE
                       </Badge>
-                    )}
-                  </div>
-                </div>
-
-                {/* Product Info */}
-                <div className="p-3 space-y-2">
-                  <div className="text-xs text-gray-500 uppercase">
-                    {product.category}
-                  </div>
-                  
-                  <h3 className="font-medium text-gray-900 line-clamp-2 text-sm leading-tight">
-                    {product.name}
-                  </h3>
-                  
-                  <div className="flex items-center space-x-1">
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                      ))}
                     </div>
-                    <span className="text-xs text-gray-500">({product.review_count})</span>
                   </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
-                    {product.original_price && (
-                      <span className="text-sm text-gray-500 line-through">
-                        ${(product.original_price / 100).toFixed(2)}
-                      </span>
-                    )}
+
+                  {/* Product Info */}
+                  <div className="p-3 space-y-2">
+                    <div className="text-xs text-gray-500 uppercase">
+                      {product.category}
+                    </div>
+                    
+                    <h3 className="font-medium text-gray-900 line-clamp-2 text-sm leading-tight">
+                      {product.name}
+                    </h3>
+                    
+                    <div className="flex items-center space-x-1">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        ))}
+                      </div>
+                      <span className="text-xs text-gray-500">({product.review_count})</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
+                      {product.original_price && (
+                        <span className="text-sm text-gray-500 line-through">
+                          ${(product.original_price / 100).toFixed(2)}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
+
+          {/* Empty state */}
+          {filteredProducts.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
+              <Button variant="outline" onClick={() => {
+                setSelectedFilters({
+                  productType: [],
+                  color: [],
+                  material: [],
+                  category: []
+                });
+                setPriceFrom('');
+                setPriceTo('');
+              }} className="mt-4">
+                Clear Filters
+              </Button>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Product Modal */}
+      {selectedProduct && (
+        <PendantProductModal 
+          product={selectedProduct} 
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
 
       <Footer />
     </div>
