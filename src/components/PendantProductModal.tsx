@@ -88,14 +88,6 @@ const PendantProductModal = ({ product, onClose }: PendantProductModalProps) => 
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Badge className="bg-blue-500 text-white">{product.category}</Badge>
-                  {product.in_stock && (
-                    <Badge className="bg-green-500 text-white">IN STOCK</Badge>
-                  )}
-                  {product.discount_percentage && product.discount_percentage > 0 && (
-                    <Badge className="bg-red-500 text-white">
-                      {product.discount_percentage}% OFF
-                    </Badge>
-                  )}
                 </div>
 
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>

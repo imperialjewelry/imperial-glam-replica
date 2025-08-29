@@ -11,7 +11,6 @@ import { Tables } from '@/integrations/supabase/types';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
-import ProductCheckout from '../components/ProductCheckout';
 import PendantProductModal from '../components/PendantProductModal';
 
 type PendantProduct = Tables<'pendant_products'>;
@@ -21,6 +20,7 @@ const Pendants = () => {
   const [products, setProducts] = useState<PendantProduct[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<PendantProduct[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<PendantProduct | null>(null);
+  const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('featured');
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
@@ -50,15 +50,19 @@ const Pendants = () => {
   }, [products, selectedFilters, priceFrom, priceTo, sortBy]);
 
   const fetchProducts = async () => {
-    const { data, error } = await supabase
-      .from('pendant_products')
-      .select('*')
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('pendant_products')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching pendant products:', error);
-    } else {
+      if (error) throw error;
+      
       setProducts(data || []);
+    } catch (error) {
+      console.error('Error fetching pendant products:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -150,7 +154,6 @@ const Pendants = () => {
     }));
   };
 
-  // Get unique values and counts from products
   const getFilterOptions = (field: keyof PendantProduct) => {
     const counts: { [key: string]: number } = {};
     products.forEach(product => {
@@ -385,25 +388,92 @@ const Pendants = () => {
       </div>
     )
   );
+
+  const pendantTypes = [
+    "TENNIS PENDANTS",
+    "CUBAN LINK PENDANTS", 
+    "BAGUETTE PENDANTS"
+  ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <PromoBar />
+        <Header />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading products...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
       
-      {/* Hero Section */}
-      <section className="bg-gray-50 py-12 px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              MOISSANITE DIAMOND PENDANTS
-            </h1>
-            <p className="text-lg text-gray-600 mb-8">
-              All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Pendants
-            </p>
+      {/* Desktop Hero Section */}
+      {!isMobile && (
+        <section className="bg-gray-50 py-12 px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center">
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                MOISSANITE DIAMOND PENDANTS
+              </h1>
+              <p className="text-lg text-gray-600 mb-8">
+                All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Pendants
+              </p>
+              
+              <div className="flex justify-center space-x-8 text-sm text-gray-500">
+                {pendantTypes.map((type, index) => (
+                  <span key={index} className="border-r border-gray-300 pr-8 last:border-r-0">
+                    {type}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* Mobile Hero Section */}
+      {isMobile && (
+        <section className="bg-gray-50 py-6 px-3">
+          <div className="max-w-sm mx-auto">
+            <div className="grid grid-cols-4 gap-1.5 mb-4">
+              {filteredProducts.slice(0, 4).map((product, index) => (
+                <img 
+                  key={index}
+                  src={product.image_url} 
+                  alt={`Pendant ${index + 1}`} 
+                  className="w-full aspect-square rounded-lg object-cover"
+                />
+              ))}
+            </div>
+            
+            <div className="text-center">
+              <h1 className="text-xl font-bold text-gray-900 mb-2">
+                MOISSANITE DIAMOND PENDANTS
+              </h1>
+              <p className="text-sm text-gray-600 mb-4">
+                All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Pendants
+              </p>
+              
+              <div className="flex justify-center space-x-3 mb-4 text-xs">
+                {pendantTypes.map((type, index) => (
+                  <span key={index} className="text-gray-500 border-r border-gray-300 pr-3 last:border-r-0">
+                    {type}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
@@ -411,10 +481,12 @@ const Pendants = () => {
         {!isMobile && renderDesktopFilters()}
 
         {/* Products Section */}
-        <div className={`flex-1 ${isMobile ? 'py-4 px-4' : 'py-8 px-8'}`}>
+        <div className={`flex-1 ${isMobile ? 'py-3 px-3' : 'py-8 px-8'}`}>
           {/* Product count and controls */}
-          <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-semibold">{filteredProducts.length} Products</span>
+          <div className="flex items-center justify-between mb-4">
+            <span className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold`}>
+              {filteredProducts.filter(product => product.stripe_price_id).length} Products
+            </span>
             <div className="flex items-center space-x-4">
               {!isMobile && (
                 <Select value={sortBy} onValueChange={setSortBy}>
@@ -434,9 +506,9 @@ const Pendants = () => {
                   variant="outline" 
                   size="sm" 
                   onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center space-x-2"
+                  className="flex items-center space-x-2 text-xs px-3 py-1.5"
                 >
-                  <Filter className="w-4 h-4" />
+                  <Filter className="w-3 h-3" />
                   <span>FILTER</span>
                 </Button>
               )}
@@ -446,78 +518,55 @@ const Pendants = () => {
           {/* Mobile Collapsible Filters */}
           {isMobile && renderMobileFilters()}
 
-          {/* Products Grid */}
-          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
+          {/* Products Grid - Clean design without badges or overlays */}
+          <div className={`grid ${isMobile ? 'grid-cols-2 gap-2' : 'grid-cols-4 gap-4'}`}>
             {filteredProducts
               .filter(product => product.stripe_price_id)
               .map((product) => (
                 <div 
                   key={product.id} 
-                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
+                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer group"
                   onClick={() => setSelectedProduct(product)}
                 >
                   
-                  {/* Product Image */}
+                  {/* Product Image - Clean without overlays or badges */}
                   <div className="relative aspect-square overflow-hidden rounded-t-lg">
                     <img
                       src={product.image_url}
                       alt={product.name}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    
-                    {/* Badges */}
-                    <div className="absolute top-2 left-2 flex flex-col space-y-1">
-                      {product.in_stock && (
-                        <Badge className="text-xs font-semibold bg-blue-500 text-white">
-                          IN STOCK
-                        </Badge>
-                      )}
-                      {product.discount_percentage && product.discount_percentage > 0 && (
-                        <Badge className="text-xs font-semibold bg-red-500 text-white">
-                          {product.discount_percentage}% OFF
-                        </Badge>
-                      )}
-                    </div>
                   </div>
 
                   {/* Product Info */}
-                  <div className="p-3 space-y-2">
-                    <div className="text-xs text-gray-500 uppercase">
+                  <div className={`${isMobile ? 'p-2 space-y-1.5' : 'p-3 space-y-2'}`}>
+                    <div className={`text-gray-500 uppercase ${isMobile ? 'text-xs' : 'text-xs'} font-medium`}>
                       {product.category}
                     </div>
                     
-                    <h3 className="font-medium text-gray-900 line-clamp-2 text-sm leading-tight">
+                    <h3 className={`font-medium text-gray-900 line-clamp-2 leading-tight ${isMobile ? 'text-xs' : 'text-sm'}`}>
                       {product.name}
                     </h3>
                     
                     <div className="flex items-center space-x-1">
                       <div className="flex">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                          <Star key={i} className={`fill-yellow-400 text-yellow-400 ${isMobile ? 'w-2.5 h-2.5' : 'w-3 h-3'}`} />
                         ))}
                       </div>
-                      <span className="text-xs text-gray-500">({product.review_count})</span>
+                      <span className={`text-gray-500 ${isMobile ? 'text-xs' : 'text-xs'}`}>({product.review_count})</span>
                     </div>
                     
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
+                      <div className="flex items-center space-x-1.5">
+                        <span className={`font-bold text-blue-600 ${isMobile ? 'text-sm' : 'text-lg'}`}>
+                          ${(product.price / 100).toFixed(2)}
+                        </span>
                         {product.original_price && (
-                          <span className="text-sm text-gray-500 line-through">
+                          <span className={`text-gray-500 line-through ${isMobile ? 'text-xs' : 'text-sm'}`}>
                             ${(product.original_price / 100).toFixed(2)}
                           </span>
                         )}
-                      </div>
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <ProductCheckout product={{
-                          id: product.id,
-                          name: product.name,
-                          price: product.price,
-                          sizes: product.sizes,
-                          image_url: product.image_url,
-                          stripe_product_id: product.stripe_product_id,
-                          stripe_price_id: product.stripe_price_id!
-                        }} />
                       </div>
                     </div>
                   </div>
