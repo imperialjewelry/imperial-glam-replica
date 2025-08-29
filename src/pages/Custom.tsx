@@ -507,7 +507,11 @@ const Custom = () => {
       {/* Product Modal */}
       {selectedProduct && (
         <PendantProductModal 
-          product={selectedProduct} 
+          product={{
+            ...selectedProduct,
+            gemstone: selectedProduct.material, // Use material as gemstone fallback
+            diamond_cut: 'Round' // Provide default diamond_cut
+          }}
           onClose={() => setSelectedProduct(null)}
         />
       )}
