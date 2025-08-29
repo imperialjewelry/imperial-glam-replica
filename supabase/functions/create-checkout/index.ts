@@ -114,21 +114,40 @@ serve(async (req) => {
     for (const cartItem of cartItems) {
       console.log('Processing cart item:', cartItem);
       
-      // Find the unified product record using the cart item ID
-      const { data: unifiedProduct, error: productError } = await supabaseClient
+      // Try to find the unified product record by looking in all possible ways
+      let unifiedProduct = null;
+      let productDetails = null;
+
+      // First, try to find by the cart item ID in the products table
+      const { data: directProduct, error: directError } = await supabaseClient
         .from("products")
         .select("*, source_table, source_id")
         .eq("id", cartItem.id)
         .single();
 
-      if (productError) {
-        console.error('Error finding unified product:', productError);
-        // Continue with order creation even if product details can't be found
+      if (!directError && directProduct) {
+        unifiedProduct = directProduct;
+        console.log('Found unified product directly:', unifiedProduct.id);
+      } else {
+        console.log('Cart item ID not found in products table, trying to find by source_id');
+        
+        // If not found directly, try to find by source_id (the cart might have source table IDs)
+        const { data: sourceProducts, error: sourceError } = await supabaseClient
+          .from("products")
+          .select("*, source_table, source_id")
+          .eq("source_id", cartItem.id);
+
+        if (!sourceError && sourceProducts && sourceProducts.length > 0) {
+          unifiedProduct = sourceProducts[0];
+          console.log('Found unified product by source_id:', unifiedProduct.id);
+        } else {
+          console.error('Could not find unified product for cart item:', cartItem.id);
+          throw new Error(`Product not found for cart item ID: ${cartItem.id}`);
+        }
       }
 
-      let productDetails = null;
+      // Get detailed product info from the source table
       if (unifiedProduct) {
-        // Get detailed product info from the source table
         const { data: detailedProduct, error: detailError } = await supabaseClient
           .from(unifiedProduct.source_table)
           .select("*")
@@ -141,10 +160,10 @@ serve(async (req) => {
         console.log('Found product details:', productDetails?.name);
       }
 
-      // Use the unified product ID (cartItem.id) as the product_id
+      // Use the unified product ID for the order
       const orderData = {
         stripe_session_id: session.id,
-        product_id: cartItem.id, // This should be the unified product ID
+        product_id: unifiedProduct.id, // Use the unified product ID
         amount: Math.round((cartItem.price * (cartItem.quantity || 1)) - (discountAmount / cartItems.length)),
         guest_email: customerEmail,
         promo_code: promoCode || null,
@@ -156,7 +175,7 @@ serve(async (req) => {
         created_at: new Date().toISOString()
       };
 
-      console.log('Inserting order:', orderData);
+      console.log('Inserting order with unified product ID:', orderData.product_id);
 
       const { error: insertError } = await supabaseClient
         .from("orders")
