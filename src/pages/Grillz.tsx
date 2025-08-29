@@ -10,7 +10,6 @@ import { Tables } from '@/integrations/supabase/types';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
-import ProductCheckout from '../components/ProductCheckout';
 import GrillzProductModal from '../components/GrillzProductModal';
 
 type GrillzProduct = Tables<'grillz_products'>;
@@ -514,26 +513,13 @@ const Grillz = () => {
                       <span className="text-xs text-gray-500">({product.review_count})</span>
                     </div>
                     
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
-                        {product.original_price && (
-                          <span className="text-sm text-gray-500 line-through">
-                            ${(product.original_price / 100).toFixed(2)}
-                          </span>
-                        )}
-                      </div>
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <ProductCheckout product={{
-                          id: product.id,
-                          name: product.name,
-                          price: product.price,
-                          sizes: product.sizes,
-                          image_url: product.image_url,
-                          stripe_product_id: product.stripe_product_id,
-                          stripe_price_id: product.stripe_price_id!
-                        }} />
-                      </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
+                      {product.original_price && (
+                        <span className="text-sm text-gray-500 line-through">
+                          ${(product.original_price / 100).toFixed(2)}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
