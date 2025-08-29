@@ -363,7 +363,7 @@ const Header = () => {
                 <div className="flex items-center space-x-3 py-2">
                   <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
                     <img
-                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/diamond.webp"
+                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/pendants/Bart.webp"
                       alt="Diamond"
                       className="w-full h-full object-cover"
                     />
@@ -377,7 +377,7 @@ const Header = () => {
                 <div className="flex items-center space-x-3 py-2">
                   <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
                     <img
-                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/vvs-simulants.webp"
+                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/bracelets/14mm%20VVS%20Moissanite%20Cuban%20Bracelet%20%20.webp"
                       alt="VVS Diamond Simulants"
                       className="w-full h-full object-cover"
                     />
