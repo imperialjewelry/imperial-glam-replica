@@ -9,7 +9,9 @@ import { useCart } from '@/contexts/CartContext';
 import { toast } from 'sonner';
 import { Tables } from '@/integrations/supabase/types';
 
-type VvsSimulantProduct = Tables<'vvs_simulant_products'>;
+type VvsSimulantProduct = Tables<'vvs_simulant_products'> & {
+  lengths_and_prices?: any[];
+};
 
 interface VvsSimulantProductModalProps {
   product: VvsSimulantProduct | null;
