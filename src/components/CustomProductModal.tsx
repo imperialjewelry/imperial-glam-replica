@@ -15,7 +15,7 @@ interface CustomProductModalProps {
 }
 
 const CustomProductModal = ({ product, onClose }: CustomProductModalProps) => {
-  const { addToCart, dispatch } = useCart();
+  const { addToCart } = useCart();
   const { toast } = useToast();
 
   const handleAddToCart = () => {
@@ -43,7 +43,6 @@ const CustomProductModal = ({ product, onClose }: CustomProductModalProps) => {
       description: `${product.name} has been added to your cart.`,
     });
 
-    dispatch({ type: 'TOGGLE_CART' });
     onClose();
   };
 
