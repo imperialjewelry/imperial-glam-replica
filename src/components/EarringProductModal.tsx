@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { X, Star, ShoppingCart, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,7 +14,7 @@ interface EarringProductModalProps {
 }
 
 const EarringProductModal = ({ product, onClose }: EarringProductModalProps) => {
-  const { addToCart, dispatch } = useCart();
+  const { addToCart } = useCart();
   const { toast } = useToast();
 
   const handleAddToCart = () => {
@@ -43,7 +42,6 @@ const EarringProductModal = ({ product, onClose }: EarringProductModalProps) => 
       description: `${product.name} has been added to your cart.`,
     });
 
-    dispatch({ type: 'TOGGLE_CART' });
     onClose();
   };
 

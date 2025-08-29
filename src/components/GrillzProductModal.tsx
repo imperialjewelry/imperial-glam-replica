@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { X, Star, ShoppingCart, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -24,7 +23,7 @@ interface TeethOption {
 const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedTeethOption, setSelectedTeethOption] = useState<TeethOption | null>(null);
-  const { addToCart, dispatch } = useCart();
+  const { addToCart } = useCart();
   const { toast } = useToast();
 
   // Parse teeth options from lengths_and_prices JSON
@@ -89,7 +88,6 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
       description: `${product.name} has been added to your cart.`,
     });
 
-    dispatch({ type: 'TOGGLE_CART' });
     onClose();
   };
 

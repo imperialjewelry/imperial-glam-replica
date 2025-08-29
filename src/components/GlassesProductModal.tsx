@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { X, Star, ShoppingCart, Check, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,7 @@ interface GlassesProductModalProps {
 
 const GlassesProductModal = ({ product, onClose }: GlassesProductModalProps) => {
   const [selectedSize, setSelectedSize] = useState('');
-  const { addToCart, dispatch } = useCart();
+  const { addToCart } = useCart();
   const { toast } = useToast();
 
   const handleAddToCart = () => {
@@ -55,7 +54,7 @@ const GlassesProductModal = ({ product, onClose }: GlassesProductModalProps) => 
       description: `${product.name} has been added to your cart.`,
     });
 
-    dispatch({ type: 'TOGGLE_CART' });
+    onClose();
   };
 
   const qualityFeatures = [

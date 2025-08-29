@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { X, Star, ShoppingCart, Check, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,7 @@ interface ChainProductModalProps {
 
 const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
   const [selectedLength, setSelectedLength] = useState('');
-  const { addToCart, dispatch } = useCart();
+  const { addToCart } = useCart();
   const { toast } = useToast();
 
   const getCurrentPriceInfo = () => {
@@ -113,7 +112,7 @@ const ChainProductModal = ({ product, onClose }: ChainProductModalProps) => {
       description: `${product.name} has been added to your cart.`,
     });
 
-    dispatch({ type: 'TOGGLE_CART' });
+    onClose();
   };
 
   const getLengthsAndPrices = () => {
