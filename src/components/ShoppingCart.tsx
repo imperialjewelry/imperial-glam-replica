@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { X, Minus, Plus, ShoppingBag, Trash2, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -123,6 +122,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
       }));
 
       console.log('Creating checkout session with items:', line_items);
+      console.log('Cart items for order tracking:', state.items);
 
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: {
@@ -130,6 +130,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
           customerEmail: customerEmail.trim(),
           promoCode: appliedPromo?.code || null,
           discountPercentage: appliedPromo?.discount || 0,
+          cartItems: state.items, // Pass cart items for detailed order tracking
         },
       });
 

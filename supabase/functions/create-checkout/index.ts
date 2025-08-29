@@ -14,12 +14,16 @@ serve(async (req) => {
   }
 
   try {
-    const { line_items, customerEmail, promoCode, discountPercentage } = await req.json();
+    const { line_items, customerEmail, promoCode, discountPercentage, cartItems } = await req.json();
 
-    console.log('Received checkout request:', { line_items, customerEmail, promoCode, discountPercentage });
+    console.log('Received checkout request:', { line_items, customerEmail, promoCode, discountPercentage, cartItems });
 
     if (!line_items || !Array.isArray(line_items) || line_items.length === 0) {
       throw new Error("line_items is required and must be a non-empty array");
+    }
+
+    if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
+      throw new Error("cartItems is required for order tracking");
     }
 
     const stripe = new Stripe(Deno.env.get("stripetestsecret") || "", {
@@ -53,7 +57,7 @@ serve(async (req) => {
       customer_email: customerEmail,
       line_items: line_items,
       mode: "payment",
-      success_url: `${req.headers.get("origin")}/payment-success`,
+      success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get("origin")}/`,
     };
 
@@ -72,7 +76,7 @@ serve(async (req) => {
         coupon: coupon.id,
       }];
 
-      // First get the current promo code to increment its usage count
+      // Update promo code usage count
       const { data: promoData, error: fetchError } = await supabaseClient
         .from("promo_codes")
         .select("usage_count")
@@ -80,7 +84,6 @@ serve(async (req) => {
         .single();
 
       if (!fetchError && promoData) {
-        // Update promo code usage count
         const { error: updateError } = await supabaseClient
           .from("promo_codes")
           .update({ 
@@ -91,36 +94,67 @@ serve(async (req) => {
 
         if (updateError) {
           console.error('Error updating promo code usage:', updateError);
-          // Don't fail the checkout for this, just log the error
         }
       }
     }
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create(sessionConfig);
-
     console.log('Created checkout session:', session.id);
 
     // Calculate total amount after discount
-    const subtotalAmount = line_items.reduce((total: number, item: any) => {
-      return total + (item.quantity || 1);
+    const subtotalAmount = cartItems.reduce((total: number, item: any) => {
+      return total + (item.price * (item.quantity || 1));
     }, 0);
 
     const discountAmount = discountPercentage > 0 ? Math.round((subtotalAmount * discountPercentage) / 100) : 0;
     const finalAmount = subtotalAmount - discountAmount;
 
-    // Store order information in Supabase
-    await supabaseClient.from("orders").insert({
-      stripe_session_id: session.id,
-      amount: finalAmount * 100, // Convert to cents
-      guest_email: customerEmail,
-      promo_code: promoCode || null,
-      discount_percentage: discountPercentage || 0,
-      status: "pending",
-      created_at: new Date().toISOString()
-    });
+    // Store detailed order information for each cart item
+    for (const cartItem of cartItems) {
+      // Get full product details based on the item
+      let productDetails = null;
+      let sourceTable = '';
+      
+      // Determine which table to query based on the product
+      if (cartItem.id) {
+        // Try to find the product in the unified products table first
+        const { data: unifiedProduct } = await supabaseClient
+          .from("products")
+          .select("*, source_table, source_id")
+          .eq("id", cartItem.id)
+          .single();
 
-    console.log('Order record created in database');
+        if (unifiedProduct) {
+          sourceTable = unifiedProduct.source_table;
+          
+          // Get detailed product info from the source table
+          const { data: detailedProduct } = await supabaseClient
+            .from(sourceTable)
+            .select("*")
+            .eq("id", unifiedProduct.source_id)
+            .single();
+
+          productDetails = detailedProduct;
+        }
+      }
+
+      await supabaseClient.from("orders").insert({
+        stripe_session_id: session.id,
+        product_id: cartItem.id,
+        amount: finalAmount,
+        guest_email: customerEmail,
+        promo_code: promoCode || null,
+        discount_percentage: discountPercentage || 0,
+        status: "pending",
+        product_details: productDetails,
+        selected_size: cartItem.selectedSize || null,
+        selected_length: cartItem.selectedLength || null,
+        created_at: new Date().toISOString()
+      });
+    }
+
+    console.log('Order records created in database');
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

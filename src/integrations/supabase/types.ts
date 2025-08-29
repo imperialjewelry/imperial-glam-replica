@@ -725,9 +725,14 @@ export type Database = {
           created_at: string
           currency: string | null
           customer_details: Json | null
+          discount_percentage: number | null
           guest_email: string | null
           id: string
+          order_number: string | null
+          product_details: Json | null
           product_id: string
+          promo_code: string | null
+          selected_length: string | null
           selected_size: string | null
           shipping_details: Json | null
           status: string | null
@@ -741,9 +746,14 @@ export type Database = {
           created_at?: string
           currency?: string | null
           customer_details?: Json | null
+          discount_percentage?: number | null
           guest_email?: string | null
           id?: string
+          order_number?: string | null
+          product_details?: Json | null
           product_id: string
+          promo_code?: string | null
+          selected_length?: string | null
           selected_size?: string | null
           shipping_details?: Json | null
           status?: string | null
@@ -757,9 +767,14 @@ export type Database = {
           created_at?: string
           currency?: string | null
           customer_details?: Json | null
+          discount_percentage?: number | null
           guest_email?: string | null
           id?: string
+          order_number?: string | null
+          product_details?: Json | null
           product_id?: string
+          promo_code?: string | null
+          selected_length?: string | null
           selected_size?: string | null
           shipping_details?: Json | null
           status?: string | null
@@ -1173,7 +1188,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_order_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
