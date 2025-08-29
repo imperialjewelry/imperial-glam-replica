@@ -87,7 +87,7 @@ const SearchBar = () => {
     // Fetch the complete product data from the source table
     try {
       const { data, error } = await supabase
-        .from(product.source_table)
+        .from(product.source_table as any)
         .select('*')
         .eq('id', product.source_id)
         .single();
