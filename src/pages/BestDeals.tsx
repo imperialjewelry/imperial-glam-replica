@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,7 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Star, Filter } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import ProductDetailModal from '@/components/ProductDetailModal';
+import ChainProductModal from '@/components/ChainProductModal';
+import BraceletProductModal from '@/components/BraceletProductModal';
+import EarringProductModal from '@/components/EarringProductModal';
+import GrillzProductModal from '@/components/GrillzProductModal';
+import WatchProductModal from '@/components/WatchProductModal';
+import PendantProductModal from '@/components/PendantProductModal';
 import {
   Select,
   SelectContent,
@@ -66,6 +70,57 @@ const BestDeals = () => {
 
   const formatPrice = (price: number) => {
     return `$${(price / 100).toLocaleString()}`;
+  };
+
+  const renderProductModal = () => {
+    if (!selectedProduct) return null;
+
+    switch (selectedProduct.source_table) {
+      case 'chain_products':
+        return (
+          <ChainProductModal
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+          />
+        );
+      case 'bracelet_products':
+        return (
+          <BraceletProductModal
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+          />
+        );
+      case 'earring_products':
+        return (
+          <EarringProductModal
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+          />
+        );
+      case 'grillz_products':
+        return (
+          <GrillzProductModal
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+          />
+        );
+      case 'watch_products':
+        return (
+          <WatchProductModal
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+          />
+        );
+      case 'pendant_products':
+        return (
+          <PendantProductModal
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+          />
+        );
+      default:
+        return null;
+    }
   };
 
   if (isLoading) {
@@ -240,13 +295,7 @@ const BestDeals = () => {
       </div>
 
       {/* Product Detail Modal */}
-      {selectedProduct && (
-        <ProductDetailModal
-          product={selectedProduct}
-          isOpen={!!selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-        />
-      )}
+      {renderProductModal()}
       
       <Footer />
     </>
