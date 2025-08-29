@@ -12,6 +12,7 @@ import { Tables } from '@/integrations/supabase/types';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
+import ProductCheckout from '@/components/ProductCheckout';
 import EarringProductModal from '@/components/EarringProductModal';
 
 type EarringProduct = Tables<'earring_products'>;
@@ -40,7 +41,7 @@ const Earrings = () => {
         .from('earring_products')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as EarringProduct[];
     }
@@ -55,35 +56,35 @@ const Earrings = () => {
 
     // Apply product type filter
     if (selectedFilters.productType.length > 0) {
-      filtered = filtered.filter(product => 
+      filtered = filtered.filter(product =>
         selectedFilters.productType.includes(product.product_type)
       );
     }
 
     // Apply color filter
     if (selectedFilters.color.length > 0) {
-      filtered = filtered.filter(product => 
+      filtered = filtered.filter(product =>
         selectedFilters.color.includes(product.color)
       );
     }
 
     // Apply material filter
     if (selectedFilters.material.length > 0) {
-      filtered = filtered.filter(product => 
+      filtered = filtered.filter(product =>
         selectedFilters.material.includes(product.material)
       );
     }
 
     // Apply gemstone filter
     if (selectedFilters.gemstone.length > 0) {
-      filtered = filtered.filter(product => 
+      filtered = filtered.filter(product =>
         product.gemstone && selectedFilters.gemstone.includes(product.gemstone)
       );
     }
 
     // Apply diamond cut filter
     if (selectedFilters.diamondCut.length > 0) {
-      filtered = filtered.filter(product => 
+      filtered = filtered.filter(product =>
         product.diamond_cut && selectedFilters.diamondCut.includes(product.diamond_cut)
       );
     }
@@ -107,10 +108,13 @@ const Earrings = () => {
         filtered.sort((a, b) => b.price - a.price);
         break;
       case 'newest':
-        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        filtered.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
         break;
       default:
-        // Keep original order for featured
+        // featured: keep original order
         break;
     }
 
@@ -123,7 +127,7 @@ const Earrings = () => {
       const newFilters = currentFilters.includes(value)
         ? currentFilters.filter(item => item !== value)
         : [...currentFilters, value];
-      
+
       return {
         ...prev,
         [filterType]: newFilters
@@ -155,11 +159,11 @@ const Earrings = () => {
   ) => {
     const isChecked = selectedFilters[filterType].includes(option.name);
     const checkboxId = `${filterType}-${option.name}`;
-    
+
     return (
       <div key={option.name} className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Checkbox 
+          <Checkbox
             id={checkboxId}
             checked={isChecked}
             onCheckedChange={() => handleFilterChange(filterType, option.name)}
@@ -193,7 +197,7 @@ const Earrings = () => {
     <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
-      
+
       {/* Hero Section */}
       <section className="bg-gray-50 py-12 px-8">
         <div className="max-w-7xl mx-auto">
@@ -204,18 +208,18 @@ const Earrings = () => {
             <p className="text-lg text-gray-600 mb-8">
               All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Earrings
             </p>
-            
+
             {/* Category Tabs */}
             <div className="flex justify-center space-x-8 mb-8">
               {['STUD EARRINGS', 'HOOP EARRINGS', 'DROP EARRINGS'].map((tab) => (
                 <Button
                   key={tab}
-                  variant={activeTab === tab ? "default" : "ghost"}
+                  variant={activeTab === tab ? 'default' : 'ghost'}
                   onClick={() => setActiveTab(tab)}
                   className={`${
-                    activeTab === tab 
-                      ? "text-blue-600 border-b-2 border-blue-600 bg-transparent hover:bg-transparent" 
-                      : "text-gray-400 hover:text-gray-600"
+                    activeTab === tab
+                      ? 'text-blue-600 border-b-2 border-blue-600 bg-transparent hover:bg-transparent'
+                      : 'text-gray-400 hover:text-gray-600'
                   } font-medium px-4 py-2 rounded-none`}
                 >
                   {tab}
@@ -232,7 +236,7 @@ const Earrings = () => {
         {!isMobile && (
           <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
             <h2 className="text-lg font-semibold mb-6">Filters</h2>
-            
+
             {/* Product Type */}
             <div className="mb-8">
               <h3 className="font-medium text-gray-900 mb-4 uppercase">PRODUCT TYPE</h3>
@@ -306,11 +310,11 @@ const Earrings = () => {
         <div className={`flex-1 ${isMobile ? 'py-4 px-4' : 'py-8 px-8'}`}>
           <div className="flex items-center justify-between mb-6">
             <span className="text-lg font-semibold">{validProducts.length} Products</span>
-            
+
             <div className="flex items-center space-x-4">
               {isMobile && (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => setShowFilters(!showFilters)}
                 >
@@ -318,7 +322,7 @@ const Earrings = () => {
                   Filters
                 </Button>
               )}
-              
+
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-32">
                   <SelectValue placeholder="Sort by" />
@@ -436,10 +440,10 @@ const Earrings = () => {
           )}
 
           {/* Products Grid */}
-          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-6`}>
+          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-6`}>
             {validProducts.map((product) => (
-              <div 
-                key={product.id} 
+              <div
+                key={product.id}
                 className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
                 onClick={() => setSelectedProduct(product)}
               >
@@ -449,7 +453,7 @@ const Earrings = () => {
                     alt={product.name}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   />
-                  
+
                   <div className="absolute top-2 left-2 flex flex-col space-y-1">
                     {product.in_stock && (
                       <Badge className="text-xs font-semibold bg-blue-500 text-white">
@@ -489,20 +493,27 @@ const Earrings = () => {
                   <div className="text-xs text-gray-500 uppercase">
                     {product.material} / {product.category}
                   </div>
-                  
+
                   <h3 className="font-medium text-gray-900 line-clamp-2 text-sm leading-tight">
                     {product.name}
                   </h3>
-                  
+
                   <div className="flex items-center space-x-1">
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`w-3 h-3 ${i < Math.floor(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                        <Star
+                          key={i}
+                          className={`w-3 h-3 ${
+                            i < Math.floor(product.rating)
+                              ? 'fill-yellow-400 text-yellow-400'
+                              : 'text-gray-300'
+                          }`}
+                        />
                       ))}
                     </div>
                     <span className="text-xs text-gray-500">({product.review_count})</span>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <span className="text-lg font-bold text-blue-600">
@@ -514,6 +525,19 @@ const Earrings = () => {
                         </span>
                       )}
                     </div>
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <ProductCheckout
+                        product={{
+                          id: product.id,
+                          name: product.name,
+                          price: product.price,
+                          image_url: product.image_url,
+                          stripe_product_id: product.stripe_product_id,
+                          stripe_price_id: product.stripe_price_id,
+                          sizes: product.sizes
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -524,8 +548,8 @@ const Earrings = () => {
 
       {/* Product Modal */}
       {selectedProduct && (
-        <EarringProductModal 
-          product={selectedProduct} 
+        <EarringProductModal
+          product={selectedProduct}
           onClose={() => setSelectedProduct(null)}
         />
       )}
@@ -536,3 +560,4 @@ const Earrings = () => {
 };
 
 export default Earrings;
+
