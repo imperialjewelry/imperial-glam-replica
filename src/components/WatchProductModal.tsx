@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { X, Star, ShoppingCart, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,7 @@ interface WatchProductModalProps {
 
 const WatchProductModal = ({ product, onClose }: WatchProductModalProps) => {
   const [selectedSize, setSelectedSize] = useState('');
-  const { addToCart, dispatch } = useCart();
+  const { addToCart } = useCart();
   const { toast } = useToast();
 
   const handleAddToCart = () => {
@@ -54,7 +53,6 @@ const WatchProductModal = ({ product, onClose }: WatchProductModalProps) => {
       description: `${product.name} has been added to your cart.`,
     });
 
-    dispatch({ type: 'TOGGLE_CART' });
     onClose();
   };
 

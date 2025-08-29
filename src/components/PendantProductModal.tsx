@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { X, Star, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,7 +18,7 @@ const PendantProductModal = ({ product, onClose }: PendantProductModalProps) => 
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedGemstone, setSelectedGemstone] = useState(product.gemstone || '');
   const [selectedDiamondCut, setSelectedDiamondCut] = useState(product.diamond_cut || '');
-  const { addToCart, dispatch } = useCart();
+  const { addToCart } = useCart();
   const { toast } = useToast();
 
   const handleAddToCart = () => {
@@ -56,7 +55,6 @@ const PendantProductModal = ({ product, onClose }: PendantProductModalProps) => 
       description: `${product.name} has been added to your cart.`,
     });
 
-    dispatch({ type: 'TOGGLE_CART' });
     onClose();
   };
 
