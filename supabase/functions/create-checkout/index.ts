@@ -194,11 +194,10 @@ serve(async (req) => {
         source_table: sourceTable,
         selected_size: cartItem.selectedSize || null,
         selected_length: cartItem.selectedLength || null,
-        selected_color: cartItem.selectedColor || null,
         quantity: cartItem.quantity || 1
       };
 
-      // Create order record with selected variations
+      // Create order record with selected variations (removed selected_color)
       const orderData = {
         stripe_session_id: session.id,
         stripe_customer_id: customerId,
@@ -209,7 +208,6 @@ serve(async (req) => {
         status: "pending",
         selected_size: cartItem.selectedSize || null,
         selected_length: cartItem.selectedLength || null,
-        selected_color: cartItem.selectedColor || null,
         product_details: productDetailsWithConfig,
         created_at: new Date().toISOString()
       };
@@ -217,7 +215,6 @@ serve(async (req) => {
       console.log('Inserting order with selected variations:', {
         size: cartItem.selectedSize,
         length: cartItem.selectedLength,
-        color: cartItem.selectedColor,
         customerId: customerId
       });
 
