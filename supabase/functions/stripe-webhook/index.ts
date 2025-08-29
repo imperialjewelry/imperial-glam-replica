@@ -14,7 +14,7 @@ serve(async (req) => {
   }
 
   try {
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    const stripe = new Stripe(Deno.env.get("stripetestsecret") || "", {
       apiVersion: "2023-10-16",
     });
 
@@ -46,37 +46,44 @@ serve(async (req) => {
         const session = event.data.object as Stripe.Checkout.Session;
         
         console.log("Processing successful checkout session:", session.id);
+        console.log("Session details:", JSON.stringify(session, null, 2));
 
-        // Get the order from our database
-        const { data: order, error: fetchError } = await supabaseClient
+        // Get all orders for this session
+        const { data: orders, error: fetchError } = await supabaseClient
           .from("orders")
           .select("*")
-          .eq("stripe_session_id", session.id)
-          .single();
+          .eq("stripe_session_id", session.id);
 
-        if (fetchError || !order) {
-          console.error("Order not found for session:", session.id);
-          return new Response("Order not found", { status: 404 });
+        if (fetchError) {
+          console.error("Error fetching orders:", fetchError);
+          return new Response("Error fetching orders", { status: 500 });
         }
 
-        // Update order status to paid and add payment details
+        if (!orders || orders.length === 0) {
+          console.error("No orders found for session:", session.id);
+          return new Response("No orders found", { status: 404 });
+        }
+
+        console.log(`Found ${orders.length} orders for session ${session.id}`);
+
+        // Update all orders for this session to paid status
         const { error: updateError } = await supabaseClient
           .from("orders")
           .update({
             status: "paid",
             stripe_payment_intent_id: session.payment_intent,
             customer_details: session.customer_details,
-            shipping_details: session.shipping_details || session.shipping_cost,
+            shipping_details: session.shipping_details,
             updated_at: new Date().toISOString()
           })
           .eq("stripe_session_id", session.id);
 
         if (updateError) {
-          console.error("Error updating order:", updateError);
-          return new Response("Error updating order", { status: 500 });
+          console.error("Error updating orders:", updateError);
+          return new Response("Error updating orders", { status: 500 });
         }
 
-        console.log("Successfully updated order status to paid for session:", session.id);
+        console.log(`Successfully updated ${orders.length} orders to paid status for session:`, session.id);
         break;
 
       default:

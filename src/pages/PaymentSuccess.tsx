@@ -13,27 +13,68 @@ const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const [orderDetails, setOrderDetails] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const sessionId = searchParams.get('session_id');
 
   useEffect(() => {
+    console.log('PaymentSuccess component mounted, session_id:', sessionId);
     if (sessionId) {
       fetchOrderDetails();
+    } else {
+      setError('No session ID provided');
+      setLoading(false);
     }
   }, [sessionId]);
 
   const fetchOrderDetails = async () => {
     try {
-      // Fetch all orders for this session (in case of multiple items)
+      console.log('Fetching order details for session:', sessionId);
+      
+      // Wait a bit for webhook to process
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Fetch all orders for this session
       const { data, error } = await supabase
         .from('orders')
         .select('*')
         .eq('stripe_session_id', sessionId);
 
-      if (error) throw error;
-      console.log('Fetched order details:', data);
-      setOrderDetails(data || []);
+      console.log('Supabase query result:', { data, error });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      if (!data || data.length === 0) {
+        console.log('No orders found, retrying in 3 seconds...');
+        // Retry once more after 3 seconds in case webhook is slow
+        setTimeout(async () => {
+          const { data: retryData, error: retryError } = await supabase
+            .from('orders')
+            .select('*')
+            .eq('stripe_session_id', sessionId);
+          
+          if (retryError) {
+            console.error('Retry error:', retryError);
+            setError('Failed to fetch order details');
+          } else if (!retryData || retryData.length === 0) {
+            console.log('Still no orders found after retry');
+            setError('Order not found. Please contact support with your session ID: ' + sessionId);
+          } else {
+            console.log('Orders found on retry:', retryData);
+            setOrderDetails(retryData);
+          }
+          setLoading(false);
+        }, 3000);
+        return;
+      }
+
+      console.log('Orders found:', data);
+      setOrderDetails(data);
     } catch (error) {
       console.error('Error fetching order details:', error);
+      setError('Failed to fetch order details: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -44,8 +85,31 @@ const PaymentSuccess = () => {
       <div className="min-h-screen bg-white">
         <PromoBar />
         <Header />
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <div className="flex flex-col items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+          <p className="text-gray-600">Processing your order...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <PromoBar />
+        <Header />
+        <div className="max-w-2xl mx-auto py-12 px-4">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Order Processing</h1>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <p className="text-sm text-gray-500 mb-8">
+              Your payment was successful. If this issue persists, please contact support with session ID: {sessionId}
+            </p>
+            <Button onClick={() => window.location.href = '/'}>
+              Return Home
+            </Button>
+          </div>
         </div>
         <Footer />
       </div>
@@ -72,7 +136,7 @@ const PaymentSuccess = () => {
   }
 
   const firstOrder = orderDetails[0];
-  const totalAmount = orderDetails.reduce((sum, order) => sum + order.amount, 0);
+  const totalAmount = orderDetails.reduce((sum, order) => sum + (order.amount || 0), 0);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -131,7 +195,7 @@ const PaymentSuccess = () => {
                       <p className="text-sm text-gray-600">Length: {order.selected_length}</p>
                     )}
                     <p className="text-lg font-bold text-blue-600">
-                      ${(order.amount / 100).toFixed(2)}
+                      ${((order.amount || 0) / 100).toFixed(2)}
                     </p>
                   </div>
                 </div>
