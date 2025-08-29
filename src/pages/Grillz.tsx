@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -494,20 +493,6 @@ const Grillz = () => {
                       alt={product.name}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                     />
-                    
-                    {/* Badges */}
-                    <div className="absolute top-2 left-2 flex flex-col space-y-1">
-                      {product.in_stock && (
-                        <Badge className="text-xs font-semibold bg-blue-500 text-white">
-                          IN STOCK
-                        </Badge>
-                      )}
-                      {product.discount_percentage && product.discount_percentage > 0 && (
-                        <Badge className="text-xs font-semibold bg-red-500 text-white">
-                          {product.discount_percentage}% OFF
-                        </Badge>
-                      )}
-                    </div>
                   </div>
 
                   {/* Product Info */}

@@ -17,11 +17,6 @@ interface GrillzProductModalProps {
 
 const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
   const [selectedSize, setSelectedSize] = useState('');
-  const [selectedColor, setSelectedColor] = useState(product.color || 'Yellow Gold');
-  const [selectedMaterial, setSelectedMaterial] = useState(product.material || 'Solid Gold');
-  const [selectedStyle, setSelectedStyle] = useState(product.style || 'Iced Out');
-  const [selectedGemstone, setSelectedGemstone] = useState(product.gemstone || 'VVS Diamond Simulants (CZ)');
-  const [selectedTeethCount, setSelectedTeethCount] = useState(product.teeth_count || '4 Teeth');
   const { addToCart, dispatch } = useCart();
   const { toast } = useToast();
 
@@ -50,7 +45,7 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
       price: product.price,
       image_url: product.image_url,
       selectedSize,
-      selectedColor,
+      selectedColor: product.color, // Use default product color
       stripe_price_id: product.stripe_price_id,
     });
 
@@ -98,17 +93,7 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Badge className="bg-blue-500 text-white">{product.category}</Badge>
-                  {product.in_stock && (
-                    <Badge className="bg-green-500 text-white">IN STOCK</Badge>
-                  )}
-                  {product.discount_percentage && product.discount_percentage > 0 && (
-                    <Badge className="bg-red-500 text-white">
-                      {product.discount_percentage}% OFF
-                    </Badge>
-                  )}
-                  {product.ships_today && (
-                    <Badge className="bg-blue-500 text-white">SHIPS TODAY</Badge>
-                  )}
+                  <Badge className="bg-green-500 text-white">IN STOCK</Badge>
                 </div>
 
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
@@ -182,98 +167,6 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
                             {size}
                           </SelectItem>
                         ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                {/* Color Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Color
-                  </label>
-                  <Select value={selectedColor} onValueChange={setSelectedColor}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="yellow-gold">Yellow Gold</SelectItem>
-                      <SelectItem value="white-gold">White Gold</SelectItem>
-                      <SelectItem value="rose-gold">Rose Gold</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Material Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Material
-                  </label>
-                  <Select value={selectedMaterial} onValueChange={setSelectedMaterial}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="solid-gold">Solid Gold</SelectItem>
-                      <SelectItem value="925-silver">925 Silver</SelectItem>
-                      <SelectItem value="14k-gold">14K Gold</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Style Selection */}
-                {product.style && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Style
-                    </label>
-                    <Select value={selectedStyle} onValueChange={setSelectedStyle}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="iced-out">Iced Out</SelectItem>
-                        <SelectItem value="classic">Classic</SelectItem>
-                        <SelectItem value="custom-design">Custom Design</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                {/* Gemstone Selection */}
-                {product.gemstone && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Gemstone
-                    </label>
-                    <Select value={selectedGemstone} onValueChange={setSelectedGemstone}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="vvs-diamond-simulants">VVS Diamond Simulants (CZ)</SelectItem>
-                        <SelectItem value="moissanite">Moissanite</SelectItem>
-                        <SelectItem value="vvs-moissanite">VVS Moissanite</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                {/* Teeth Count Selection */}
-                {product.teeth_count && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Teeth Count
-                    </label>
-                    <Select value={selectedTeethCount} onValueChange={setSelectedTeethCount}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="4-teeth">4 Teeth</SelectItem>
-                        <SelectItem value="6-teeth">6 Teeth</SelectItem>
-                        <SelectItem value="8-teeth">8 Teeth</SelectItem>
-                        <SelectItem value="full-set">Full Set</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
