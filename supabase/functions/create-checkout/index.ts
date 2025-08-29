@@ -187,7 +187,7 @@ serve(async (req) => {
         sourceTable = 'unknown';
       }
 
-      // Create order record
+      // Create order record with selected variations
       const orderData = {
         stripe_session_id: session.id,
         stripe_customer_id: customerId,
@@ -196,6 +196,8 @@ serve(async (req) => {
         promo_code: promoCode || null,
         discount_percentage: discountPercentage || 0,
         status: "pending",
+        selected_size: cartItem.selectedSize || null,
+        selected_length: cartItem.selectedLength || null,
         product_details: {
           cart_item_id: cartItem.id,
           ...productDetails,
@@ -207,7 +209,11 @@ serve(async (req) => {
         created_at: new Date().toISOString()
       };
 
-      console.log('Inserting order with Stripe customer ID:', customerId);
+      console.log('Inserting order with selected variations:', {
+        size: cartItem.selectedSize,
+        length: cartItem.selectedLength,
+        customerId: customerId
+      });
 
       const { error: insertError } = await supabaseClient
         .from("orders")
