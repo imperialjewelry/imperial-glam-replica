@@ -13,7 +13,15 @@ import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import PendantProductModal from '../components/PendantProductModal';
 
-type PendantProduct = Tables<'pendant_products'>;
+interface LengthPrice {
+  length: string;
+  price: number;
+  stripe_price_id: string;
+}
+
+interface PendantProduct extends Omit<Tables<'pendant_products'>, 'lengths_and_prices'> {
+  lengths_and_prices?: LengthPrice[];
+}
 
 const Pendants = () => {
   const isMobile = useIsMobile();
@@ -66,6 +74,25 @@ const Pendants = () => {
     }
   };
 
+  // Helper function to get the base price for filtering and display
+  const getBasePrice = (product: PendantProduct) => {
+    const lengthsAndPrices = product.lengths_and_prices || [];
+    if (lengthsAndPrices.length > 0) {
+      // Return the lowest price from lengths_and_prices
+      return Math.min(...lengthsAndPrices.map(lp => lp.price));
+    }
+    return product.price;
+  };
+
+  // Helper function to check if product has valid pricing
+  const hasValidPricing = (product: PendantProduct) => {
+    const lengthsAndPrices = product.lengths_and_prices || [];
+    if (lengthsAndPrices.length > 0) {
+      return lengthsAndPrices.some(lp => lp.stripe_price_id);
+    }
+    return !!product.stripe_price_id;
+  };
+
   const applyFilters = () => {
     let filtered = [...products];
 
@@ -104,23 +131,23 @@ const Pendants = () => {
       );
     }
 
-    // Apply price range filter
+    // Apply price range filter using base price
     if (priceFrom || priceTo) {
       filtered = filtered.filter(product => {
-        const price = product.price / 100;
+        const price = getBasePrice(product) / 100;
         const fromPrice = priceFrom ? parseFloat(priceFrom) : 0;
         const toPrice = priceTo ? parseFloat(priceTo) : Infinity;
         return price >= fromPrice && price <= toPrice;
       });
     }
 
-    // Apply sorting
+    // Apply sorting using base price
     switch (sortBy) {
       case 'price-low':
-        filtered.sort((a, b) => a.price - b.price);
+        filtered.sort((a, b) => getBasePrice(a) - getBasePrice(b));
         break;
       case 'price-high':
-        filtered.sort((a, b) => b.price - a.price);
+        filtered.sort((a, b) => getBasePrice(b) - getBasePrice(a));
         break;
       case 'newest':
         filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -485,7 +512,7 @@ const Pendants = () => {
           {/* Product count and controls */}
           <div className="flex items-center justify-between mb-4">
             <span className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold`}>
-              {filteredProducts.filter(product => product.stripe_price_id).length} Products
+              {filteredProducts.filter(product => hasValidPricing(product)).length} Products
             </span>
             <div className="flex items-center space-x-4">
               {!isMobile && (
@@ -521,57 +548,63 @@ const Pendants = () => {
           {/* Products Grid - Clean design without badges or overlays */}
           <div className={`grid ${isMobile ? 'grid-cols-2 gap-2' : 'grid-cols-4 gap-4'}`}>
             {filteredProducts
-              .filter(product => product.stripe_price_id)
-              .map((product) => (
-                <div 
-                  key={product.id} 
-                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer group"
-                  onClick={() => setSelectedProduct(product)}
-                >
-                  
-                  {/* Product Image - Clean without overlays or badges */}
-                  <div className="relative aspect-square overflow-hidden rounded-t-lg">
-                    <img
-                      src={product.image_url}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
+              .filter(product => hasValidPricing(product))
+              .map((product) => {
+                const basePrice = getBasePrice(product);
+                const lengthsAndPrices = product.lengths_and_prices || [];
+                const hasVariablePricing = lengthsAndPrices.length > 0;
+                
+                return (
+                  <div 
+                    key={product.id} 
+                    className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer group"
+                    onClick={() => setSelectedProduct(product)}
+                  >
+                    
+                    {/* Product Image - Clean without overlays or badges */}
+                    <div className="relative aspect-square overflow-hidden rounded-t-lg">
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
 
-                  {/* Product Info */}
-                  <div className={`${isMobile ? 'p-2 space-y-1.5' : 'p-3 space-y-2'}`}>
-                    <div className={`text-gray-500 uppercase ${isMobile ? 'text-xs' : 'text-xs'} font-medium`}>
-                      {product.category}
-                    </div>
-                    
-                    <h3 className={`font-medium text-gray-900 line-clamp-2 leading-tight ${isMobile ? 'text-xs' : 'text-sm'}`}>
-                      {product.name}
-                    </h3>
-                    
-                    <div className="flex items-center space-x-1">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`fill-yellow-400 text-yellow-400 ${isMobile ? 'w-2.5 h-2.5' : 'w-3 h-3'}`} />
-                        ))}
+                    {/* Product Info */}
+                    <div className={`${isMobile ? 'p-2 space-y-1.5' : 'p-3 space-y-2'}`}>
+                      <div className={`text-gray-500 uppercase ${isMobile ? 'text-xs' : 'text-xs'} font-medium`}>
+                        {product.category}
                       </div>
-                      <span className={`text-gray-500 ${isMobile ? 'text-xs' : 'text-xs'}`}>({product.review_count})</span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-1.5">
-                        <span className={`font-bold text-blue-600 ${isMobile ? 'text-sm' : 'text-lg'}`}>
-                          ${(product.price / 100).toFixed(2)}
-                        </span>
-                        {product.original_price && (
-                          <span className={`text-gray-500 line-through ${isMobile ? 'text-xs' : 'text-sm'}`}>
-                            ${(product.original_price / 100).toFixed(2)}
+                      
+                      <h3 className={`font-medium text-gray-900 line-clamp-2 leading-tight ${isMobile ? 'text-xs' : 'text-sm'}`}>
+                        {product.name}
+                      </h3>
+                      
+                      <div className="flex items-center space-x-1">
+                        <div className="flex">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className={`fill-yellow-400 text-yellow-400 ${isMobile ? 'w-2.5 h-2.5' : 'w-3 h-3'}`} />
+                          ))}
+                        </div>
+                        <span className={`text-gray-500 ${isMobile ? 'text-xs' : 'text-xs'}`}>({product.review_count})</span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-1.5">
+                          <span className={`font-bold text-blue-600 ${isMobile ? 'text-sm' : 'text-lg'}`}>
+                            {hasVariablePricing ? 'From ' : ''}${(basePrice / 100).toFixed(2)}
                           </span>
-                        )}
+                          {product.original_price && product.original_price > basePrice && (
+                            <span className={`text-gray-500 line-through ${isMobile ? 'text-xs' : 'text-sm'}`}>
+                              ${(product.original_price / 100).toFixed(2)}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
           </div>
         </div>
       </div>
