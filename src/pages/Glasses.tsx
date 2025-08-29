@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react';
-import { Star, ChevronDown, Filter } from 'lucide-react';
+import { Star, ChevronDown, Filter, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,399 +11,239 @@ import { Tables } from '@/integrations/supabase/types';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
+import GlassesProductModal from '../components/GlassesProductModal';
 
 type GlassesProduct = Tables<'glasses_products'>;
 
 const Glasses = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<GlassesProduct[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<GlassesProduct[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<GlassesProduct | null>(null);
   const [sortBy, setSortBy] = useState('featured');
-  const [priceFrom, setPriceFrom] = useState('');
-  const [priceTo, setPriceTo] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [openSections, setOpenSections] = useState({
-    productType: false,
-    price: false,
-    color: false,
-    lensColor: false
+  const [loading, setLoading] = useState(true);
+
+  // Dynamic filter states
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedLensColors, setSelectedLensColors] = useState<string[]>([]);
+  const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
+
+  // Dynamic filter options
+  const [filterOptions, setFilterOptions] = useState({
+    categories: [] as { name: string; count: number }[],
+    colors: [] as { name: string; count: number }[],
+    lensColors: [] as { name: string; count: number }[],
+    materials: [] as { name: string; count: number }[],
   });
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
-  const fetchProducts = async () => {
-    const { data, error } = await supabase
-      .from('glasses_products')
-      .select('*')
-      .order('created_at', { ascending: false });
+  useEffect(() => {
+    generateFilterOptions();
+  }, [products]);
 
-    if (error) {
-      console.error('Error fetching glasses products:', error);
-    } else {
-      setProducts(data || []);
+  useEffect(() => {
+    applyFilters();
+  }, [products, selectedCategories, selectedColors, selectedLensColors, selectedMaterials, priceRange, sortBy]);
+
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('glasses_products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching glasses products:', error);
+      } else {
+        setProducts(data || []);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
-  const toggleSection = (section: keyof typeof openSections) => {
-    setOpenSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
+  const generateFilterOptions = () => {
+    const categories = new Map<string, number>();
+    const colors = new Map<string, number>();
+    const lensColors = new Map<string, number>();
+    const materials = new Map<string, number>();
+
+    products.forEach(product => {
+      // Categories
+      categories.set(product.category, (categories.get(product.category) || 0) + 1);
+      
+      // Colors
+      colors.set(product.color, (colors.get(product.color) || 0) + 1);
+      
+      // Lens Colors
+      if (product.lens_color) {
+        lensColors.set(product.lens_color, (lensColors.get(product.lens_color) || 0) + 1);
+      }
+      
+      // Materials
+      materials.set(product.material, (materials.get(product.material) || 0) + 1);
+    });
+
+    setFilterOptions({
+      categories: Array.from(categories.entries()).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count),
+      colors: Array.from(colors.entries()).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count),
+      lensColors: Array.from(lensColors.entries()).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count),
+      materials: Array.from(materials.entries()).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count),
+    });
   };
 
-  const productTypes = [
-    { name: "Custom Sunglasses", count: 9 },
-    { name: "Fleuree Glasses", count: 3 },
-    { name: "Classic Glasses", count: 2 },
-    { name: "Aviator Glasses", count: 1 },
-    { name: "Rectangle Glasses", count: 1 },
-    { name: "Square Glasses", count: 1 },
-    { name: "Wayfarer Glasses", count: 1 },
-    { name: "Ankh Glasses", count: 1 },
-    { name: "Prong Sunglasses", count: 1 }
-  ];
+  const applyFilters = () => {
+    let filtered = [...products];
 
-  const colors = [
-    { name: "Yellow Gold", count: 6 },
-    { name: "White Gold", count: 9 },
-    { name: "Rose Gold", count: 6 }
-  ];
+    // Apply category filter
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(product => selectedCategories.includes(product.category));
+    }
 
-  const lensColors = [
-    { name: "Black", count: 8 },
-    { name: "Clear", count: 7 },
-    { name: "Blue", count: 4 },
-    { name: "Pink", count: 5 },
-    { name: "Brown", count: 4 },
-    { name: "Burgundy & Clear", count: 1 },
-    { name: "Navy", count: 1 },
-    { name: "Dark Blue", count: 2 },
-    { name: "Red", count: 1 }
-  ];
+    // Apply color filter
+    if (selectedColors.length > 0) {
+      filtered = filtered.filter(product => selectedColors.includes(product.color));
+    }
 
-  const glassesTypes = [
-    "SUNGLASSES",
-    "PRESCRIPTION GLASSES", 
-    "DESIGNER FRAMES"
-  ];
+    // Apply lens color filter
+    if (selectedLensColors.length > 0) {
+      filtered = filtered.filter(product => product.lens_color && selectedLensColors.includes(product.lens_color));
+    }
 
-  const renderDesktopFilters = () => (
-    <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
-      <h2 className="text-lg font-semibold mb-6">Filters</h2>
-      
-      {/* Product Type */}
-      <div className="mb-8">
-        <h3 className="font-medium text-gray-900 mb-4 uppercase">PRODUCT TYPE</h3>
-        <div className="space-y-3">
-          {productTypes.map((type) => (
-            <div key={type.name} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${type.name}`} />
-                <label htmlFor={`desktop-${type.name}`} className="text-sm text-gray-700">
-                  {type.name}
-                </label>
-              </div>
-              <span className="text-sm text-gray-500">({type.count})</span>
-            </div>
-          ))}
+    // Apply material filter
+    if (selectedMaterials.length > 0) {
+      filtered = filtered.filter(product => selectedMaterials.includes(product.material));
+    }
+
+    // Apply price filter
+    if (priceRange.min || priceRange.max) {
+      filtered = filtered.filter(product => {
+        const price = product.price / 100;
+        const min = priceRange.min ? parseFloat(priceRange.min) : 0;
+        const max = priceRange.max ? parseFloat(priceRange.max) : Infinity;
+        return price >= min && price <= max;
+      });
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+      default:
+        filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+    }
+
+    setFilteredProducts(filtered);
+  };
+
+  const handleFilterChange = (type: string, value: string) => {
+    switch (type) {
+      case 'category':
+        setSelectedCategories(prev => 
+          prev.includes(value) 
+            ? prev.filter(item => item !== value)
+            : [...prev, value]
+        );
+        break;
+      case 'color':
+        setSelectedColors(prev => 
+          prev.includes(value) 
+            ? prev.filter(item => item !== value)
+            : [...prev, value]
+        );
+        break;
+      case 'lensColor':
+        setSelectedLensColors(prev => 
+          prev.includes(value) 
+            ? prev.filter(item => item !== value)
+            : [...prev, value]
+        );
+        break;
+      case 'material':
+        setSelectedMaterials(prev => 
+          prev.includes(value) 
+            ? prev.filter(item => item !== value)
+            : [...prev, value]
+        );
+        break;
+    }
+  };
+
+  const clearAllFilters = () => {
+    setSelectedCategories([]);
+    setSelectedColors([]);
+    setSelectedLensColors([]);
+    setSelectedMaterials([]);
+    setPriceRange({ min: '', max: '' });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <PromoBar />
+        <Header />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-lg">Loading glasses...</div>
         </div>
+        <Footer />
       </div>
-
-      {/* Price */}
-      <div className="mb-8">
-        <h3 className="font-medium text-gray-900 mb-4 uppercase">PRICE</h3>
-        <div className="flex space-x-2">
-          <div className="flex-1">
-            <label className="block text-xs text-gray-500 mb-1">FROM</label>
-            <input
-              type="number"
-              value={priceFrom}
-              onChange={(e) => setPriceFrom(e.target.value)}
-              placeholder="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-            />
-          </div>
-          <div className="flex-1">
-            <label className="block text-xs text-gray-500 mb-1">TO</label>
-            <input
-              type="number"
-              value={priceTo}
-              onChange={(e) => setPriceTo(e.target.value)}
-              placeholder="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Color */}
-      <div className="mb-8">
-        <h3 className="font-medium text-gray-900 mb-4 uppercase">COLOR</h3>
-        <div className="space-y-3">
-          {colors.map((color) => (
-            <div key={color.name} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${color.name}`} />
-                <label htmlFor={`desktop-${color.name}`} className="text-sm text-gray-700">
-                  {color.name}
-                </label>
-              </div>
-              <span className="text-sm text-gray-500">({color.count})</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Lens Color */}
-      <div className="mb-8">
-        <h3 className="font-medium text-gray-900 mb-4 uppercase">LENS COLOR</h3>
-        <div className="space-y-3">
-          {lensColors.map((lensColor) => (
-            <div key={lensColor.name} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Checkbox id={`desktop-${lensColor.name}`} />
-                <label htmlFor={`desktop-${lensColor.name}`} className="text-sm text-gray-700">
-                  {lensColor.name}
-                </label>
-              </div>
-              <span className="text-sm text-gray-500">({lensColor.count})</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderMobileFilters = () => (
-    showFilters && (
-      <div className="bg-white border rounded-lg mb-6 overflow-hidden">
-        
-        {/* Sort By */}
-        <div className="p-4 border-b">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="featured">Featured</SelectItem>
-              <SelectItem value="price-low">Price: Low to High</SelectItem>
-              <SelectItem value="price-high">Price: High to Low</SelectItem>
-              <SelectItem value="newest">Newest</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Product Type Filter */}
-        <Collapsible open={openSections.productType} onOpenChange={() => toggleSection('productType')}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
-            <span className="font-medium">PRODUCT TYPE</span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.productType ? 'rotate-180' : ''}`} />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="p-4 border-b">
-            <div className="space-y-3">
-              {productTypes.map((type) => (
-                <div key={type.name} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id={type.name} />
-                    <label htmlFor={type.name} className="text-sm text-gray-700">
-                      {type.name}
-                    </label>
-                  </div>
-                  <span className="text-sm text-gray-500">({type.count})</span>
-                </div>
-              ))}
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-
-        {/* Price Filter */}
-        <Collapsible open={openSections.price} onOpenChange={() => toggleSection('price')}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
-            <span className="font-medium">PRICE</span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.price ? 'rotate-180' : ''}`} />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="p-4 border-b">
-            <div className="flex space-x-2">
-              <div className="flex-1">
-                <label className="block text-xs text-gray-500 mb-1">FROM</label>
-                <input
-                  type="number"
-                  value={priceFrom}
-                  onChange={(e) => setPriceFrom(e.target.value)}
-                  placeholder="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="block text-xs text-gray-500 mb-1">TO</label>
-                <input
-                  type="number"
-                  value={priceTo}
-                  onChange={(e) => setPriceTo(e.target.value)}
-                  placeholder="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                />
-              </div>
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-
-        {/* Color Filter */}
-        <Collapsible open={openSections.color} onOpenChange={() => toggleSection('color')}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
-            <span className="font-medium">COLOR</span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.color ? 'rotate-180' : ''}`} />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="p-4 border-b">
-            <div className="space-y-3">
-              {colors.map((color) => (
-                <div key={color.name} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id={color.name} />
-                    <label htmlFor={color.name} className="text-sm text-gray-700">
-                      {color.name}
-                    </label>
-                  </div>
-                  <span className="text-sm text-gray-500">({color.count})</span>
-                </div>
-              ))}
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-
-        {/* Lens Color Filter */}
-        <Collapsible open={openSections.lensColor} onOpenChange={() => toggleSection('lensColor')}>
-          <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left hover:bg-gray-50">
-            <span className="font-medium">LENS COLOR</span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${openSections.lensColor ? 'rotate-180' : ''}`} />
-          </CollapsibleTrigger>
-          <CollapsibleContent className="p-4">
-            <div className="space-y-3">
-              {lensColors.map((lensColor) => (
-                <div key={lensColor.name} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id={lensColor.name} />
-                    <label htmlFor={lensColor.name} className="text-sm text-gray-700">
-                      {lensColor.name}
-                    </label>
-                  </div>
-                  <span className="text-sm text-gray-500">({lensColor.count})</span>
-                </div>
-              ))}
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-      </div>
-    )
-  );
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
       
-      {/* Desktop Hero Section */}
-      {!isMobile && (
-        <section className="bg-gray-50 py-12 px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                MOISSANITE DIAMOND GLASSES
-              </h1>
-              <p className="text-lg text-gray-600 mb-8">
-                All Moissanite Iced Out 14K White, Yellow and Rose Gold Designer Glasses
-              </p>
-              
-              {/* Glasses Types Navigation */}
-              <div className="flex justify-center space-x-8 text-sm text-gray-500">
-                {glassesTypes.map((type, index) => (
-                  <span key={index} className="border-r border-gray-300 pr-8 last:border-r-0">
-                    {type}
-                  </span>
-                ))}
-              </div>
-            </div>
+      {/* Hero Section */}
+      <section className={`bg-gray-50 ${isMobile ? 'py-8 px-4' : 'py-12 px-8'}`}>
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className={`font-bold text-gray-900 mb-4 ${isMobile ? 'text-2xl' : 'text-4xl'}`}>
+            MOISSANITE DIAMOND GLASSES
+          </h1>
+          <p className={`text-gray-600 mb-8 ${isMobile ? 'text-sm' : 'text-lg'}`}>
+            All Moissanite Iced Out 14K White, Yellow and Rose Gold Designer Glasses
+          </p>
+          
+          {/* Category Pills */}
+          <div className={`flex ${isMobile ? 'flex-wrap justify-center gap-2' : 'justify-center space-x-8'} text-sm text-gray-500`}>
+            {['SUNGLASSES', 'PRESCRIPTION GLASSES', 'DESIGNER FRAMES'].map((type, index) => (
+              <span key={index} className={`${isMobile ? 'px-3 py-1 bg-gray-200 rounded-full' : 'border-r border-gray-300 pr-8 last:border-r-0'}`}>
+                {type}
+              </span>
+            ))}
           </div>
-        </section>
-      )}
-
-      {/* Mobile Hero Section */}
-      {isMobile && (
-        <section className="bg-gray-50 py-8 px-4">
-          <div className="max-w-sm mx-auto">
-            {/* Hero Images */}
-            <div className="grid grid-cols-4 gap-2 mb-6">
-              <img 
-                src="https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?auto=format&fit=crop&w=200&q=80" 
-                alt="Glasses 1" 
-                className="w-full aspect-square rounded-lg object-cover"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1508296695146-257a814070b4?auto=format&fit=crop&w=200&q=80" 
-                alt="Glasses 2" 
-                className="w-full aspect-square rounded-lg object-cover"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=200&q=80" 
-                alt="Glasses 3" 
-                className="w-full aspect-square rounded-lg object-cover"
-              />
-              <img 
-                src="https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?auto=format&fit=crop&w=200&q=80" 
-                alt="Glasses 4" 
-                className="w-full aspect-square rounded-lg object-cover"
-              />
-            </div>
-            
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                MOISSANITE DIAMOND GLASSES
-              </h1>
-              <p className="text-sm text-gray-600 mb-6">
-                All Moissanite Iced Out 14K White, Yellow and Rose Gold Designer Glasses
-              </p>
-              
-              {/* Glasses Types Navigation */}
-              <div className="flex justify-center space-x-4 mb-6 text-xs">
-                {glassesTypes.map((type, index) => (
-                  <span key={index} className="text-gray-500 border-r border-gray-300 pr-4 last:border-r-0">
-                    {type}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
         {/* Desktop Sidebar Filters */}
         {!isMobile && (
-          <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
-            <h2 className="text-lg font-semibold mb-6">Filters</h2>
-            
-            {/* Product Type */}
-            <div className="mb-8">
-              <h3 className="font-medium text-gray-900 mb-4 uppercase">PRODUCT TYPE</h3>
-              <div className="space-y-3">
-                {productTypes.map((type) => (
-                  <div key={type.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id={`desktop-${type.name}`} />
-                      <label htmlFor={`desktop-${type.name}`} className="text-sm text-gray-700">
-                        {type.name}
-                      </label>
-                    </div>
-                    <span className="text-sm text-gray-500">({type.count})</span>
-                  </div>
-                ))}
-              </div>
+          <div className="w-80 bg-white p-6 border-r border-gray-200 min-h-screen">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-semibold">Filters</h2>
+              {(selectedCategories.length > 0 || selectedColors.length > 0 || selectedLensColors.length > 0 || selectedMaterials.length > 0 || priceRange.min || priceRange.max) && (
+                <Button variant="outline" size="sm" onClick={clearAllFilters}>
+                  Clear All
+                </Button>
+              )}
             </div>
-
-            {/* Price */}
+            
+            {/* Price Filter */}
             <div className="mb-8">
               <h3 className="font-medium text-gray-900 mb-4 uppercase">PRICE</h3>
               <div className="flex space-x-2">
@@ -412,8 +251,8 @@ const Glasses = () => {
                   <label className="block text-xs text-gray-500 mb-1">FROM</label>
                   <input
                     type="number"
-                    value={priceFrom}
-                    onChange={(e) => setPriceFrom(e.target.value)}
+                    value={priceRange.min}
+                    onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
                     placeholder="0"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                   />
@@ -422,8 +261,8 @@ const Glasses = () => {
                   <label className="block text-xs text-gray-500 mb-1">TO</label>
                   <input
                     type="number"
-                    value={priceTo}
-                    onChange={(e) => setPriceTo(e.target.value)}
+                    value={priceRange.max}
+                    onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
                     placeholder="0"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                   />
@@ -431,15 +270,41 @@ const Glasses = () => {
               </div>
             </div>
 
-            {/* Color */}
+            {/* Category Filter */}
+            <div className="mb-8">
+              <h3 className="font-medium text-gray-900 mb-4 uppercase">CATEGORY</h3>
+              <div className="space-y-3 max-h-48 overflow-y-auto">
+                {filterOptions.categories.map((category) => (
+                  <div key={category.name} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`category-${category.name}`}
+                        checked={selectedCategories.includes(category.name)}
+                        onCheckedChange={() => handleFilterChange('category', category.name)}
+                      />
+                      <label htmlFor={`category-${category.name}`} className="text-sm text-gray-700 cursor-pointer">
+                        {category.name}
+                      </label>
+                    </div>
+                    <span className="text-sm text-gray-500">({category.count})</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Color Filter */}
             <div className="mb-8">
               <h3 className="font-medium text-gray-900 mb-4 uppercase">COLOR</h3>
-              <div className="space-y-3">
-                {colors.map((color) => (
+              <div className="space-y-3 max-h-48 overflow-y-auto">
+                {filterOptions.colors.map((color) => (
                   <div key={color.name} className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <Checkbox id={`desktop-${color.name}`} />
-                      <label htmlFor={`desktop-${color.name}`} className="text-sm text-gray-700">
+                      <Checkbox 
+                        id={`color-${color.name}`}
+                        checked={selectedColors.includes(color.name)}
+                        onCheckedChange={() => handleFilterChange('color', color.name)}
+                      />
+                      <label htmlFor={`color-${color.name}`} className="text-sm text-gray-700 cursor-pointer">
                         {color.name}
                       </label>
                     </div>
@@ -449,19 +314,47 @@ const Glasses = () => {
               </div>
             </div>
 
-            {/* Lens Color */}
+            {/* Lens Color Filter */}
+            {filterOptions.lensColors.length > 0 && (
+              <div className="mb-8">
+                <h3 className="font-medium text-gray-900 mb-4 uppercase">LENS COLOR</h3>
+                <div className="space-y-3 max-h-48 overflow-y-auto">
+                  {filterOptions.lensColors.map((lensColor) => (
+                    <div key={lensColor.name} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={`lens-${lensColor.name}`}
+                          checked={selectedLensColors.includes(lensColor.name)}
+                          onCheckedChange={() => handleFilterChange('lensColor', lensColor.name)}
+                        />
+                        <label htmlFor={`lens-${lensColor.name}`} className="text-sm text-gray-700 cursor-pointer">
+                          {lensColor.name}
+                        </label>
+                      </div>
+                      <span className="text-sm text-gray-500">({lensColor.count})</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Material Filter */}
             <div className="mb-8">
-              <h3 className="font-medium text-gray-900 mb-4 uppercase">LENS COLOR</h3>
-              <div className="space-y-3">
-                {lensColors.map((lensColor) => (
-                  <div key={lensColor.name} className="flex items-center justify-between">
+              <h3 className="font-medium text-gray-900 mb-4 uppercase">MATERIAL</h3>
+              <div className="space-y-3 max-h-48 overflow-y-auto">
+                {filterOptions.materials.map((material) => (
+                  <div key={material.name} className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <Checkbox id={`desktop-${lensColor.name}`} />
-                      <label htmlFor={`desktop-${lensColor.name}`} className="text-sm text-gray-700">
-                        {lensColor.name}
+                      <Checkbox 
+                        id={`material-${material.name}`}
+                        checked={selectedMaterials.includes(material.name)}
+                        onCheckedChange={() => handleFilterChange('material', material.name)}
+                      />
+                      <label htmlFor={`material-${material.name}`} className="text-sm text-gray-700 cursor-pointer">
+                        {material.name}
                       </label>
                     </div>
-                    <span className="text-sm text-gray-500">({lensColor.count})</span>
+                    <span className="text-sm text-gray-500">({material.count})</span>
                   </div>
                 ))}
               </div>
@@ -473,9 +366,9 @@ const Glasses = () => {
         <div className={`flex-1 ${isMobile ? 'py-4 px-4' : 'py-8 px-8'}`}>
           {/* Product count and controls */}
           <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-semibold">{products.length} Products</span>
+            <span className="text-lg font-semibold">{filteredProducts.length} Products</span>
             <div className="flex items-center space-x-4">
-              {!isMobile && (
+              {!isMobile ? (
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Sort By" />
@@ -487,8 +380,7 @@ const Glasses = () => {
                     <SelectItem value="newest">Newest</SelectItem>
                   </SelectContent>
                 </Select>
-              )}
-              {isMobile && (
+              ) : (
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -502,12 +394,19 @@ const Glasses = () => {
             </div>
           </div>
 
-          {/* Mobile Collapsible Filters */}
+          {/* Mobile Filters */}
           {isMobile && showFilters && (
             <div className="bg-white border rounded-lg mb-6 overflow-hidden">
-              
-              {/* Sort By */}
               <div className="p-4 border-b">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-medium">Filters</h3>
+                  {(selectedCategories.length > 0 || selectedColors.length > 0 || selectedLensColors.length > 0 || selectedMaterials.length > 0 || priceRange.min || priceRange.max) && (
+                    <Button variant="outline" size="sm" onClick={clearAllFilters}>
+                      Clear All
+                    </Button>
+                  )}
+                </div>
+                
                 <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-full">
@@ -522,34 +421,11 @@ const Glasses = () => {
                 </Select>
               </div>
 
-              {/* Product Type Filter */}
-              <Collapsible open={openSections.productType} onOpenChange={() => toggleSection('productType')}>
-                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
-                  <span className="font-medium">PRODUCT TYPE</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${openSections.productType ? 'rotate-180' : ''}`} />
-                </CollapsibleTrigger>
-                <CollapsibleContent className="p-4 border-b">
-                  <div className="space-y-3">
-                    {productTypes.map((type) => (
-                      <div key={type.name} className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id={type.name} />
-                          <label htmlFor={type.name} className="text-sm text-gray-700">
-                            {type.name}
-                          </label>
-                        </div>
-                        <span className="text-sm text-gray-500">({type.count})</span>
-                      </div>
-                    ))}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* Price Filter */}
-              <Collapsible open={openSections.price} onOpenChange={() => toggleSection('price')}>
+              {/* Mobile Price Filter */}
+              <Collapsible>
                 <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
                   <span className="font-medium">PRICE</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${openSections.price ? 'rotate-180' : ''}`} />
+                  <ChevronDown className="w-4 h-4" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="p-4 border-b">
                   <div className="flex space-x-2">
@@ -557,8 +433,8 @@ const Glasses = () => {
                       <label className="block text-xs text-gray-500 mb-1">FROM</label>
                       <input
                         type="number"
-                        value={priceFrom}
-                        onChange={(e) => setPriceFrom(e.target.value)}
+                        value={priceRange.min}
+                        onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
                         placeholder="0"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                       />
@@ -567,8 +443,8 @@ const Glasses = () => {
                       <label className="block text-xs text-gray-500 mb-1">TO</label>
                       <input
                         type="number"
-                        value={priceTo}
-                        onChange={(e) => setPriceTo(e.target.value)}
+                        value={priceRange.max}
+                        onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
                         placeholder="0"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
                       />
@@ -577,19 +453,51 @@ const Glasses = () => {
                 </CollapsibleContent>
               </Collapsible>
 
-              {/* Color Filter */}
-              <Collapsible open={openSections.color} onOpenChange={() => toggleSection('color')}>
+              {/* Mobile filter sections for categories, colors, lens colors, and materials would go here */}
+              {/* Category Filter */}
+              <Collapsible>
                 <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
-                  <span className="font-medium">COLOR</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${openSections.color ? 'rotate-180' : ''}`} />
+                  <span className="font-medium">CATEGORY</span>
+                  <ChevronDown className="w-4 h-4" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="p-4 border-b">
                   <div className="space-y-3">
-                    {colors.map((color) => (
+                    {filterOptions.categories.map((category) => (
+                      <div key={category.name} className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`mobile-category-${category.name}`}
+                            checked={selectedCategories.includes(category.name)}
+                            onCheckedChange={() => handleFilterChange('category', category.name)}
+                          />
+                          <label htmlFor={`mobile-category-${category.name}`} className="text-sm text-gray-700 cursor-pointer">
+                            {category.name}
+                          </label>
+                        </div>
+                        <span className="text-sm text-gray-500">({category.count})</span>
+                      </div>
+                    ))}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* Color Filter */}
+              <Collapsible>
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+                  <span className="font-medium">COLOR</span>
+                  <ChevronDown className="w-4 h-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 border-b">
+                  <div className="space-y-3">
+                    {filterOptions.colors.map((color) => (
                       <div key={color.name} className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                          <Checkbox id={color.name} />
-                          <label htmlFor={color.name} className="text-sm text-gray-700">
+                          <Checkbox
+                            id={`mobile-color-${color.name}`}
+                            checked={selectedColors.includes(color.name)}
+                            onCheckedChange={() => handleFilterChange('color', color.name)}
+                          />
+                          <label htmlFor={`mobile-color-${color.name}`} className="text-sm text-gray-700 cursor-pointer">
                             {color.name}
                           </label>
                         </div>
@@ -601,22 +509,55 @@ const Glasses = () => {
               </Collapsible>
 
               {/* Lens Color Filter */}
-              <Collapsible open={openSections.lensColor} onOpenChange={() => toggleSection('lensColor')}>
+              {filterOptions.lensColors.length > 0 && (
+                <Collapsible>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+                    <span className="font-medium">LENS COLOR</span>
+                    <ChevronDown className="w-4 h-4" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="p-4 border-b">
+                    <div className="space-y-3">
+                      {filterOptions.lensColors.map((lensColor) => (
+                        <div key={lensColor.name} className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`mobile-lens-${lensColor.name}`}
+                              checked={selectedLensColors.includes(lensColor.name)}
+                              onCheckedChange={() => handleFilterChange('lensColor', lensColor.name)}
+                            />
+                            <label htmlFor={`mobile-lens-${lensColor.name}`} className="text-sm text-gray-700 cursor-pointer">
+                              {lensColor.name}
+                            </label>
+                          </div>
+                          <span className="text-sm text-gray-500">({lensColor.count})</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              )}
+
+              {/* Material Filter */}
+              <Collapsible>
                 <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left hover:bg-gray-50">
-                  <span className="font-medium">LENS COLOR</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${openSections.lensColor ? 'rotate-180' : ''}`} />
+                  <span className="font-medium">MATERIAL</span>
+                  <ChevronDown className="w-4 h-4" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="p-4">
                   <div className="space-y-3">
-                    {lensColors.map((lensColor) => (
-                      <div key={lensColor.name} className="flex items-center justify-between">
+                    {filterOptions.materials.map((material) => (
+                      <div key={material.name} className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                          <Checkbox id={lensColor.name} />
-                          <label htmlFor={lensColor.name} className="text-sm text-gray-700">
-                            {lensColor.name}
+                          <Checkbox
+                            id={`mobile-material-${material.name}`}
+                            checked={selectedMaterials.includes(material.name)}
+                            onCheckedChange={() => handleFilterChange('material', material.name)}
+                          />
+                          <label htmlFor={`mobile-material-${material.name}`} className="text-sm text-gray-700 cursor-pointer">
+                            {material.name}
                           </label>
                         </div>
-                        <span className="text-sm text-gray-500">({lensColor.count})</span>
+                        <span className="text-sm text-gray-500">({material.count})</span>
                       </div>
                     ))}
                   </div>
@@ -626,17 +567,29 @@ const Glasses = () => {
           )}
 
           {/* Products Grid */}
-          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
-            {products.map((product) => (
-              <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
+          <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3 lg:grid-cols-4'} gap-6`}>
+            {filteredProducts.map((product) => (
+              <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow group">
                 
                 {/* Product Image */}
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
                   <img
                     src={product.image_url}
                     alt={product.name}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
+                  
+                  {/* Quick View Button */}
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                    <Button
+                      onClick={() => setSelectedProduct(product)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-black hover:bg-gray-100"
+                      size="sm"
+                    >
+                      <Eye className="w-4 h-4 mr-2" />
+                      Quick View
+                    </Button>
+                  </div>
                   
                   {/* Badges */}
                   <div className="absolute top-2 left-2 flex flex-col space-y-1">
@@ -650,11 +603,16 @@ const Glasses = () => {
                         {product.discount_percentage}% OFF
                       </Badge>
                     )}
+                    {product.featured && (
+                      <Badge className="text-xs font-semibold bg-yellow-500 text-white">
+                        FEATURED
+                      </Badge>
+                    )}
                   </div>
                 </div>
 
                 {/* Product Info */}
-                <div className="p-3 space-y-2">
+                <div className="p-4 space-y-3">
                   <div className="text-xs text-gray-500 uppercase">
                     {product.category}
                   </div>
@@ -674,7 +632,7 @@ const Glasses = () => {
                   
                   <div className="flex items-center space-x-2">
                     <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
-                    {product.original_price && (
+                    {product.original_price && product.original_price > product.price && (
                       <span className="text-sm text-gray-500 line-through">
                         ${(product.original_price / 100).toFixed(2)}
                       </span>
@@ -684,8 +642,25 @@ const Glasses = () => {
               </div>
             ))}
           </div>
+
+          {filteredProducts.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-500">No glasses found matching your filters.</p>
+              <Button onClick={clearAllFilters} variant="outline" className="mt-4">
+                Clear Filters
+              </Button>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Product Modal */}
+      {selectedProduct && (
+        <GlassesProductModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
 
       <Footer />
     </div>
