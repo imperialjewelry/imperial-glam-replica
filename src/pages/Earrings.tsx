@@ -12,7 +12,6 @@ import { Tables } from '@/integrations/supabase/types';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
-import ProductCheckout from '@/components/ProductCheckout';
 import EarringProductModal from '@/components/EarringProductModal';
 
 type EarringProduct = Tables<'earring_products'>;
@@ -514,17 +513,6 @@ const Earrings = () => {
                           ${(product.original_price / 100).toFixed(2)}
                         </span>
                       )}
-                    </div>
-                    <div onClick={(e) => e.stopPropagation()}>
-                      <ProductCheckout product={{
-                        id: product.id,
-                        name: product.name,
-                        price: product.price,
-                        image_url: product.image_url,
-                        stripe_product_id: product.stripe_product_id,
-                        stripe_price_id: product.stripe_price_id,
-                        sizes: product.sizes
-                      }} />
                     </div>
                   </div>
                 </div>

@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { X, Star, ShoppingCart, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { Tables } from '@/integrations/supabase/types';
@@ -16,24 +15,10 @@ interface EarringProductModalProps {
 }
 
 const EarringProductModal = ({ product, onClose }: EarringProductModalProps) => {
-  const [selectedSize, setSelectedSize] = useState('');
-  const [selectedColor, setSelectedColor] = useState(product.color || 'Yellow Gold');
-  const [selectedMaterial, setSelectedMaterial] = useState(product.material || '925 Silver');
-  const [selectedGemstone, setSelectedGemstone] = useState(product.gemstone || 'VVS Diamond Simulants (CZ)');
-  const [selectedDiamondCut, setSelectedDiamondCut] = useState(product.diamond_cut || 'Round');
   const { addToCart, dispatch } = useCart();
   const { toast } = useToast();
 
   const handleAddToCart = () => {
-    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
-      toast({
-        title: "Size Required",
-        description: "Please select a size before adding to cart.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (!product.stripe_price_id) {
       toast({
         title: "Product Error",
@@ -48,8 +33,8 @@ const EarringProductModal = ({ product, onClose }: EarringProductModalProps) => 
       name: product.name,
       price: product.price,
       image_url: product.image_url,
-      selectedSize,
-      selectedColor,
+      selectedSize: '',
+      selectedColor: product.color,
       stripe_price_id: product.stripe_price_id,
     });
 
@@ -150,114 +135,6 @@ const EarringProductModal = ({ product, onClose }: EarringProductModalProps) => 
                     </div>
                   ))}
                 </div>
-              </div>
-
-              {/* Product Info Display */}
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg">
-                  <div>
-                    <span className="font-medium text-gray-700">Color:</span>
-                    <div className="text-gray-900 font-semibold">{product.color}</div>
-                  </div>
-                  <div>
-                    <span className="font-medium text-gray-700">Material:</span>
-                    <div className="text-gray-900 font-semibold">{product.material}</div>
-                  </div>
-                </div>
-
-                {/* Size Selection */}
-                {product.sizes && product.sizes.length > 0 && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Size *
-                    </label>
-                    <Select value={selectedSize} onValueChange={setSelectedSize}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Size" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {product.sizes.filter(size => size && size.trim() !== '').map((size) => (
-                          <SelectItem key={size} value={size}>
-                            {size}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                {/* Color Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Color
-                  </label>
-                  <Select value={selectedColor} onValueChange={setSelectedColor}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="yellow-gold">Yellow Gold</SelectItem>
-                      <SelectItem value="white-gold">White Gold</SelectItem>
-                      <SelectItem value="rose-gold">Rose Gold</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Material Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Material
-                  </label>
-                  <Select value={selectedMaterial} onValueChange={setSelectedMaterial}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="925-silver">925 Silver</SelectItem>
-                      <SelectItem value="14k-gold">14K Gold</SelectItem>
-                      <SelectItem value="18k-gold">18K Gold</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Gemstone Selection */}
-                {product.gemstone && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Gemstone
-                    </label>
-                    <Select value={selectedGemstone} onValueChange={setSelectedGemstone}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="vvs-diamond-simulants">VVS Diamond Simulants (CZ)</SelectItem>
-                        <SelectItem value="moissanite">Moissanite</SelectItem>
-                        <SelectItem value="vvs-moissanite">VVS Moissanite</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                {/* Diamond Cut Selection */}
-                {product.diamond_cut && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Diamond Cut
-                    </label>
-                    <Select value={selectedDiamondCut} onValueChange={setSelectedDiamondCut}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="round">Round</SelectItem>
-                        <SelectItem value="princess">Princess</SelectItem>
-                        <SelectItem value="emerald">Emerald</SelectItem>
-                        <SelectItem value="oval">Oval</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
               </div>
 
               {/* Add to Cart Button */}
