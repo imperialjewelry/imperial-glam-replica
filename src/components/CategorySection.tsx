@@ -31,7 +31,7 @@ const CategorySection = () => {
     },
     {
       name: "GRILLZ",
-      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/grillz/10on10vvs.webp",
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/grillz//IMG_5019%20(1).webp",
       path: "/grillz"
     },
     {
@@ -41,7 +41,7 @@ const CategorySection = () => {
     },
     {
       name: "PENDANTS",
-      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/earrings//skullpendanyt.webp",
+      image: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/pendants/skullpendanyt.webp",
       path: "/pendants"
     },
     {
