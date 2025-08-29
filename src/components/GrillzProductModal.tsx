@@ -15,10 +15,30 @@ interface GrillzProductModalProps {
   onClose: () => void;
 }
 
+interface TeethOption {
+  teeth: string;
+  price: number;
+  stripe_price_id: string;
+}
+
 const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
   const [selectedSize, setSelectedSize] = useState('');
+  const [selectedTeethOption, setSelectedTeethOption] = useState<TeethOption | null>(null);
   const { addToCart, dispatch } = useCart();
   const { toast } = useToast();
+
+  // Parse teeth options from lengths_and_prices JSON
+  const teethOptions: TeethOption[] = product.lengths_and_prices 
+    ? (product.lengths_and_prices as any[]).map(option => ({
+        teeth: option.teeth || option.length || '',
+        price: option.price || 0,
+        stripe_price_id: option.stripe_price_id || ''
+      }))
+    : [];
+
+  const hasTeethOptions = teethOptions.length > 0;
+  const currentPrice = selectedTeethOption ? selectedTeethOption.price : product.price;
+  const currentStripeId = selectedTeethOption ? selectedTeethOption.stripe_price_id : product.stripe_price_id;
 
   const handleAddToCart = () => {
     if (product.sizes && product.sizes.length > 0 && !selectedSize) {
@@ -30,7 +50,16 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
       return;
     }
 
-    if (!product.stripe_price_id) {
+    if (hasTeethOptions && !selectedTeethOption) {
+      toast({
+        title: "Teeth Count Required",
+        description: "Please select a teeth count before adding to cart.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!currentStripeId) {
       toast({
         title: "Product Error",
         description: "This product is not available for purchase at the moment.",
@@ -42,11 +71,12 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
     addToCart({
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: currentPrice,
       image_url: product.image_url,
       selectedSize,
-      selectedColor: product.color, // Use default product color
-      stripe_price_id: product.stripe_price_id,
+      selectedColor: product.color,
+      stripe_price_id: currentStripeId,
+      selectedLength: selectedTeethOption?.teeth || undefined,
     });
 
     toast({
@@ -109,7 +139,7 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
 
                 <div className="flex items-center space-x-4 mb-6">
                   <span className="text-3xl font-bold text-blue-600">
-                    ${(product.price / 100).toFixed(2)}
+                    ${(currentPrice / 100).toFixed(2)}
                   </span>
                   {product.original_price && (
                     <span className="text-xl text-gray-500 line-through">
@@ -151,6 +181,33 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
                   </div>
                 </div>
 
+                {/* Teeth Count Selection */}
+                {hasTeethOptions && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Number of Teeth *
+                    </label>
+                    <Select 
+                      value={selectedTeethOption?.teeth || ''} 
+                      onValueChange={(value) => {
+                        const option = teethOptions.find(opt => opt.teeth === value);
+                        setSelectedTeethOption(option || null);
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Number of Teeth" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {teethOptions.map((option) => (
+                          <SelectItem key={option.teeth} value={option.teeth}>
+                            {option.teeth} - ${(option.price / 100).toFixed(2)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
                 {/* Size Selection */}
                 {product.sizes && product.sizes.length > 0 && (
                   <div>
@@ -177,10 +234,10 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
               <Button
                 onClick={handleAddToCart}
                 className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 text-lg"
-                disabled={!product.stripe_price_id}
+                disabled={!currentStripeId}
               >
                 <ShoppingCart className="w-5 h-5 mr-2" />
-                Add to Cart - ${(product.price / 100).toFixed(2)}
+                Add to Cart - ${(currentPrice / 100).toFixed(2)}
               </Button>
 
               {/* Product Specifications */}

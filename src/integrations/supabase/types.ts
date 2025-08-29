@@ -572,6 +572,7 @@ export type Database = {
           id: string
           image_url: string
           in_stock: boolean | null
+          lengths_and_prices: Json | null
           material: string
           name: string
           original_price: number | null
@@ -598,6 +599,7 @@ export type Database = {
           id?: string
           image_url: string
           in_stock?: boolean | null
+          lengths_and_prices?: Json | null
           material: string
           name: string
           original_price?: number | null
@@ -624,6 +626,7 @@ export type Database = {
           id?: string
           image_url?: string
           in_stock?: boolean | null
+          lengths_and_prices?: Json | null
           material?: string
           name?: string
           original_price?: number | null
