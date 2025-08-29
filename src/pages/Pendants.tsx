@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -70,7 +71,7 @@ const Pendants = () => {
       const transformedData: PendantProduct[] = (data || []).map(product => ({
         ...product,
         lengths_and_prices: Array.isArray(product.lengths_and_prices) 
-          ? product.lengths_and_prices as LengthPrice[]
+          ? (product.lengths_and_prices as unknown as LengthPrice[])
           : []
       }));
       
