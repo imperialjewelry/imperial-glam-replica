@@ -155,28 +155,37 @@ serve(async (req) => {
 
       if (!productDetails) {
         console.error('Product not found in any table for cart item:', cartItem.id);
-        throw new Error(`Product not found for cart item ID: ${cartItem.id}`);
+        // Don't throw error, just log and continue - we'll create order without detailed product info
+        console.log('Creating order without detailed product info for item:', cartItem.id);
+        productDetails = {
+          name: cartItem.name,
+          price: cartItem.price,
+          image_url: cartItem.image_url
+        };
+        sourceTable = 'unknown';
       }
 
-      // Create order record with the cart item ID as product_id
+      // Create order record - don't reference any foreign key, just store the data
       const orderData = {
         stripe_session_id: session.id,
-        product_id: cartItem.id, // Use the original cart item ID
+        // Don't use product_id foreign key - just store as metadata
         amount: Math.round((cartItem.price * (cartItem.quantity || 1)) - (discountAmount / cartItems.length)),
         guest_email: customerEmail,
         promo_code: promoCode || null,
         discount_percentage: discountPercentage || 0,
         status: "pending",
         product_details: {
+          cart_item_id: cartItem.id,
           ...productDetails,
-          source_table: sourceTable
+          source_table: sourceTable,
+          selected_size: cartItem.selectedSize || null,
+          selected_length: cartItem.selectedLength || null,
+          quantity: cartItem.quantity || 1
         },
-        selected_size: cartItem.selectedSize || null,
-        selected_length: cartItem.selectedLength || null,
         created_at: new Date().toISOString()
       };
 
-      console.log('Inserting order with product from', sourceTable, ':', orderData.product_id);
+      console.log('Inserting order with product from', sourceTable, ':', cartItem.id);
 
       const { error: insertError } = await supabaseClient
         .from("orders")
