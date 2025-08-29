@@ -108,74 +108,75 @@ serve(async (req) => {
     }, 0);
 
     const discountAmount = discountPercentage > 0 ? Math.round((subtotalAmount * discountPercentage) / 100) : 0;
-    const finalAmount = subtotalAmount - discountAmount;
+
+    // Define the possible product tables to search
+    const productTables = [
+      'grillz_products',
+      'chain_products', 
+      'watch_products',
+      'earring_products',
+      'pendant_products',
+      'bracelet_products',
+      'glasses_products',
+      'diamond_products',
+      'engagement_ring_products',
+      'hip_hop_ring_products',
+      'vvs_simulant_products',
+      'custom_products'
+    ];
 
     // Store detailed order information for each cart item
     for (const cartItem of cartItems) {
       console.log('Processing cart item:', cartItem);
       
-      // Try to find the unified product record by looking in all possible ways
-      let unifiedProduct = null;
       let productDetails = null;
+      let sourceTable = null;
 
-      // First, try to find by the cart item ID in the products table
-      const { data: directProduct, error: directError } = await supabaseClient
-        .from("products")
-        .select("*, source_table, source_id")
-        .eq("id", cartItem.id)
-        .single();
+      // Try to find the product in each table
+      for (const table of productTables) {
+        try {
+          const { data: product, error } = await supabaseClient
+            .from(table)
+            .select("*")
+            .eq("id", cartItem.id)
+            .single();
 
-      if (!directError && directProduct) {
-        unifiedProduct = directProduct;
-        console.log('Found unified product directly:', unifiedProduct.id);
-      } else {
-        console.log('Cart item ID not found in products table, trying to find by source_id');
-        
-        // If not found directly, try to find by source_id (the cart might have source table IDs)
-        const { data: sourceProducts, error: sourceError } = await supabaseClient
-          .from("products")
-          .select("*, source_table, source_id")
-          .eq("source_id", cartItem.id);
-
-        if (!sourceError && sourceProducts && sourceProducts.length > 0) {
-          unifiedProduct = sourceProducts[0];
-          console.log('Found unified product by source_id:', unifiedProduct.id);
-        } else {
-          console.error('Could not find unified product for cart item:', cartItem.id);
-          throw new Error(`Product not found for cart item ID: ${cartItem.id}`);
+          if (!error && product) {
+            productDetails = product;
+            sourceTable = table;
+            console.log(`Found product in ${table}:`, product.name);
+            break;
+          }
+        } catch (err) {
+          // Continue searching in other tables
+          continue;
         }
       }
 
-      // Get detailed product info from the source table
-      if (unifiedProduct) {
-        const { data: detailedProduct, error: detailError } = await supabaseClient
-          .from(unifiedProduct.source_table)
-          .select("*")
-          .eq("id", unifiedProduct.source_id)
-          .single();
-
-        if (!detailError && detailedProduct) {
-          productDetails = detailedProduct;
-        }
-        console.log('Found product details:', productDetails?.name);
+      if (!productDetails) {
+        console.error('Product not found in any table for cart item:', cartItem.id);
+        throw new Error(`Product not found for cart item ID: ${cartItem.id}`);
       }
 
-      // Use the unified product ID for the order
+      // Create order record with the cart item ID as product_id
       const orderData = {
         stripe_session_id: session.id,
-        product_id: unifiedProduct.id, // Use the unified product ID
+        product_id: cartItem.id, // Use the original cart item ID
         amount: Math.round((cartItem.price * (cartItem.quantity || 1)) - (discountAmount / cartItems.length)),
         guest_email: customerEmail,
         promo_code: promoCode || null,
         discount_percentage: discountPercentage || 0,
         status: "pending",
-        product_details: productDetails,
+        product_details: {
+          ...productDetails,
+          source_table: sourceTable
+        },
         selected_size: cartItem.selectedSize || null,
         selected_length: cartItem.selectedLength || null,
         created_at: new Date().toISOString()
       };
 
-      console.log('Inserting order with unified product ID:', orderData.product_id);
+      console.log('Inserting order with product from', sourceTable, ':', orderData.product_id);
 
       const { error: insertError } = await supabaseClient
         .from("orders")
