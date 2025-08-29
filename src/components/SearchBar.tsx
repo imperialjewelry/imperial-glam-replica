@@ -23,6 +23,7 @@ interface Product {
   image_url: string;
   discount_percentage: number;
   source_table: string;
+  source_id: string;
   // Additional properties that might be present
   [key: string]: any;
 }
@@ -31,6 +32,7 @@ const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [fullProductData, setFullProductData] = useState<any>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
   const { data: searchResults = [], isLoading } = useQuery({
@@ -40,7 +42,7 @@ const SearchBar = () => {
       
       const { data, error } = await supabase
         .from('products')
-        .select('id, name, description, price, original_price, category, image_url, discount_percentage, source_table')
+        .select('id, name, description, price, original_price, category, image_url, discount_percentage, source_table, source_id')
         .or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%`)
         .eq('in_stock', true)
         .limit(6);
@@ -78,59 +80,92 @@ const SearchBar = () => {
 
   const formatPrice = (price: number) => `$${(price / 100).toFixed(2)}`;
 
-  const handleProductClick = (product: Product) => {
+  const handleProductClick = async (product: Product) => {
     setSelectedProduct(product);
     setIsOpen(false);
+
+    // Fetch the complete product data from the source table
+    try {
+      const { data, error } = await supabase
+        .from(product.source_table)
+        .select('*')
+        .eq('id', product.source_id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching full product data:', error);
+        setFullProductData(product); // Fallback to basic data
+      } else {
+        setFullProductData(data);
+      }
+    } catch (error) {
+      console.error('Error fetching full product data:', error);
+      setFullProductData(product); // Fallback to basic data
+    }
   };
 
   const renderProductModal = () => {
-    if (!selectedProduct) return null;
-
-    // Cast the product to any to avoid TypeScript errors since we're passing
-    // the basic product data and the modals will handle the missing properties
-    const productData = selectedProduct as any;
+    if (!selectedProduct || !fullProductData) return null;
 
     switch (selectedProduct.source_table) {
       case 'chain_products':
         return (
           <ChainProductModal
-            product={productData}
-            onClose={() => setSelectedProduct(null)}
+            product={fullProductData}
+            onClose={() => {
+              setSelectedProduct(null);
+              setFullProductData(null);
+            }}
           />
         );
       case 'bracelet_products':
         return (
           <BraceletProductModal
-            product={productData}
-            onClose={() => setSelectedProduct(null)}
+            product={fullProductData}
+            onClose={() => {
+              setSelectedProduct(null);
+              setFullProductData(null);
+            }}
           />
         );
       case 'earring_products':
         return (
           <EarringProductModal
-            product={productData}
-            onClose={() => setSelectedProduct(null)}
+            product={fullProductData}
+            onClose={() => {
+              setSelectedProduct(null);
+              setFullProductData(null);
+            }}
           />
         );
       case 'grillz_products':
         return (
           <GrillzProductModal
-            product={productData}
-            onClose={() => setSelectedProduct(null)}
+            product={fullProductData}
+            onClose={() => {
+              setSelectedProduct(null);
+              setFullProductData(null);
+            }}
           />
         );
       case 'watch_products':
         return (
           <WatchProductModal
-            product={productData}
-            onClose={() => setSelectedProduct(null)}
+            product={fullProductData}
+            onClose={() => {
+              setSelectedProduct(null);
+              setFullProductData(null);
+            }}
           />
         );
       case 'pendant_products':
         return (
           <PendantProductModal
-            product={productData}
-            onClose={() => setSelectedProduct(null)}
+            product={fullProductData}
+            onClose={() => {
+              setSelectedProduct(null);
+              setFullProductData(null);
+            }}
           />
         );
       default:

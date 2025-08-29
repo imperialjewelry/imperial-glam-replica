@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,6 +24,7 @@ import {
 
 const BestDeals = () => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [fullProductData, setFullProductData] = useState<any>(null);
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [sortBy, setSortBy] = useState('discount');
 
@@ -72,50 +74,91 @@ const BestDeals = () => {
     return `$${(price / 100).toLocaleString()}`;
   };
 
+  const handleProductClick = async (product: any) => {
+    setSelectedProduct(product);
+
+    // Fetch the complete product data from the source table
+    try {
+      const { data, error } = await supabase
+        .from(product.source_table)
+        .select('*')
+        .eq('id', product.source_id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching full product data:', error);
+        setFullProductData(product); // Fallback to basic data
+      } else {
+        setFullProductData(data);
+      }
+    } catch (error) {
+      console.error('Error fetching full product data:', error);
+      setFullProductData(product); // Fallback to basic data
+    }
+  };
+
   const renderProductModal = () => {
-    if (!selectedProduct) return null;
+    if (!selectedProduct || !fullProductData) return null;
 
     switch (selectedProduct.source_table) {
       case 'chain_products':
         return (
           <ChainProductModal
-            product={selectedProduct}
-            onClose={() => setSelectedProduct(null)}
+            product={fullProductData}
+            onClose={() => {
+              setSelectedProduct(null);
+              setFullProductData(null);
+            }}
           />
         );
       case 'bracelet_products':
         return (
           <BraceletProductModal
-            product={selectedProduct}
-            onClose={() => setSelectedProduct(null)}
+            product={fullProductData}
+            onClose={() => {
+              setSelectedProduct(null);
+              setFullProductData(null);
+            }}
           />
         );
       case 'earring_products':
         return (
           <EarringProductModal
-            product={selectedProduct}
-            onClose={() => setSelectedProduct(null)}
+            product={fullProductData}
+            onClose={() => {
+              setSelectedProduct(null);
+              setFullProductData(null);
+            }}
           />
         );
       case 'grillz_products':
         return (
           <GrillzProductModal
-            product={selectedProduct}
-            onClose={() => setSelectedProduct(null)}
+            product={fullProductData}
+            onClose={() => {
+              setSelectedProduct(null);
+              setFullProductData(null);
+            }}
           />
         );
       case 'watch_products':
         return (
           <WatchProductModal
-            product={selectedProduct}
-            onClose={() => setSelectedProduct(null)}
+            product={fullProductData}
+            onClose={() => {
+              setSelectedProduct(null);
+              setFullProductData(null);
+            }}
           />
         );
       case 'pendant_products':
         return (
           <PendantProductModal
-            product={selectedProduct}
-            onClose={() => setSelectedProduct(null)}
+            product={fullProductData}
+            onClose={() => {
+              setSelectedProduct(null);
+              setFullProductData(null);
+            }}
           />
         );
       default:
@@ -207,7 +250,7 @@ const BestDeals = () => {
                 <Card 
                   key={product.id}
                   className="group cursor-pointer hover:shadow-lg transition-all duration-300 bg-white border-gray-200"
-                  onClick={() => setSelectedProduct(product)}
+                  onClick={() => handleProductClick(product)}
                 >
                   <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100">
                     <img
