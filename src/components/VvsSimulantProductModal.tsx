@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Star, ChevronLeft, ChevronRight, Check, Gift, ShoppingCart } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from 'sonner';
@@ -28,6 +29,7 @@ interface VvsSimulantProduct {
   clarity_grade: string | null;
   description: string | null;
   stripe_price_id: string;
+  lengths_and_prices: any[] | null;
 }
 
 interface VvsSimulantProductModalProps {
@@ -35,12 +37,32 @@ interface VvsSimulantProductModalProps {
   onClose: () => void;
 }
 
+interface LengthOption {
+  length: string;
+  price: number;
+  stripe_price_id: string;
+}
+
 const VvsSimulantProductModal = ({ product, onClose }: VvsSimulantProductModalProps) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
+  const [selectedLengthOption, setSelectedLengthOption] = useState<LengthOption | null>(null);
   const { dispatch } = useCart();
 
   if (!product) return null;
+
+  // Parse length options from lengths_and_prices JSON
+  const lengthOptions: LengthOption[] = product.lengths_and_prices 
+    ? (product.lengths_and_prices as any[]).map(option => ({
+        length: option.length || option.carat_weight || '',
+        price: option.price || 0,
+        stripe_price_id: option.stripe_price_id || ''
+      }))
+    : [];
+
+  const hasLengthOptions = lengthOptions.length > 0;
+  const currentPrice = selectedLengthOption ? selectedLengthOption.price : product.price;
+  const currentStripeId = selectedLengthOption ? selectedLengthOption.stripe_price_id : product.stripe_price_id;
 
   // Mock additional images for carousel (in real app, these would come from product data)
   const images = [
@@ -60,14 +82,30 @@ const VvsSimulantProductModal = ({ product, onClose }: VvsSimulantProductModalPr
   ];
 
   const handleAddToCart = () => {
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+      toast.error('Please select a size before adding to cart.');
+      return;
+    }
+
+    if (hasLengthOptions && !selectedLengthOption) {
+      toast.error('Please select a length/weight before adding to cart.');
+      return;
+    }
+
+    if (!currentStripeId) {
+      toast.error('This product is not available for purchase at the moment.');
+      return;
+    }
+
     const cartItem = {
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: currentPrice,
       image_url: product.image_url,
       selectedSize: selectedSize || 'Standard',
       quantity: 1,
-      stripe_price_id: product.stripe_price_id
+      stripe_price_id: currentStripeId,
+      selectedLength: selectedLengthOption?.length || undefined,
     };
 
     dispatch({ type: 'ADD_ITEM', payload: cartItem });
@@ -94,7 +132,7 @@ const VvsSimulantProductModal = ({ product, onClose }: VvsSimulantProductModalPr
                 </Badge>
               )}
               {product.clarity_grade && (
-                <Badge className="bg-purple-500 text-white px-3 py-1">
+                <Badge className="bg-blue-500 text-white px-3 py-1">
                   {product.clarity_grade} GRADE
                 </Badge>
               )}
@@ -105,7 +143,7 @@ const VvsSimulantProductModal = ({ product, onClose }: VvsSimulantProductModalPr
             </div>
 
             {/* Main product image */}
-            <div className="relative mb-4 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg overflow-hidden aspect-square">
+            <div className="relative mb-4 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg overflow-hidden aspect-square">
               <img
                 src={images[selectedImage]}
                 alt={product.name}
@@ -134,7 +172,7 @@ const VvsSimulantProductModal = ({ product, onClose }: VvsSimulantProductModalPr
                   key={index}
                   onClick={() => setSelectedImage(index)}
                   className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${
-                    selectedImage === index ? 'border-purple-500' : 'border-gray-200'
+                    selectedImage === index ? 'border-blue-500' : 'border-gray-200'
                   }`}
                 >
                   <img src={img} alt="" className="w-full h-full object-cover" />
@@ -189,10 +227,10 @@ const VvsSimulantProductModal = ({ product, onClose }: VvsSimulantProductModalPr
             {/* Price */}
             <div className="space-y-2">
               <div className="flex items-center gap-3">
-                <span className="text-3xl font-bold text-purple-600">
-                  ${(product.price / 100).toFixed(2)}
+                <span className="text-3xl font-bold text-blue-600">
+                  ${(currentPrice / 100).toFixed(2)}
                 </span>
-                {product.original_price && product.original_price > product.price && (
+                {product.original_price && product.original_price > currentPrice && (
                   <span className="text-xl text-gray-500 line-through">
                     ${(product.original_price / 100).toFixed(2)}
                   </span>
@@ -204,7 +242,7 @@ const VvsSimulantProductModal = ({ product, onClose }: VvsSimulantProductModalPr
                 )}
               </div>
               <div className="text-sm text-gray-600">
-                As low as ${((product.price / 100) / 12).toFixed(2)}/mo or 0% APR with <span className="font-semibold">Affirm</span>
+                As low as ${((currentPrice / 100) / 12).toFixed(2)}/mo or 0% APR with <span className="font-semibold">Affirm</span>
               </div>
             </div>
 
@@ -212,7 +250,7 @@ const VvsSimulantProductModal = ({ product, onClose }: VvsSimulantProductModalPr
             <div className="grid grid-cols-2 gap-4">
               {features.map((feature, index) => (
                 <div key={index} className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-purple-500 mt-0.5 flex-shrink-0" />
+                  <Check className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
                   <div>
                     <div className="font-medium text-sm">{feature.text}</div>
                     {feature.subtext && (
@@ -222,6 +260,33 @@ const VvsSimulantProductModal = ({ product, onClose }: VvsSimulantProductModalPr
                 </div>
               ))}
             </div>
+
+            {/* Length/Weight selection */}
+            {hasLengthOptions && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Length/Weight *
+                </label>
+                <Select 
+                  value={selectedLengthOption?.length || ''} 
+                  onValueChange={(value) => {
+                    const option = lengthOptions.find(opt => opt.length === value);
+                    setSelectedLengthOption(option || null);
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Length/Weight" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {lengthOptions.map((option) => (
+                      <SelectItem key={option.length} value={option.length}>
+                        {option.length} - ${(option.price / 100).toFixed(2)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             {/* Size selection */}
             {product.sizes && product.sizes.length > 0 && (
@@ -234,7 +299,7 @@ const VvsSimulantProductModal = ({ product, onClose }: VvsSimulantProductModalPr
                       onClick={() => setSelectedSize(size)}
                       className={`px-4 py-2 border rounded-md ${
                         selectedSize === size
-                          ? 'border-purple-500 bg-purple-50 text-purple-700'
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
                           : 'border-gray-300 hover:border-gray-400'
                       }`}
                     >
@@ -248,16 +313,17 @@ const VvsSimulantProductModal = ({ product, onClose }: VvsSimulantProductModalPr
             {/* Add to cart button */}
             <Button 
               onClick={handleAddToCart}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 text-lg font-semibold flex items-center justify-center gap-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-semibold flex items-center justify-center gap-2"
+              disabled={!currentStripeId}
             >
               <ShoppingCart className="w-5 h-5" />
-              ADD TO CART
+              ADD TO CART - ${(currentPrice / 100).toFixed(2)}
             </Button>
 
             {/* Free gift banner */}
-            <div className="bg-purple-50 p-3 rounded flex items-center gap-2">
-              <Gift className="w-5 h-5 text-purple-600" />
-              <span className="font-medium text-purple-800">FREE VVS Certificate & Gift Box included</span>
+            <div className="bg-blue-50 p-3 rounded flex items-center gap-2">
+              <Gift className="w-5 h-5 text-blue-600" />
+              <span className="font-medium text-blue-800">FREE VVS Certificate & Gift Box included</span>
             </div>
 
             {/* Product description */}
