@@ -66,7 +66,15 @@ const Pendants = () => {
 
       if (error) throw error;
       
-      setProducts(data || []);
+      // Transform the data to match our interface
+      const transformedData: PendantProduct[] = (data || []).map(product => ({
+        ...product,
+        lengths_and_prices: Array.isArray(product.lengths_and_prices) 
+          ? product.lengths_and_prices as LengthPrice[]
+          : []
+      }));
+      
+      setProducts(transformedData);
     } catch (error) {
       console.error('Error fetching pendant products:', error);
     } finally {
