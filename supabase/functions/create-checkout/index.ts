@@ -112,37 +112,40 @@ serve(async (req) => {
 
     // Store detailed order information for each cart item
     for (const cartItem of cartItems) {
-      // Get full product details based on the item
-      let productDetails = null;
-      let sourceTable = '';
+      console.log('Processing cart item:', cartItem);
       
-      // Determine which table to query based on the product
-      if (cartItem.id) {
-        // Try to find the product in the unified products table first
-        const { data: unifiedProduct } = await supabaseClient
-          .from("products")
-          .select("*, source_table, source_id")
-          .eq("id", cartItem.id)
-          .single();
+      // Find the unified product record using the cart item ID
+      const { data: unifiedProduct, error: productError } = await supabaseClient
+        .from("products")
+        .select("*, source_table, source_id")
+        .eq("id", cartItem.id)
+        .single();
 
-        if (unifiedProduct) {
-          sourceTable = unifiedProduct.source_table;
-          
-          // Get detailed product info from the source table
-          const { data: detailedProduct } = await supabaseClient
-            .from(sourceTable)
-            .select("*")
-            .eq("id", unifiedProduct.source_id)
-            .single();
-
-          productDetails = detailedProduct;
-        }
+      if (productError) {
+        console.error('Error finding unified product:', productError);
+        // Continue with order creation even if product details can't be found
       }
 
-      await supabaseClient.from("orders").insert({
+      let productDetails = null;
+      if (unifiedProduct) {
+        // Get detailed product info from the source table
+        const { data: detailedProduct, error: detailError } = await supabaseClient
+          .from(unifiedProduct.source_table)
+          .select("*")
+          .eq("id", unifiedProduct.source_id)
+          .single();
+
+        if (!detailError && detailedProduct) {
+          productDetails = detailedProduct;
+        }
+        console.log('Found product details:', productDetails?.name);
+      }
+
+      // Use the unified product ID (cartItem.id) as the product_id
+      const orderData = {
         stripe_session_id: session.id,
-        product_id: cartItem.id,
-        amount: finalAmount,
+        product_id: cartItem.id, // This should be the unified product ID
+        amount: Math.round((cartItem.price * (cartItem.quantity || 1)) - (discountAmount / cartItems.length)),
         guest_email: customerEmail,
         promo_code: promoCode || null,
         discount_percentage: discountPercentage || 0,
@@ -151,7 +154,18 @@ serve(async (req) => {
         selected_size: cartItem.selectedSize || null,
         selected_length: cartItem.selectedLength || null,
         created_at: new Date().toISOString()
-      });
+      };
+
+      console.log('Inserting order:', orderData);
+
+      const { error: insertError } = await supabaseClient
+        .from("orders")
+        .insert(orderData);
+
+      if (insertError) {
+        console.error('Error inserting order:', insertError);
+        throw new Error(`Failed to create order: ${insertError.message}`);
+      }
     }
 
     console.log('Order records created in database');
