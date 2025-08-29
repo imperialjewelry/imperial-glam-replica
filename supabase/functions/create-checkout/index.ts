@@ -22,7 +22,7 @@ serve(async (req) => {
       throw new Error("line_items is required and must be a non-empty array");
     }
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    const stripe = new Stripe(Deno.env.get("stripetestsecret") || "", {
       apiVersion: "2023-10-16",
     });
 
