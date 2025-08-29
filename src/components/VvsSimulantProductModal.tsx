@@ -30,10 +30,11 @@ const VvsSimulantProductModal = ({ product, onClose }: VvsSimulantProductModalPr
 
   if (!product) return null;
 
-  // Parse length options from lengths_and_prices JSON
-  const lengthOptions: LengthOption[] = product.lengths_and_prices 
-    ? Array.isArray(product.lengths_and_prices) 
-      ? (product.lengths_and_prices as any[])
+  // Parse length options from lengths_and_prices JSON - safely access the property
+  const lengthsAndPricesData = (product as any).lengths_and_prices;
+  const lengthOptions: LengthOption[] = lengthsAndPricesData 
+    ? Array.isArray(lengthsAndPricesData) 
+      ? (lengthsAndPricesData as any[])
           .filter(option => option.length && option.length.trim() !== '') // Filter out empty lengths
           .map(option => ({
             length: option.length || option.carat_weight || '',
