@@ -435,9 +435,9 @@ const Custom = () => {
                     
                     {/* Badges */}
                     <div className="absolute top-2 left-2 flex flex-col space-y-1">
-                      {product.in_stock && (
-                        <Badge className="text-xs font-semibold bg-blue-500 text-white">
-                          IN STOCK
+                      {product.customizable && (
+                        <Badge className="text-xs font-semibold bg-green-500 text-white">
+                          CUSTOMIZABLE
                         </Badge>
                       )}
                       {product.discount_percentage && product.discount_percentage > 0 && (
@@ -445,9 +445,6 @@ const Custom = () => {
                           {product.discount_percentage}% OFF
                         </Badge>
                       )}
-                      <Badge className="text-xs font-semibold bg-green-500 text-white">
-                        CUSTOMIZABLE
-                      </Badge>
                     </div>
                   </div>
 

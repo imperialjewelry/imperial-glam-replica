@@ -179,10 +179,10 @@ export type Database = {
           description: string | null
           discount_percentage: number | null
           featured: boolean | null
-          gemstone: string | null
           id: string
           image_url: string
           in_stock: boolean | null
+          lengths_and_prices: Json
           material: string
           name: string
           original_price: number | null
@@ -190,7 +190,6 @@ export type Database = {
           product_type: string
           rating: number | null
           review_count: number | null
-          shape: string | null
           ships_today: boolean | null
           sizes: string[] | null
           stripe_price_id: string | null
@@ -205,10 +204,10 @@ export type Database = {
           description?: string | null
           discount_percentage?: number | null
           featured?: boolean | null
-          gemstone?: string | null
           id?: string
           image_url: string
           in_stock?: boolean | null
+          lengths_and_prices?: Json
           material: string
           name: string
           original_price?: number | null
@@ -216,7 +215,6 @@ export type Database = {
           product_type: string
           rating?: number | null
           review_count?: number | null
-          shape?: string | null
           ships_today?: boolean | null
           sizes?: string[] | null
           stripe_price_id?: string | null
@@ -231,10 +229,10 @@ export type Database = {
           description?: string | null
           discount_percentage?: number | null
           featured?: boolean | null
-          gemstone?: string | null
           id?: string
           image_url?: string
           in_stock?: boolean | null
+          lengths_and_prices?: Json
           material?: string
           name?: string
           original_price?: number | null
@@ -242,7 +240,6 @@ export type Database = {
           product_type?: string
           rating?: number | null
           review_count?: number | null
-          shape?: string | null
           ships_today?: boolean | null
           sizes?: string[] | null
           stripe_price_id?: string | null
@@ -1023,6 +1020,7 @@ export type Database = {
           id: string
           image_url: string
           in_stock: boolean | null
+          lengths_and_prices: Json
           material: string
           name: string
           original_price: number | null
@@ -1049,6 +1047,7 @@ export type Database = {
           id?: string
           image_url: string
           in_stock?: boolean | null
+          lengths_and_prices?: Json
           material: string
           name: string
           original_price?: number | null
@@ -1075,6 +1074,7 @@ export type Database = {
           id?: string
           image_url?: string
           in_stock?: boolean | null
+          lengths_and_prices?: Json
           material?: string
           name?: string
           original_price?: number | null
