@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,34 +11,60 @@ import { Tables } from '@/integrations/supabase/types';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
+import VvsSimulantProductModal from '../components/VvsSimulantProductModal';
 
 type VvsSimulantProduct = Tables<'vvs_simulant_products'>;
+
+interface FilterOption {
+  value: string;
+  count: number;
+}
 
 const VvsDiamondSimulants = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<VvsSimulantProduct[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<VvsSimulantProduct[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<VvsSimulantProduct | null>(null);
   const [sortBy, setSortBy] = useState('featured');
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [openSections, setOpenSections] = useState({
-    productType: false,
-    price: false,
-    color: false,
-    material: false,
-    caratWeight: false,
-    cutQuality: false,
-    clarityGrade: false
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({
+    product_type: [],
+    color: [],
+    material: [],
+    carat_weight: [],
+    cut_quality: [],
+    clarity_grade: []
+  });
+  
+  // Dynamic filter options
+  const [filterOptions, setFilterOptions] = useState<Record<string, FilterOption[]>>({
+    product_type: [],
+    color: [],
+    material: [],
+    carat_weight: [],
+    cut_quality: [],
+    clarity_grade: []
   });
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    generateFilterOptions();
+  }, [products]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [products, selectedFilters, priceFrom, priceTo, sortBy]);
+
   const fetchProducts = async () => {
     const { data, error } = await supabase
       .from('vvs_simulant_products')
       .select('*')
+      .eq('in_stock', true)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -49,54 +74,131 @@ const VvsDiamondSimulants = () => {
     }
   };
 
-  const toggleSection = (section: keyof typeof openSections) => {
-    setOpenSections(prev => ({
+  const generateFilterOptions = () => {
+    const options: Record<string, FilterOption[]> = {
+      product_type: [],
+      color: [],
+      material: [],
+      carat_weight: [],
+      cut_quality: [],
+      clarity_grade: []
+    };
+
+    // Count occurrences of each filter value
+    const counts: Record<string, Record<string, number>> = {
+      product_type: {},
+      color: {},
+      material: {},
+      carat_weight: {},
+      cut_quality: {},
+      clarity_grade: {}
+    };
+
+    products.forEach(product => {
+      ['product_type', 'color', 'material', 'carat_weight', 'cut_quality', 'clarity_grade'].forEach(field => {
+        const value = product[field as keyof VvsSimulantProduct] as string;
+        if (value && value.trim()) {
+          counts[field][value] = (counts[field][value] || 0) + 1;
+        }
+      });
+    });
+
+    // Convert counts to FilterOption arrays
+    Object.keys(counts).forEach(field => {
+      options[field] = Object.entries(counts[field])
+        .map(([value, count]) => ({ value, count }))
+        .sort((a, b) => b.count - a.count);
+    });
+
+    setFilterOptions(options);
+  };
+
+  const applyFilters = () => {
+    let filtered = [...products];
+
+    // Apply category filters
+    Object.entries(selectedFilters).forEach(([field, values]) => {
+      if (values.length > 0) {
+        filtered = filtered.filter(product => {
+          const productValue = product[field as keyof VvsSimulantProduct] as string;
+          return values.includes(productValue);
+        });
+      }
+    });
+
+    // Apply price filters
+    if (priceFrom) {
+      const minPrice = parseFloat(priceFrom) * 100;
+      filtered = filtered.filter(product => product.price >= minPrice);
+    }
+    if (priceTo) {
+      const maxPrice = parseFloat(priceTo) * 100;
+      filtered = filtered.filter(product => product.price <= maxPrice);
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+      default:
+        // Featured - keep current order
+        break;
+    }
+
+    setFilteredProducts(filtered);
+  };
+
+  const handleFilterChange = (field: string, value: string, checked: boolean) => {
+    setSelectedFilters(prev => ({
       ...prev,
-      [section]: !prev[section]
+      [field]: checked 
+        ? [...prev[field], value]
+        : prev[field].filter(v => v !== value)
     }));
   };
 
-  const productTypes = [
-    { name: "Round Simulants", count: 4 },
-    { name: "Princess Simulants", count: 3 },
-    { name: "Emerald Simulants", count: 2 },
-    { name: "Oval Simulants", count: 2 },
-    { name: "Cushion Simulants", count: 1 }
-  ];
+  const clearFilters = () => {
+    setSelectedFilters({
+      product_type: [],
+      color: [],
+      material: [],
+      carat_weight: [],
+      cut_quality: [],
+      clarity_grade: []
+    });
+    setPriceFrom('');
+    setPriceTo('');
+  };
 
-  const colors = [
-    { name: "Colorless", count: 6 },
-    { name: "Near Colorless", count: 5 },
-    { name: "Fancy Yellow", count: 3 },
-    { name: "Fancy Blue", count: 2 }
-  ];
-
-  const materials = [
-    { name: "Synthetic Diamond", count: 8 },
-    { name: "Moissanite", count: 4 },
-    { name: "Premium CZ", count: 2 }
-  ];
-
-  const caratWeights = [
-    { name: "0.5 CT", count: 3 },
-    { name: "1.0 CT", count: 4 },
-    { name: "1.5 CT", count: 3 },
-    { name: "2.0 CT", count: 2 },
-    { name: "3.0 CT", count: 1 }
-  ];
-
-  const cutQualities = [
-    { name: "Excellent", count: 6 },
-    { name: "Very Good", count: 4 },
-    { name: "Good", count: 2 }
-  ];
-
-  const clarityGrades = [
-    { name: "VVS1", count: 5 },
-    { name: "VVS2", count: 4 },
-    { name: "VS1", count: 3 },
-    { name: "VS2", count: 2 }
-  ];
+  const renderFilterSection = (title: string, field: string, options: FilterOption[]) => (
+    <div className="mb-8">
+      <h3 className="font-medium text-gray-900 mb-4 uppercase">{title}</h3>
+      <div className="space-y-3 max-h-48 overflow-y-auto">
+        {options.map((option) => (
+          <div key={option.value} className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id={`${field}-${option.value}`}
+                checked={selectedFilters[field].includes(option.value)}
+                onCheckedChange={(checked) => handleFilterChange(field, option.value, !!checked)}
+              />
+              <label htmlFor={`${field}-${option.value}`} className="text-sm text-gray-700 cursor-pointer">
+                {option.value}
+              </label>
+            </div>
+            <span className="text-sm text-gray-500">({option.count})</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-white">
@@ -122,27 +224,14 @@ const VvsDiamondSimulants = () => {
         {/* Desktop Sidebar Filters */}
         {!isMobile && (
           <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
-            <h2 className="text-lg font-semibold mb-6">Filters</h2>
-            
-            {/* Product Type */}
-            <div className="mb-8">
-              <h3 className="font-medium text-gray-900 mb-4 uppercase">PRODUCT TYPE</h3>
-              <div className="space-y-3">
-                {productTypes.map((type) => (
-                  <div key={type.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id={`desktop-${type.name}`} />
-                      <label htmlFor={`desktop-${type.name}`} className="text-sm text-gray-700">
-                        {type.name}
-                      </label>
-                    </div>
-                    <span className="text-sm text-gray-500">({type.count})</span>
-                  </div>
-                ))}
-              </div>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-semibold">Filters</h2>
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-sm text-gray-500">
+                Clear All
+              </Button>
             </div>
-
-            {/* Price */}
+            
+            {/* Price Filter */}
             <div className="mb-8">
               <h3 className="font-medium text-gray-900 mb-4 uppercase">PRICE</h3>
               <div className="flex space-x-2">
@@ -169,95 +258,92 @@ const VvsDiamondSimulants = () => {
               </div>
             </div>
 
-            {/* Color */}
-            <div className="mb-8">
-              <h3 className="font-medium text-gray-900 mb-4 uppercase">COLOR</h3>
-              <div className="space-y-3">
-                {colors.map((color) => (
-                  <div key={color.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id={`desktop-${color.name}`} />
-                      <label htmlFor={`desktop-${color.name}`} className="text-sm text-gray-700">
-                        {color.name}
-                      </label>
-                    </div>
-                    <span className="text-sm text-gray-500">({color.count})</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Dynamic Filter Sections */}
+            {renderFilterSection('Product Type', 'product_type', filterOptions.product_type)}
+            {renderFilterSection('Color', 'color', filterOptions.color)}
+            {renderFilterSection('Material', 'material', filterOptions.material)}
+            {renderFilterSection('Carat Weight', 'carat_weight', filterOptions.carat_weight)}
+            {renderFilterSection('Cut Quality', 'cut_quality', filterOptions.cut_quality)}
+            {renderFilterSection('Clarity Grade', 'clarity_grade', filterOptions.clarity_grade)}
+          </div>
+        )}
 
-            {/* Material */}
-            <div className="mb-8">
-              <h3 className="font-medium text-gray-900 mb-4 uppercase">MATERIAL</h3>
-              <div className="space-y-3">
-                {materials.map((material) => (
-                  <div key={material.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id={`desktop-${material.name}`} />
-                      <label htmlFor={`desktop-${material.name}`} className="text-sm text-gray-700">
-                        {material.name}
-                      </label>
-                    </div>
-                    <span className="text-sm text-gray-500">({material.count})</span>
-                  </div>
-                ))}
-              </div>
+        {/* Mobile Filters */}
+        {isMobile && showFilters && (
+          <div className="bg-white p-4 border-b border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Filters</h2>
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-sm text-gray-500">
+                Clear All
+              </Button>
             </div>
+            
+            {/* Collapsible filter sections for mobile */}
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-2 text-left">
+                <span className="font-medium">Price Range</span>
+                <ChevronDown className="w-4 h-4" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pb-4">
+                <div className="flex space-x-2 mt-2">
+                  <input
+                    type="number"
+                    value={priceFrom}
+                    onChange={(e) => setPriceFrom(e.target.value)}
+                    placeholder="Min"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  />
+                  <input
+                    type="number"
+                    value={priceTo}
+                    onChange={(e) => setPriceTo(e.target.value)}
+                    placeholder="Max"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  />
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
 
-            {/* Carat Weight */}
-            <div className="mb-8">
-              <h3 className="font-medium text-gray-900 mb-4 uppercase">CARAT WEIGHT</h3>
-              <div className="space-y-3">
-                {caratWeights.map((weight) => (
-                  <div key={weight.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id={`desktop-${weight.name}`} />
-                      <label htmlFor={`desktop-${weight.name}`} className="text-sm text-gray-700">
-                        {weight.name}
-                      </label>
-                    </div>
-                    <span className="text-sm text-gray-500">({weight.count})</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {Object.entries(filterOptions).map(([field, options]) => {
+              if (options.length === 0) return null;
+              
+              const fieldTitles = {
+                product_type: 'Product Type',
+                color: 'Color',
+                material: 'Material',
+                carat_weight: 'Carat Weight',
+                cut_quality: 'Cut Quality',
+                clarity_grade: 'Clarity Grade'
+              };
 
-            {/* Cut Quality */}
-            <div className="mb-8">
-              <h3 className="font-medium text-gray-900 mb-4 uppercase">CUT QUALITY</h3>
-              <div className="space-y-3">
-                {cutQualities.map((cut) => (
-                  <div key={cut.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id={`desktop-${cut.name}`} />
-                      <label htmlFor={`desktop-${cut.name}`} className="text-sm text-gray-700">
-                        {cut.name}
-                      </label>
+              return (
+                <Collapsible key={field}>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full py-2 text-left border-t">
+                    <span className="font-medium">{fieldTitles[field as keyof typeof fieldTitles]}</span>
+                    <ChevronDown className="w-4 h-4" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pb-4">
+                    <div className="space-y-2 mt-2 max-h-32 overflow-y-auto">
+                      {options.map((option) => (
+                        <div key={option.value} className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox 
+                              id={`mobile-${field}-${option.value}`}
+                              checked={selectedFilters[field].includes(option.value)}
+                              onCheckedChange={(checked) => handleFilterChange(field, option.value, !!checked)}
+                            />
+                            <label htmlFor={`mobile-${field}-${option.value}`} className="text-sm text-gray-700">
+                              {option.value}
+                            </label>
+                          </div>
+                          <span className="text-sm text-gray-500">({option.count})</span>
+                        </div>
+                      ))}
                     </div>
-                    <span className="text-sm text-gray-500">({cut.count})</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Clarity Grade */}
-            <div className="mb-8">
-              <h3 className="font-medium text-gray-900 mb-4 uppercase">CLARITY GRADE</h3>
-              <div className="space-y-3">
-                {clarityGrades.map((clarity) => (
-                  <div key={clarity.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id={`desktop-${clarity.name}`} />
-                      <label htmlFor={`desktop-${clarity.name}`} className="text-sm text-gray-700">
-                        {clarity.name}
-                      </label>
-                    </div>
-                    <span className="text-sm text-gray-500">({clarity.count})</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              );
+            })}
           </div>
         )}
 
@@ -265,7 +351,7 @@ const VvsDiamondSimulants = () => {
         <div className={`flex-1 ${isMobile ? 'py-4 px-4' : 'py-8 px-8'}`}>
           {/* Product count and controls */}
           <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-semibold">{products.length} Products</span>
+            <span className="text-lg font-semibold">{filteredProducts.length} Products</span>
             <div className="flex items-center space-x-4">
               {!isMobile && (
                 <Select value={sortBy} onValueChange={setSortBy}>
@@ -296,8 +382,12 @@ const VvsDiamondSimulants = () => {
 
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
-            {products.map((product) => (
-              <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
+            {filteredProducts.map((product) => (
+              <div 
+                key={product.id} 
+                className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => setSelectedProduct(product)}
+              >
                 
                 {/* Product Image */}
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
@@ -310,7 +400,7 @@ const VvsDiamondSimulants = () => {
                   {/* Badges */}
                   <div className="absolute top-2 left-2 flex flex-col space-y-1">
                     {product.in_stock && (
-                      <Badge className="text-xs font-semibold bg-blue-500 text-white">
+                      <Badge className="text-xs font-semibold bg-green-500 text-white">
                         IN STOCK
                       </Badge>
                     )}
@@ -354,7 +444,7 @@ const VvsDiamondSimulants = () => {
                   </div>
                   
                   <div className="flex items-center space-x-2">
-                    <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
+                    <span className="text-lg font-bold text-purple-600">${(product.price / 100).toFixed(2)}</span>
                     {product.original_price && (
                       <span className="text-sm text-gray-500 line-through">
                         ${(product.original_price / 100).toFixed(2)}
@@ -365,10 +455,26 @@ const VvsDiamondSimulants = () => {
               </div>
             ))}
           </div>
+
+          {/* Empty state */}
+          {filteredProducts.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
+              <Button variant="outline" onClick={clearFilters} className="mt-4">
+                Clear Filters
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
       <Footer />
+      
+      {/* Product Modal */}
+      <VvsSimulantProductModal
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+      />
     </div>
   );
 };
