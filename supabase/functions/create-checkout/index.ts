@@ -187,6 +187,17 @@ serve(async (req) => {
         sourceTable = 'unknown';
       }
 
+      // Create a unique identifier for this specific product configuration
+      const productDetailsWithConfig = {
+        cart_item_id: cartItem.id,
+        ...productDetails,
+        source_table: sourceTable,
+        selected_size: cartItem.selectedSize || null,
+        selected_length: cartItem.selectedLength || null,
+        selected_color: cartItem.selectedColor || null,
+        quantity: cartItem.quantity || 1
+      };
+
       // Create order record with selected variations
       const orderData = {
         stripe_session_id: session.id,
@@ -198,26 +209,24 @@ serve(async (req) => {
         status: "pending",
         selected_size: cartItem.selectedSize || null,
         selected_length: cartItem.selectedLength || null,
-        product_details: {
-          cart_item_id: cartItem.id,
-          ...productDetails,
-          source_table: sourceTable,
-          selected_size: cartItem.selectedSize || null,
-          selected_length: cartItem.selectedLength || null,
-          quantity: cartItem.quantity || 1
-        },
+        selected_color: cartItem.selectedColor || null,
+        product_details: productDetailsWithConfig,
         created_at: new Date().toISOString()
       };
 
       console.log('Inserting order with selected variations:', {
         size: cartItem.selectedSize,
         length: cartItem.selectedLength,
+        color: cartItem.selectedColor,
         customerId: customerId
       });
 
+      // Use upsert to handle potential duplicates gracefully
       const { error: insertError } = await supabaseClient
         .from("orders")
-        .insert(orderData);
+        .upsert(orderData, {
+          onConflict: 'stripe_session_id,product_details'
+        });
 
       if (insertError) {
         console.error('Error inserting order:', insertError);
