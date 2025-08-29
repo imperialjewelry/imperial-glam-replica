@@ -730,7 +730,7 @@ export type Database = {
           id: string
           order_number: string | null
           product_details: Json | null
-          product_id: string
+          product_id: string | null
           promo_code: string | null
           selected_length: string | null
           selected_size: string | null
@@ -751,7 +751,7 @@ export type Database = {
           id?: string
           order_number?: string | null
           product_details?: Json | null
-          product_id: string
+          product_id?: string | null
           promo_code?: string | null
           selected_length?: string | null
           selected_size?: string | null
@@ -772,7 +772,7 @@ export type Database = {
           id?: string
           order_number?: string | null
           product_details?: Json | null
-          product_id?: string
+          product_id?: string | null
           promo_code?: string | null
           selected_length?: string | null
           selected_size?: string | null
