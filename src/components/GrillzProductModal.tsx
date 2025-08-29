@@ -8,7 +8,9 @@ import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { Tables } from '@/integrations/supabase/types';
 
-type GrillzProduct = Tables<'grillz_products'>;
+type GrillzProduct = Tables<'grillz_products'> & {
+  lengths_and_prices?: any[];
+};
 
 interface GrillzProductModalProps {
   product: GrillzProduct;
@@ -29,11 +31,14 @@ const GrillzProductModal = ({ product, onClose }: GrillzProductModalProps) => {
 
   // Parse teeth options from lengths_and_prices JSON
   const teethOptions: TeethOption[] = product.lengths_and_prices 
-    ? (product.lengths_and_prices as any[]).map(option => ({
-        teeth: option.teeth || option.length || '',
-        price: option.price || 0,
-        stripe_price_id: option.stripe_price_id || ''
-      }))
+    ? (product.lengths_and_prices as any[])
+        .filter(option => option.teeth && option.teeth.trim() !== '') // Filter out empty teeth values
+        .map(option => ({
+          teeth: option.teeth || option.length || '',
+          price: option.price || 0,
+          stripe_price_id: option.stripe_price_id || ''
+        }))
+        .filter(option => option.teeth.trim() !== '') // Double check no empty strings
     : [];
 
   const hasTeethOptions = teethOptions.length > 0;
