@@ -340,7 +340,7 @@ const Header = () => {
                 <div className="flex items-center space-x-3 py-2">
                   <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
                     <img 
-                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/grillz//IMG_5019%20(1).webp"
+                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/grillz/10on10vvs.webp"
                       alt="Grillz"
                       className="w-full h-full object-cover"
                     />
