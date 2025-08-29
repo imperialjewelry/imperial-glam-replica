@@ -444,7 +444,7 @@ const VvsDiamondSimulants = () => {
                   </div>
                   
                   <div className="flex items-center space-x-2">
-                    <span className="text-lg font-bold text-purple-600">${(product.price / 100).toFixed(2)}</span>
+                    <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
                     {product.original_price && (
                       <span className="text-sm text-gray-500 line-through">
                         ${(product.original_price / 100).toFixed(2)}

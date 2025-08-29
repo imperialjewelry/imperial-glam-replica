@@ -9,9 +9,7 @@ import { useCart } from '@/contexts/CartContext';
 import { toast } from 'sonner';
 import { Tables } from '@/integrations/supabase/types';
 
-type VvsSimulantProduct = Tables<'vvs_simulant_products'> & {
-  lengths_and_prices?: any[];
-};
+type VvsSimulantProduct = Tables<'vvs_simulant_products'>;
 
 interface VvsSimulantProductModalProps {
   product: VvsSimulantProduct | null;
@@ -34,14 +32,16 @@ const VvsSimulantProductModal = ({ product, onClose }: VvsSimulantProductModalPr
 
   // Parse length options from lengths_and_prices JSON
   const lengthOptions: LengthOption[] = product.lengths_and_prices 
-    ? (product.lengths_and_prices as any[])
-        .filter(option => option.length && option.length.trim() !== '') // Filter out empty lengths
-        .map(option => ({
-          length: option.length || option.carat_weight || '',
-          price: option.price || 0,
-          stripe_price_id: option.stripe_price_id || ''
-        }))
-        .filter(option => option.length.trim() !== '') // Double check no empty strings
+    ? Array.isArray(product.lengths_and_prices) 
+      ? (product.lengths_and_prices as any[])
+          .filter(option => option.length && option.length.trim() !== '') // Filter out empty lengths
+          .map(option => ({
+            length: option.length || option.carat_weight || '',
+            price: option.price || 0,
+            stripe_price_id: option.stripe_price_id || ''
+          }))
+          .filter(option => option.length.trim() !== '') // Double check no empty strings
+      : []
     : [];
 
   const hasLengthOptions = lengthOptions.length > 0;
