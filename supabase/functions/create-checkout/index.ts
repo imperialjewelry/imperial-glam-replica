@@ -52,9 +52,31 @@ serve(async (req) => {
       }
     }
 
+    // Check if customer exists or create a new one
+    let customerId;
+    const existingCustomers = await stripe.customers.list({
+      email: customerEmail,
+      limit: 1
+    });
+
+    if (existingCustomers.data.length > 0) {
+      customerId = existingCustomers.data[0].id;
+      console.log('Found existing customer:', customerId);
+    } else {
+      // Create new customer
+      const newCustomer = await stripe.customers.create({
+        email: customerEmail,
+        metadata: {
+          source: 'imperial_jewelry_website'
+        }
+      });
+      customerId = newCustomer.id;
+      console.log('Created new customer:', customerId);
+    }
+
     // Create checkout session configuration
     const sessionConfig: any = {
-      customer_email: customerEmail,
+      customer: customerId,
       line_items: line_items,
       mode: "payment",
       success_url: `${req.headers.get("origin")}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
@@ -165,10 +187,10 @@ serve(async (req) => {
         sourceTable = 'unknown';
       }
 
-      // Create order record - don't reference any foreign key, just store the data
+      // Create order record
       const orderData = {
         stripe_session_id: session.id,
-        // Don't use product_id foreign key - just store as metadata
+        stripe_customer_id: customerId,
         amount: Math.round((cartItem.price * (cartItem.quantity || 1)) - (discountAmount / cartItems.length)),
         guest_email: customerEmail,
         promo_code: promoCode || null,
@@ -185,7 +207,7 @@ serve(async (req) => {
         created_at: new Date().toISOString()
       };
 
-      console.log('Inserting order with product from', sourceTable, ':', cartItem.id);
+      console.log('Inserting order with Stripe customer ID:', customerId);
 
       const { error: insertError } = await supabaseClient
         .from("orders")
@@ -197,7 +219,7 @@ serve(async (req) => {
       }
     }
 
-    console.log('Order records created in database');
+    console.log('Order records created in database with Stripe customer ID:', customerId);
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -736,6 +736,7 @@ export type Database = {
           selected_size: string | null
           shipping_details: Json | null
           status: string | null
+          stripe_customer_id: string | null
           stripe_payment_intent_id: string | null
           stripe_session_id: string | null
           updated_at: string
@@ -757,6 +758,7 @@ export type Database = {
           selected_size?: string | null
           shipping_details?: Json | null
           status?: string | null
+          stripe_customer_id?: string | null
           stripe_payment_intent_id?: string | null
           stripe_session_id?: string | null
           updated_at?: string
@@ -778,6 +780,7 @@ export type Database = {
           selected_size?: string | null
           shipping_details?: Json | null
           status?: string | null
+          stripe_customer_id?: string | null
           stripe_payment_intent_id?: string | null
           stripe_session_id?: string | null
           updated_at?: string
