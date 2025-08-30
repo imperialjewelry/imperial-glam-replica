@@ -5,6 +5,7 @@ import { FaInstagram } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const Footer = () => {
   const [openSections, setOpenSections] = useState<string[]>([]);
@@ -31,28 +32,23 @@ const Footer = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/newsletter-signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: email.trim() }),
+      const { data, error } = await supabase.functions.invoke('newsletter-signup', {
+        body: { email: email.trim() }
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (error) {
+        console.error('Newsletter signup error:', error);
+        toast({
+          title: "Error",
+          description: error.message || "Failed to subscribe. Please try again.",
+          variant: "destructive",
+        });
+      } else {
         toast({
           title: "Success!",
           description: "Thank you for subscribing! You'll receive 10% off your first order.",
         });
         setEmail('');
-      } else {
-        toast({
-          title: "Error",
-          description: data.error || "Failed to subscribe. Please try again.",
-          variant: "destructive",
-        });
       }
     } catch (error) {
       console.error('Newsletter signup error:', error);
