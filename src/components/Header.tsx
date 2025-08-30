@@ -29,7 +29,7 @@ const Header = () => {
             <div className="flex items-center space-x-6">
               <div className="text-gray-600 flex items-center">
                 <Truck className="w-4 h-4 inline mr-1" />
-                READY TO SHIP→
+                READY TO SHIP →
               </div>
               <div className="flex items-center space-x-2">
                 <Instagram className="w-4 h-4 text-pink-500" />
