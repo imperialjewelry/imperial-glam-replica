@@ -21,6 +21,7 @@ import VvsDiamondSimulants from "./pages/VvsDiamondSimulants";
 import Diamond from "./pages/Diamond";
 import Product from "./pages/Product";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import SearchResults from "./pages/SearchResults";
 import NotFound from "./pages/NotFound";
 import ShoppingCart from "./components/ShoppingCart";
 
@@ -53,6 +54,7 @@ const AppContent = () => {
         <Route path="/diamond" element={<Diamond />} />
         <Route path="/product/:id" element={<Product />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/search" element={<SearchResults />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
