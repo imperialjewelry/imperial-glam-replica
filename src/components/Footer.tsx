@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { FaInstagram, } from 'react-icons/fa';
+import { FaInstagram } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 const Footer = () => {
@@ -168,7 +168,7 @@ const Footer = () => {
 
             <div className="flex flex-col items-start md:items-end space-y-4">
               <div className="flex space-x-3">
-                <FaInstagram className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer" />
+                
                 
                 <FaInstagram className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer" />
                 
