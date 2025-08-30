@@ -13,111 +13,42 @@ const Footer = () => {
   };
 
   const footerSections = [{
-    title: "SHOP BY CATEGORY",
+    title: "SHOP",
     links: [
-      { name: "Best Deals", path: "/" },
-      { name: "VVS Diamond Simulants", path: "/vvs-diamond-simulants" },
-      { name: "Moissanite Chains", path: "/chains" },
-      { name: "Moissanite Watches", path: "/watches" },
-      { name: "Moissanite Tennis Chains", path: "/chains" },
-      { name: "Moissanite Cuban Link Chains", path: "/chains" },
-      { name: "Cuban Link Chains", path: "/chains" },
-      { name: "Cuban Link Bracelets", path: "/bracelets" },
-      { name: "Moissanite Hip Hop Jewelry", path: "/chains" },
-      { name: "Moissanite Bracelets", path: "/bracelets" },
-      { name: "Moissanite Cuban Bracelets", path: "/bracelets" },
-      { name: "Moissanite Glasses", path: "/glasses" },
-      { name: "Moissanite Grillz", path: "/grillz" },
-      { name: "Moissanite Hip Hop Pendants", path: "/pendants" },
-      { name: "Moissanite Cross Pendants", path: "/pendants" },
-      { name: "Moissanite Earrings Screw Back", path: "/earrings" },
-      { name: "Iced Out Chains", path: "/chains" },
-      { name: "Jesus Pieces", path: "/pendants" },
-      { name: "Infinity Link Collection", path: "/chains" },
-      { name: "Baguette Chains", path: "/chains" },
-      { name: "Gold Chains", path: "/chains" },
-      { name: "All Chains", path: "/chains" },
-      { name: "All Bracelets", path: "/bracelets" }
+      { name: "Best Deals", path: "/best-deals" },
+      { name: "Custom (Free Quote)", path: "/custom" },
+      { name: "Engagement Rings", path: "/rings/engagement" },
+      { name: "Hip Hop Rings", path: "/rings/hip-hop" },
+      { name: "Chains", path: "/chains" },
+      { name: "Bracelets", path: "/bracelets" },
+      { name: "Pendants", path: "/pendants" },
+      { name: "Earrings", path: "/earrings" },
+      { name: "Watches", path: "/watches" },
+      { name: "Grillz", path: "/grillz" },
+      { name: "Diamond", path: "/diamond" },
+      { name: "VVS Simulants", path: "/vvs-diamond-simulants" }
     ]
   }, {
-    title: "CUSTOM",
+    title: "HELP",
     links: [
-      { name: "Custom Moissanite Chains", path: "/custom" },
-      { name: "Custom Moissanite Pendants", path: "/custom" },
-      { name: "Custom Moissanite Rings", path: "/custom" },
-      { name: "Custom Grillz", path: "/custom" },
-      { name: "All Custom Jewelry", path: "/custom" },
-      { name: "FREE Custom Jewelry Quote", path: "/custom" }
+      { name: "Shipping & Delivery", path: "/policies/shipping" },
+      { name: "Returns & Refunds", path: "/policies/returns" },
+      { name: "Size Guides", path: "/size-guides" },
+      { name: "FAQs", path: "/faqs" }
     ]
   }, {
-    title: "MORE CATEGORIES",
+    title: "COMPANY",
     links: [
-      { name: "Black Moissanite Jewelry", path: "/chains" },
-      { name: "Best Sellers", path: "/" },
-      { name: "Rapper Chains", path: "/chains" },
-      { name: "Baguette Bracelet", path: "/bracelets" },
-      { name: "Iced Out Bracelets", path: "/bracelets" },
-      { name: "Prong Cuban Link Chains", path: "/chains" },
-      { name: "Iced Out Watches", path: "/watches" },
-      { name: "Men's Pearls", path: "/chains" },
-      { name: "Cross Chains", path: "/chains" }
-    ]
-  }, {
-    title: "SUPPORT",
-    links: [
-      { name: "Contact Support", path: "#contact" },
-      { name: "Customer Help Portal", path: "#help" },
-      { name: "Frequently Asked Questions", path: "#faq" },
-      { name: "Track Your Order", path: "#track" },
-      { name: "Affiliate Program", path: "#affiliate" },
-      { name: "Certificates", path: "#certificates" },
-      { name: "Youtube Video Reviews", path: "#reviews" },
-      { name: "Moissanite Color Chart", path: "#color-chart" },
-      { name: "Moissanite Size Chart", path: "#size-chart" },
-      { name: "Jewelry Care", path: "#care" },
-      { name: "Authors", path: "#authors" },
-      { name: "Blog", path: "#blog" },
-      { name: "Discount Codes", path: "#discounts" }
-    ]
-  }, {
-    title: "POLICY",
-    links: [
-      { name: "Free Gift Policy", path: "#gift-policy" },
-      { name: "Shipping & Delivery", path: "#shipping" },
-      { name: "Terms of Service", path: "#terms" },
-      { name: "Refund Policy", path: "#refund" },
-      { name: "Privacy Policy", path: "#privacy" },
-      { name: "Mode of Payment", path: "#payment" },
-      { name: "Financing", path: "#financing" }
-    ]
-  }, {
-    title: "GUIDES",
-    links: [
-      { name: "Pendant Size Guide", path: "#pendant-guide" },
-      { name: "Bracelet Guide", path: "#bracelet-guide" },
-      { name: "Chain Size Guide", path: "#chain-guide" }
-    ]
-  }];
-
-  const productCategories = [{
-    title: "MOISSANITE RINGS",
-    links: [
-      { name: "Moissanite Engagement Rings", path: "/rings/engagement" },
-      { name: "Cuban Link Rings", path: "/rings/hip-hop" },
-      { name: "Men's Hip Hop Rings", path: "/rings/hip-hop" }
-    ]
-  }, {
-    title: "DIAMOND JEWELRY",
-    links: [
-      { name: "Diamond Chains", path: "/diamond" },
-      { name: "Diamond Tennis Chains", path: "/diamond" },
-      { name: "Diamond Cuban Link Chains", path: "/diamond" },
-      { name: "Diamond Grillz", path: "/diamond" }
+      { name: "About Imperial Jewelry", path: "/about" },
+      { name: "Reviews", path: "/reviews" },
+      { name: "Financing", path: "/financing" },
+      { name: "Certificates", path: "/certificates" },
+      { name: "Contact", path: "/contact" }
     ]
   }];
 
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-black text-white">
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Contact Info */}
         <div className="mb-8">
@@ -128,8 +59,8 @@ const Footer = () => {
         </div>
 
         {/* Desktop Layout */}
-        <div className="hidden md:grid md:grid-cols-6 gap-8">
-          {/* Contact and Product Categories */}
+        <div className="hidden md:grid md:grid-cols-4 gap-8">
+          {/* Contact Information */}
           <div className="space-y-8">
             <div>
               <h3 className="text-sm font-semibold mb-4">CONTACT US</h3>
@@ -141,24 +72,6 @@ const Footer = () => {
                 <p>Weekends: Closed</p>
               </div>
             </div>
-
-            {productCategories.map(category => (
-              <div key={category.title}>
-                <h3 className="text-sm font-semibold mb-4">{category.title}</h3>
-                <ul className="space-y-2">
-                  {category.links.map(link => (
-                    <li key={link.name}>
-                      <Link 
-                        to={link.path} 
-                        className="text-sm text-gray-300 hover:text-white transition-colors"
-                      >
-                        {link.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
           </div>
 
           {/* Footer Sections */}
@@ -168,21 +81,12 @@ const Footer = () => {
               <ul className="space-y-2">
                 {section.links.map(link => (
                   <li key={link.name}>
-                    {link.path.startsWith('#') ? (
-                      <a 
-                        href={link.path} 
-                        className="text-sm text-gray-300 hover:text-white transition-colors"
-                      >
-                        {link.name}
-                      </a>
-                    ) : (
-                      <Link 
-                        to={link.path} 
-                        className="text-sm text-gray-300 hover:text-white transition-colors"
-                      >
-                        {link.name}
-                      </Link>
-                    )}
+                    <Link 
+                      to={link.path} 
+                      className="text-sm text-gray-300 hover:text-white transition-colors"
+                    >
+                      {link.name}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -204,36 +108,6 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Product Categories */}
-          {productCategories.map(category => (
-            <div key={category.title} className="border-b border-gray-700 pb-4">
-              <button 
-                onClick={() => toggleSection(category.title)} 
-                className="flex items-center justify-between w-full text-left"
-              >
-                <h3 className="text-sm font-semibold">{category.title}</h3>
-                {openSections.includes(category.title) ? 
-                  <ChevronUp className="w-4 h-4" /> : 
-                  <ChevronDown className="w-4 h-4" />
-                }
-              </button>
-              {openSections.includes(category.title) && (
-                <ul className="mt-4 space-y-2">
-                  {category.links.map(link => (
-                    <li key={link.name}>
-                      <Link 
-                        to={link.path} 
-                        className="text-sm text-gray-300 hover:text-white transition-colors"
-                      >
-                        {link.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
-
           {/* Main Footer Sections */}
           {footerSections.map(section => (
             <div key={section.title} className="border-b border-gray-700 pb-4">
@@ -251,21 +125,12 @@ const Footer = () => {
                 <ul className="mt-4 space-y-2">
                   {section.links.map(link => (
                     <li key={link.name}>
-                      {link.path.startsWith('#') ? (
-                        <a 
-                          href={link.path} 
-                          className="text-sm text-gray-300 hover:text-white transition-colors"
-                        >
-                          {link.name}
-                        </a>
-                      ) : (
-                        <Link 
-                          to={link.path} 
-                          className="text-sm text-gray-300 hover:text-white transition-colors"
-                        >
-                          {link.name}
-                        </Link>
-                      )}
+                      <Link 
+                        to={link.path} 
+                        className="text-sm text-gray-300 hover:text-white transition-colors"
+                      >
+                        {link.name}
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -283,9 +148,9 @@ const Footer = () => {
                 <input 
                   type="email" 
                   placeholder="Email address" 
-                  className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-l-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                  className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-l-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white" 
                 />
-                <Button className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-r-md">
+                <Button className="bg-white hover:bg-gray-200 text-black px-6 py-2 rounded-r-md">
                   →
                 </Button>
               </div>
@@ -305,6 +170,15 @@ const Footer = () => {
                 <p className="text-gray-300">Houston, TX | Private Showroom</p>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Utility Strip */}
+        <div className="mt-8 pt-4 border-t border-gray-700 text-center">
+          <div className="text-xs text-gray-400">
+            © 2025 Imperial Jewelry · 
+            <Link to="/legal/privacy" className="hover:text-white ml-1">Privacy</Link> · 
+            <Link to="/legal/terms" className="hover:text-white ml-1">Terms</Link>
           </div>
         </div>
       </div>
