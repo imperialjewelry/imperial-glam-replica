@@ -1,14 +1,69 @@
+
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { FaInstagram } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 const Footer = () => {
   const [openSections, setOpenSections] = useState<string[]>([]);
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const toggleSection = (section: string) => {
     setOpenSections(prev => prev.includes(section) ? prev.filter(s => s !== section) : [...prev, section]);
+  };
+
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter your email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/newsletter-signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: "Success!",
+          description: "Thank you for subscribing! You'll receive 10% off your first order.",
+        });
+        setEmail('');
+      } else {
+        toast({
+          title: "Error",
+          description: data.error || "Failed to subscribe. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Newsletter signup error:', error);
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const footerSections = [{
@@ -154,16 +209,24 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-6 md:space-y-0">
             <div className="flex-1 max-w-md">
               <h3 className="text-sm font-semibold mb-4">SIGN UP, GET 10% OFF.</h3>
-              <div className="flex">
+              <form onSubmit={handleEmailSubmit} className="flex">
                 <input
                   type="email"
                   placeholder="Email address"
-                  className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-l-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isSubmitting}
+                  className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-l-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-50"
+                  required
                 />
-                <Button className="bg-white hover:bg-gray-200 text-black px-6 py-2 rounded-r-md">
-                  →
+                <Button 
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-white hover:bg-gray-200 text-black px-6 py-2 rounded-r-md disabled:opacity-50"
+                >
+                  {isSubmitting ? '...' : '→'}
                 </Button>
-              </div>
+              </form>
             </div>
 
             <div className="flex flex-col items-start md:items-end space-y-4">

@@ -809,7 +809,7 @@ export type Database = {
           id: string
           image_url: string
           in_stock: boolean | null
-          lengths_and_prices: Json
+          lengths_and_prices: Json | null
           material: string
           name: string
           original_price: number | null
@@ -835,7 +835,7 @@ export type Database = {
           id?: string
           image_url: string
           in_stock?: boolean | null
-          lengths_and_prices?: Json
+          lengths_and_prices?: Json | null
           material: string
           name: string
           original_price?: number | null
@@ -861,7 +861,7 @@ export type Database = {
           id?: string
           image_url?: string
           in_stock?: boolean | null
-          lengths_and_prices?: Json
+          lengths_and_prices?: Json | null
           material?: string
           name?: string
           original_price?: number | null
@@ -1024,6 +1024,30 @@ export type Database = {
           updated_at?: string
           usage_count?: number
           usage_limit?: number | null
+        }
+        Relationships: []
+      }
+      promo_list: {
+        Row: {
+          active: boolean
+          email: string
+          id: string
+          source: string | null
+          subscribed_at: string
+        }
+        Insert: {
+          active?: boolean
+          email: string
+          id?: string
+          source?: string | null
+          subscribed_at?: string
+        }
+        Update: {
+          active?: boolean
+          email?: string
+          id?: string
+          source?: string | null
+          subscribed_at?: string
         }
         Relationships: []
       }
