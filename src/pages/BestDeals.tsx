@@ -133,10 +133,7 @@ const BestDeals = () => {
           <div className="max-w-7xl mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">BEST DEALS</h1>
             <p className="text-xl opacity-90 mb-8">Incredible savings on premium jewelry</p>
-            <div className="flex items-center justify-center space-x-1">
-              {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />)}
-              <span className="ml-2 text-lg">30,000+ Happy Customers</span>
-            </div>
+            
           </div>
         </div>
 
