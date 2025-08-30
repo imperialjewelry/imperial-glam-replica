@@ -46,7 +46,7 @@ const Footer = () => {
       } else {
         toast({
           title: "Success!",
-          description: "Thank you for subscribing! You'll receive 10% off your first order.",
+          description: "Thank you for subscribing! You'll receive all future promos.",
         });
         setEmail('');
       }
@@ -204,7 +204,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-gray-700">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-6 md:space-y-0">
             <div className="flex-1 max-w-md">
-              <h3 className="text-sm font-semibold mb-4">SIGN UP, GET 10% OFF.</h3>
+              <h3 className="text-sm font-semibold mb-4">SIGN UP, PROMOS.</h3>
               <form onSubmit={handleEmailSubmit} className="flex">
                 <input
                   type="email"
