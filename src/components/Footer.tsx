@@ -53,8 +53,17 @@ const Footer = () => {
         {/* Contact Info */}
         <div className="mb-8">
           <div className="flex items-center mb-4">
-            <div className="text-2xl font-bold mr-4">💎 IMPERIAL JEWELRY</div>
-            <div className="text-sm text-gray-400">Imperial Jewelry - World renowned, bespoke custom jewelers.</div>
+            <img
+              src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/imperialjewelrylogo.webp"
+              alt="Imperial Jewelry logo"
+              className="h-10 w-auto mr-3 select-none"
+              loading="lazy"
+              decoding="async"
+            />
+            <div className="text-2xl font-bold mr-4">IMPERIAL JEWELRY</div>
+            <div className="text-sm text-gray-400">
+              Imperial Jewelry - World renowned, bespoke custom jewelers.
+            </div>
           </div>
         </div>
 
@@ -81,8 +90,8 @@ const Footer = () => {
               <ul className="space-y-2">
                 {section.links.map(link => (
                   <li key={link.name}>
-                    <Link 
-                      to={link.path} 
+                    <Link
+                      to={link.path}
                       className="text-sm text-gray-300 hover:text-white transition-colors"
                     >
                       {link.name}
@@ -111,22 +120,22 @@ const Footer = () => {
           {/* Main Footer Sections */}
           {footerSections.map(section => (
             <div key={section.title} className="border-b border-gray-700 pb-4">
-              <button 
-                onClick={() => toggleSection(section.title)} 
+              <button
+                onClick={() => toggleSection(section.title)}
                 className="flex items-center justify-between w-full text-left"
               >
                 <h3 className="text-sm font-semibold">{section.title}</h3>
-                {openSections.includes(section.title) ? 
-                  <ChevronUp className="w-4 h-4" /> : 
-                  <ChevronDown className="w-4 h-4" />
+                {openSections.includes(section.title)
+                  ? <ChevronUp className="w-4 h-4" />
+                  : <ChevronDown className="w-4 h-4" />
                 }
               </button>
               {openSections.includes(section.title) && (
                 <ul className="mt-4 space-y-2">
                   {section.links.map(link => (
                     <li key={link.name}>
-                      <Link 
-                        to={link.path} 
+                      <Link
+                        to={link.path}
                         className="text-sm text-gray-300 hover:text-white transition-colors"
                       >
                         {link.name}
@@ -145,10 +154,10 @@ const Footer = () => {
             <div className="flex-1 max-w-md">
               <h3 className="text-sm font-semibold mb-4">SIGN UP, GET 10% OFF.</h3>
               <div className="flex">
-                <input 
-                  type="email" 
-                  placeholder="Email address" 
-                  className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-l-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white" 
+                <input
+                  type="email"
+                  placeholder="Email address"
+                  className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-l-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white"
                 />
                 <Button className="bg-white hover:bg-gray-200 text-black px-6 py-2 rounded-r-md">
                   →
@@ -176,8 +185,8 @@ const Footer = () => {
         {/* Utility Strip */}
         <div className="mt-8 pt-4 border-t border-gray-700 text-center">
           <div className="text-xs text-gray-400">
-            © 2025 Imperial Jewelry · 
-            <Link to="/legal/privacy" className="hover:text-white ml-1">Privacy</Link> · 
+            © 2025 Imperial Jewelry ·
+            <Link to="/legal/privacy" className="hover:text-white ml-1">Privacy</Link> ·
             <Link to="/legal/terms" className="hover:text-white ml-1">Terms</Link>
           </div>
         </div>
