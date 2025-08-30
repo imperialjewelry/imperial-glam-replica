@@ -86,7 +86,7 @@ const Footer = () => {
         {/* Contact Info */}
         <div className="mb-8">
           <div className="flex items-center mb-4">
-            <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/imperialjewelrylogo.webp" alt="Imperial Jewelry logo" loading="lazy" decoding="async" className="h-20 w-15 mr-3 select-none" />
+            <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/imperialjewelrylogo.webp" alt="Imperial Jewelry logo" className="h-10 w-auto mr-3 select-none" loading="lazy" decoding="async" />
             <div className="text-2xl font-bold mr-4">IMPERIAL JEWELRY</div>
             <div className="text-sm text-gray-400">
               Imperial Jewelry - World renowned, bespoke custom jewelers.
@@ -169,10 +169,10 @@ const Footer = () => {
             <div className="flex flex-col items-start md:items-end space-y-4">
               <div className="flex space-x-3">
                 <FaYoutube className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer" />
-                <FaInstagram className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer" />
+                
                 <FaFacebook className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer" />
-                <FaPinterest className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer" />
-                <FaLinkedin className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer" />
+                
+                
               </div>
 
               <div className="text-sm">
