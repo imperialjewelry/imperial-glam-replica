@@ -136,7 +136,7 @@ const Header = () => {
         {/* Mobile social icons bar */}
         <div className="flex items-center justify-center space-x-4 py-2 bg-gray-50">
           <Instagram className="w-5 h-5 text-pink-500" />
-          <MessageCircle className="w-5 h-5 text-green-500" />
+          
         </div>
       </header>
 
