@@ -11,6 +11,10 @@ import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
 import FilterSection from '@/components/FilterSection';
+import EngagementRingProductModal from '@/components/EngagementRingProductModal';
+import { Tables } from '@/integrations/supabase/types';
+
+type EngagementRingProduct = Tables<'engagement_ring_products'>;
 
 const EngagementRings = () => {
   const isMobile = useIsMobile();
@@ -19,6 +23,7 @@ const EngagementRings = () => {
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<EngagementRingProduct | null>(null);
   
   // Selected filter states
   const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>([]);
@@ -218,7 +223,11 @@ const EngagementRings = () => {
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
             {filteredProducts.map(product => (
-              <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
+              <div 
+                key={product.id} 
+                className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => setSelectedProduct(product)}
+              >
                 {/* Product Image */}
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
                   <img 
@@ -277,6 +286,14 @@ const EngagementRings = () => {
           </div>
         </div>
       </div>
+
+      {/* Product Modal */}
+      {selectedProduct && (
+        <EngagementRingProductModal 
+          product={selectedProduct} 
+          onClose={() => setSelectedProduct(null)} 
+        />
+      )}
 
       <Footer />
     </div>

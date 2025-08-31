@@ -11,6 +11,10 @@ import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
 import FilterSection from '@/components/FilterSection';
+import HipHopRingProductModal from '@/components/HipHopRingProductModal';
+import { Tables } from '@/integrations/supabase/types';
+
+type HipHopRingProduct = Tables<'hip_hop_ring_products'>;
 
 const HipHopRings = () => {
   const isMobile = useIsMobile();
@@ -19,6 +23,7 @@ const HipHopRings = () => {
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<HipHopRingProduct | null>(null);
   
   // Selected filter states
   const [selectedProductTypes, setSelectedProductTypes] = useState<string[]>([]);
@@ -233,7 +238,11 @@ const HipHopRings = () => {
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
             {filteredProducts.map(product => (
-              <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
+              <div 
+                key={product.id} 
+                className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => setSelectedProduct(product)}
+              >
                 {/* Product Image */}
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
                   <img 
@@ -292,6 +301,14 @@ const HipHopRings = () => {
           </div>
         </div>
       </div>
+
+      {/* Product Modal */}
+      {selectedProduct && (
+        <HipHopRingProductModal 
+          product={selectedProduct} 
+          onClose={() => setSelectedProduct(null)} 
+        />
+      )}
 
       <Footer />
     </div>
