@@ -13,7 +13,9 @@ import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import GrillzProductModal from '../components/GrillzProductModal';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
+
 type GrillzProduct = Tables<'grillz_products'>;
+
 const Grillz = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<GrillzProduct[]>([]);
@@ -40,12 +42,15 @@ const Grillz = () => {
     gemstone: false,
     teethCount: false
   });
+
   useEffect(() => {
     fetchProducts();
   }, []);
+
   useEffect(() => {
     applyFilters();
   }, [products, selectedFilters, priceFrom, priceTo, sortBy]);
+
   const fetchProducts = async () => {
     const {
       data,
@@ -59,6 +64,7 @@ const Grillz = () => {
       setProducts(data || []);
     }
   };
+
   const applyFilters = () => {
     let filtered = [...products];
 
@@ -119,6 +125,7 @@ const Grillz = () => {
     }
     setFilteredProducts(filtered);
   };
+
   const handleFilterChange = (filterType: keyof typeof selectedFilters, value: string) => {
     setSelectedFilters(prev => {
       const currentFilters = prev[filterType];
@@ -129,6 +136,7 @@ const Grillz = () => {
       };
     });
   };
+
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
       ...prev,
@@ -152,12 +160,14 @@ const Grillz = () => {
       count
     }));
   };
+
   const productTypes = getFilterOptions('product_type');
   const colors = getFilterOptions('color');
   const materials = getFilterOptions('material');
   const styles = getFilterOptions('style');
   const gemstones = getFilterOptions('gemstone');
   const teethCounts = getFilterOptions('teeth_count');
+
   const renderFilterCheckbox = (filterType: keyof typeof selectedFilters, option: {
     name: string;
     count: number;
@@ -174,6 +184,7 @@ const Grillz = () => {
         <span className="text-sm text-gray-500">({option.count})</span>
       </div>;
   };
+
   const renderDesktopFilters = () => <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
       <h2 className="text-lg font-semibold mb-6">Filters</h2>
       
@@ -240,6 +251,7 @@ const Grillz = () => {
         </div>
       </div>
     </div>;
+
   const renderMobileFilters = () => showFilters && <div className="bg-white border rounded-lg mb-6 overflow-hidden">
         {/* Sort By */}
         <div className="p-4 border-b">
@@ -355,12 +367,25 @@ const Grillz = () => {
           </CollapsibleContent>
         </Collapsible>
       </div>;
-  return <div className="min-h-screen bg-white">
+
+  return (
+    <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
       
-      {/* Hero Section */}
-      
+      {/* Desktop Hero Section */}
+      {!isMobile && (
+        <div className="bg-gray-50 py-12 px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              MOISSANITE DIAMOND GRILLZ
+            </h1>
+            <p className="text-lg text-gray-600">
+              All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Grillz
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Product Showcase */}
       <MobileProductShowcase category="GRILLZ" tableName="grillz_products" />
@@ -439,6 +464,8 @@ const Grillz = () => {
       {selectedProduct && <GrillzProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default Grillz;

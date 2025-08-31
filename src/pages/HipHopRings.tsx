@@ -12,7 +12,9 @@ import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
+
 type RingProduct = Tables<'hip_hop_ring_products'>;
+
 const HipHopRings = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<RingProduct[]>([]);
@@ -27,28 +29,31 @@ const HipHopRings = () => {
     material: false,
     chainType: false
   });
+
   useEffect(() => {
     fetchProducts();
   }, []);
+
   const fetchProducts = async () => {
-    const {
-      data,
-      error
-    } = await supabase.from('hip_hop_ring_products').select('*').order('created_at', {
-      ascending: false
-    });
+    const { data, error } = await supabase
+      .from('hip_hop_ring_products')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
     if (error) {
       console.error('Error fetching hip hop ring products:', error);
     } else {
       setProducts(data || []);
     }
   };
+
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
       ...prev,
       [section]: !prev[section]
     }));
   };
+
   const productTypes = [{
     name: "Cuban Chains",
     count: 4
@@ -65,6 +70,7 @@ const HipHopRings = () => {
     name: "Franco Chains",
     count: 1
   }];
+
   const colors = [{
     name: "Yellow Gold",
     count: 6
@@ -75,6 +81,7 @@ const HipHopRings = () => {
     name: "Rose Gold",
     count: 4
   }];
+
   const materials = [{
     name: "14K Solid Gold",
     count: 8
@@ -85,6 +92,7 @@ const HipHopRings = () => {
     name: "925 Silver",
     count: 2
   }];
+
   const chainTypes = [{
     name: "Cuban Link",
     count: 4
@@ -98,12 +106,25 @@ const HipHopRings = () => {
     name: "Rope",
     count: 2
   }];
-  return <div className="min-h-screen bg-white">
+
+  return (
+    <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
       
-      {/* Hero Section */}
-      
+      {/* Desktop Hero Section */}
+      {!isMobile && (
+        <div className="bg-gray-50 py-12 px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              MOISSANITE DIAMOND RINGS
+            </h1>
+            <p className="text-lg text-gray-600">
+              All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Rings
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Product Showcase */}
       <MobileProductShowcase category="RINGS" tableName="hip_hop_ring_products" />
@@ -267,6 +288,8 @@ const HipHopRings = () => {
       </div>
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default HipHopRings;

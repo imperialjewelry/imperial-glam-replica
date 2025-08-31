@@ -13,7 +13,9 @@ import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import VvsSimulantProductModal from '../components/VvsSimulantProductModal';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
+
 type VvsSimulantProduct = Tables<'vvs_simulant_products'>;
+
 const VvsDiamondSimulants = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<VvsSimulantProduct[]>([]);
@@ -40,12 +42,15 @@ const VvsDiamondSimulants = () => {
     cutQuality: false,
     clarityGrade: false
   });
+
   useEffect(() => {
     fetchProducts();
   }, []);
+
   useEffect(() => {
     applyFilters();
   }, [products, selectedFilters, priceFrom, priceTo, sortBy]);
+
   const fetchProducts = async () => {
     const {
       data,
@@ -59,6 +64,7 @@ const VvsDiamondSimulants = () => {
       setProducts(data || []);
     }
   };
+
   const applyFilters = () => {
     let filtered = [...products];
 
@@ -119,6 +125,7 @@ const VvsDiamondSimulants = () => {
     }
     setFilteredProducts(filtered);
   };
+
   const handleFilterChange = (filterType: keyof typeof selectedFilters, value: string) => {
     setSelectedFilters(prev => {
       const currentFilters = prev[filterType];
@@ -129,6 +136,7 @@ const VvsDiamondSimulants = () => {
       };
     });
   };
+
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
       ...prev,
@@ -152,12 +160,14 @@ const VvsDiamondSimulants = () => {
       count
     }));
   };
+
   const productTypes = getFilterOptions('product_type');
   const colors = getFilterOptions('color');
   const materials = getFilterOptions('material');
   const caratWeights = getFilterOptions('carat_weight');
   const cutQualities = getFilterOptions('cut_quality');
   const clarityGrades = getFilterOptions('clarity_grade');
+
   const renderFilterCheckbox = (filterType: keyof typeof selectedFilters, option: {
     name: string;
     count: number;
@@ -174,6 +184,7 @@ const VvsDiamondSimulants = () => {
         <span className="text-sm text-gray-500">({option.count})</span>
       </div>;
   };
+
   const renderDesktopFilters = () => <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
       <h2 className="text-lg font-semibold mb-6">Filters</h2>
       
@@ -240,6 +251,7 @@ const VvsDiamondSimulants = () => {
         </div>
       </div>
     </div>;
+
   const renderMobileFilters = () => showFilters && <div className="bg-white border rounded-lg mb-6 overflow-hidden">
         {/* Sort By */}
         <div className="p-4 border-b">
@@ -355,12 +367,25 @@ const VvsDiamondSimulants = () => {
           </CollapsibleContent>
         </Collapsible>
       </div>;
-  return <div className="min-h-screen bg-white">
+
+  return (
+    <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
       
-      {/* Hero Section */}
-      
+      {/* Desktop Hero Section */}
+      {!isMobile && (
+        <div className="bg-gray-50 py-12 px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              VVS DIAMOND SIMULANTS
+            </h1>
+            <p className="text-lg text-gray-600">
+              All VVS Diamond Simulant Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Jewelry
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Product Showcase */}
       <MobileProductShowcase category="VVS SIMULANTS" tableName="vvs_simulant_products" />
@@ -478,6 +503,8 @@ const VvsDiamondSimulants = () => {
       {selectedProduct && <VvsSimulantProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default VvsDiamondSimulants;

@@ -12,7 +12,9 @@ import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
+
 type EngagementRingProduct = Tables<'engagement_ring_products'>;
+
 const EngagementRings = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<EngagementRingProduct[]>([]);
@@ -28,9 +30,11 @@ const EngagementRings = () => {
     material: false,
     chainType: false
   });
+
   useEffect(() => {
     fetchProducts();
   }, []);
+
   const fetchProducts = async () => {
     const {
       data,
@@ -44,12 +48,14 @@ const EngagementRings = () => {
       setProducts(data || []);
     }
   };
+
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
       ...prev,
       [section]: !prev[section]
     }));
   };
+
   const productTypes = [{
     name: "Halo Rings",
     count: 4
@@ -66,6 +72,7 @@ const EngagementRings = () => {
     name: "Three Stone Rings",
     count: 1
   }];
+
   const colors = [{
     name: "Yellow Gold",
     count: 6
@@ -76,6 +83,7 @@ const EngagementRings = () => {
     name: "Rose Gold",
     count: 4
   }];
+
   const materials = [{
     name: "14K Solid Gold",
     count: 8
@@ -86,6 +94,7 @@ const EngagementRings = () => {
     name: "925 Silver",
     count: 2
   }];
+
   const ringStyles = [{
     name: "Classic",
     count: 4
@@ -96,12 +105,24 @@ const EngagementRings = () => {
     name: "Vintage",
     count: 2
   }];
+
   return <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
       
-      {/* Hero Section */}
-      
+      {/* Desktop Hero Section */}
+      {!isMobile && (
+        <div className="bg-gray-50 py-12 px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              MOISSANITE ENGAGEMENT RINGS
+            </h1>
+            <p className="text-lg text-gray-600">
+              All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Engagement Rings
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Product Showcase */}
       <MobileProductShowcase category="ENGAGEMENT RINGS" tableName="engagement_ring_products" />
@@ -267,4 +288,5 @@ const EngagementRings = () => {
       <Footer />
     </div>;
 };
+
 export default EngagementRings;

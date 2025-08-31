@@ -13,7 +13,9 @@ import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import WatchProductModal from '../components/WatchProductModal';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
+
 type WatchProduct = Tables<'watch_products'>;
+
 const Watches = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<WatchProduct[]>([]);
@@ -29,9 +31,11 @@ const Watches = () => {
     material: false,
     chainType: false
   });
+
   useEffect(() => {
     fetchProducts();
   }, []);
+
   const fetchProducts = async () => {
     const {
       data,
@@ -45,12 +49,14 @@ const Watches = () => {
       setProducts(data || []);
     }
   };
+
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
       ...prev,
       [section]: !prev[section]
     }));
   };
+
   const productTypes = [{
     name: "Cuban Chains",
     count: 4
@@ -67,6 +73,7 @@ const Watches = () => {
     name: "Franco Chains",
     count: 1
   }];
+
   const colors = [{
     name: "Yellow Gold",
     count: 6
@@ -77,6 +84,7 @@ const Watches = () => {
     name: "Rose Gold",
     count: 4
   }];
+
   const materials = [{
     name: "14K Solid Gold",
     count: 8
@@ -87,6 +95,7 @@ const Watches = () => {
     name: "925 Silver",
     count: 2
   }];
+
   const chainTypes = [{
     name: "Cuban Link",
     count: 4
@@ -100,12 +109,24 @@ const Watches = () => {
     name: "Rope",
     count: 2
   }];
+
   return <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
       
-      {/* Hero Section */}
-      
+      {/* Desktop Hero Section */}
+      {!isMobile && (
+        <div className="bg-gray-50 py-12 px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              MOISSANITE DIAMOND WATCHES
+            </h1>
+            <p className="text-lg text-gray-600">
+              All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Watches
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Product Showcase */}
       <MobileProductShowcase category="WATCHES" tableName="watch_products" />
@@ -274,4 +295,5 @@ const Watches = () => {
       <Footer />
     </div>;
 };
+
 export default Watches;

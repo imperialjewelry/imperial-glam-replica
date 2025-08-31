@@ -13,7 +13,9 @@ import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import GlassesProductModal from '../components/GlassesProductModal';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
+
 type GlassesProduct = Tables<'glasses_products'>;
+
 const Glasses = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<GlassesProduct[]>([]);
@@ -29,9 +31,11 @@ const Glasses = () => {
     chainType: false
   });
   const [selectedProduct, setSelectedProduct] = useState<GlassesProduct | null>(null);
+
   useEffect(() => {
     fetchProducts();
   }, []);
+
   const fetchProducts = async () => {
     const {
       data,
@@ -45,12 +49,14 @@ const Glasses = () => {
       setProducts(data || []);
     }
   };
+
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
       ...prev,
       [section]: !prev[section]
     }));
   };
+
   const productTypes = [{
     name: "Sunglasses",
     count: 4
@@ -61,6 +67,7 @@ const Glasses = () => {
     name: "Blue Light Glasses",
     count: 2
   }];
+
   const colors = [{
     name: "Black",
     count: 6
@@ -71,6 +78,7 @@ const Glasses = () => {
     name: "Silver",
     count: 4
   }];
+
   const materials = [{
     name: "Metal",
     count: 8
@@ -81,6 +89,7 @@ const Glasses = () => {
     name: "Titanium",
     count: 2
   }];
+
   const chainTypes = [{
     name: "Round",
     count: 4
@@ -91,12 +100,25 @@ const Glasses = () => {
     name: "Oval",
     count: 2
   }];
-  return <div className="min-h-screen bg-white">
+
+  return (
+    <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
       
-      {/* Hero Section */}
-      
+      {/* Desktop Hero Section */}
+      {!isMobile && (
+        <div className="bg-gray-50 py-12 px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              MOISSANITE DIAMOND GLASSES
+            </h1>
+            <p className="text-lg text-gray-600">
+              All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Glasses
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Product Showcase */}
       <MobileProductShowcase category="GLASSES" tableName="glasses_products" />
@@ -263,6 +285,8 @@ const Glasses = () => {
       {selectedProduct && <GlassesProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default Glasses;

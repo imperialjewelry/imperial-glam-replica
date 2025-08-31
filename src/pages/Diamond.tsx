@@ -12,7 +12,9 @@ import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
+
 type DiamondProduct = Tables<'diamond_products'>;
+
 const Diamond = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<DiamondProduct[]>([]);
@@ -27,9 +29,11 @@ const Diamond = () => {
     material: false,
     chainType: false
   });
+
   useEffect(() => {
     fetchProducts();
   }, []);
+
   const fetchProducts = async () => {
     const {
       data,
@@ -43,12 +47,14 @@ const Diamond = () => {
       setProducts(data || []);
     }
   };
+
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
       ...prev,
       [section]: !prev[section]
     }));
   };
+
   const productTypes = [{
     name: "Cuban Chains",
     count: 4
@@ -65,6 +71,7 @@ const Diamond = () => {
     name: "Franco Chains",
     count: 1
   }];
+
   const colors = [{
     name: "Yellow Gold",
     count: 6
@@ -75,6 +82,7 @@ const Diamond = () => {
     name: "Rose Gold",
     count: 4
   }];
+
   const materials = [{
     name: "14K Solid Gold",
     count: 8
@@ -85,6 +93,7 @@ const Diamond = () => {
     name: "925 Silver",
     count: 2
   }];
+
   const chainTypes = [{
     name: "Cuban Link",
     count: 4
@@ -98,12 +107,25 @@ const Diamond = () => {
     name: "Rope",
     count: 2
   }];
-  return <div className="min-h-screen bg-white">
+
+  return (
+    <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
       
-      {/* Hero Section */}
-      
+      {/* Desktop Hero Section */}
+      {!isMobile && (
+        <div className="bg-gray-50 py-12 px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              MOISSANITE DIAMOND CHAINS
+            </h1>
+            <p className="text-lg text-gray-600">
+              All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Chains
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Product Showcase */}
       <MobileProductShowcase category="CHAINS" tableName="diamond_products" />
@@ -267,6 +289,8 @@ const Diamond = () => {
       </div>
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default Diamond;
