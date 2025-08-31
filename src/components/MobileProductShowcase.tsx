@@ -7,20 +7,31 @@ interface MobileProductShowcaseProps {
   tableName: string;
 }
 
+interface ProductImage {
+  id: string;
+  name: string;
+  image_url: string;
+}
+
 const MobileProductShowcase = ({ category, tableName }: MobileProductShowcaseProps) => {
   const { data: products = [] } = useQuery({
     queryKey: [`mobile-showcase-${tableName}`],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from(tableName)
-        .select('id, name, image_url')
-        .limit(4);
-      
-      if (error) {
+      try {
+        const { data, error } = await supabase
+          .from(tableName as any)
+          .select('id, name, image_url')
+          .limit(4);
+        
+        if (error) {
+          console.error(`Error fetching ${tableName}:`, error);
+          return [];
+        }
+        return (data || []) as ProductImage[];
+      } catch (error) {
         console.error(`Error fetching ${tableName}:`, error);
         return [];
       }
-      return data || [];
     }
   });
 
@@ -29,7 +40,7 @@ const MobileProductShowcase = ({ category, tableName }: MobileProductShowcasePro
   return (
     <div className="block md:hidden px-4 py-6">
       <div className="grid grid-cols-4 gap-2 mb-6">
-        {products.map((product, index) => (
+        {products.map((product) => (
           <div key={product.id} className="aspect-square">
             <img
               src={product.image_url}

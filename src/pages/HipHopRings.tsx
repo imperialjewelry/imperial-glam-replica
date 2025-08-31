@@ -13,7 +13,7 @@ import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
 
-type RingProduct = Tables<'ring_products'>;
+type RingProduct = Tables<'hip_hop_ring_products'>;
 
 const HipHopRings = () => {
   const isMobile = useIsMobile();
@@ -36,12 +36,12 @@ const HipHopRings = () => {
 
   const fetchProducts = async () => {
     const { data, error } = await supabase
-      .from('ring_products')
+      .from('hip_hop_ring_products')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Error fetching ring products:', error);
+      console.error('Error fetching hip hop ring products:', error);
     } else {
       setProducts(data || []);
     }
@@ -101,7 +101,7 @@ const HipHopRings = () => {
       </section>
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="RINGS" tableName="ring_products" />
+      <MobileProductShowcase category="RINGS" tableName="hip_hop_ring_products" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
@@ -310,5 +310,39 @@ const HipHopRings = () => {
     </div>
   );
 };
+
+const toggleSection = (section: keyof typeof openSections) => {
+  setOpenSections(prev => ({
+    ...prev,
+    [section]: !prev[section]
+  }));
+};
+
+const productTypes = [
+  { name: "Cuban Chains", count: 4 },
+  { name: "Tennis Chains", count: 3 },
+  { name: "Figaro Chains", count: 2 },
+  { name: "Rope Chains", count: 2 },
+  { name: "Franco Chains", count: 1 }
+];
+
+const colors = [
+  { name: "Yellow Gold", count: 6 },
+  { name: "White Gold", count: 5 },
+  { name: "Rose Gold", count: 4 }
+];
+
+const materials = [
+  { name: "14K Solid Gold", count: 8 },
+  { name: "18K Solid Gold", count: 3 },
+  { name: "925 Silver", count: 2 }
+];
+
+const chainTypes = [
+  { name: "Cuban Link", count: 4 },
+  { name: "Tennis", count: 3 },
+  { name: "Figaro", count: 2 },
+  { name: "Rope", count: 2 }
+];
 
 export default HipHopRings;
