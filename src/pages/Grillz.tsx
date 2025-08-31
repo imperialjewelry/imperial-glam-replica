@@ -1,6 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -11,6 +13,7 @@ import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import GrillzProductModal from '../components/GrillzProductModal';
+import MobileProductShowcase from '@/components/MobileProductShowcase';
 
 type GrillzProduct = Tables<'grillz_products'>;
 
@@ -424,14 +427,17 @@ const Grillz = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              MOISSANITE DIAMOND GRILLZ
+              MOISSANITE GRILLZ COLLECTION
             </h1>
             <p className="text-lg text-gray-600 mb-8">
-              Premium Moissanite Iced Out 14K White, Yellow and Rose Gold Grillz
+              Premium Moissanite Iced Out Grillz - Hip Hop Jewelry
             </p>
           </div>
         </div>
       </section>
+
+      {/* Mobile Product Showcase */}
+      <MobileProductShowcase category="GRILLZ" tableName="grillz_products" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
@@ -530,8 +536,8 @@ const Grillz = () => {
 
       {/* Product Modal */}
       {selectedProduct && (
-        <GrillzProductModal 
-          product={selectedProduct} 
+        <GrillzProductModal
+          product={selectedProduct}
           onClose={() => setSelectedProduct(null)}
         />
       )}

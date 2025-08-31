@@ -7,12 +7,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
 import { Tables } from '@/integrations/supabase/types';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
-import EarringProductModal from '@/components/EarringProductModal';
+import EarringProductModal from '../components/EarringProductModal';
+import MobileProductShowcase from '@/components/MobileProductShowcase';
 
 type EarringProduct = Tables<'earring_products'>;
 
@@ -198,32 +198,17 @@ const Earrings = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              MOISSANITE DIAMOND EARRINGS
+              MOISSANITE EARRINGS COLLECTION
             </h1>
             <p className="text-lg text-gray-600 mb-8">
-              All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Earrings
+              Premium Moissanite Iced Out Earrings - Hip Hop Jewelry
             </p>
-            
-            {/* Category Tabs */}
-            <div className="flex justify-center space-x-8 mb-8">
-              {['STUD EARRINGS', 'HOOP EARRINGS', 'DROP EARRINGS'].map((tab) => (
-                <Button
-                  key={tab}
-                  variant={activeTab === tab ? "default" : "ghost"}
-                  onClick={() => setActiveTab(tab)}
-                  className={`${
-                    activeTab === tab 
-                      ? "text-blue-600 border-b-2 border-blue-600 bg-transparent hover:bg-transparent" 
-                      : "text-gray-400 hover:text-gray-600"
-                  } font-medium px-4 py-2 rounded-none`}
-                >
-                  {tab}
-                </Button>
-              ))}
-            </div>
           </div>
         </div>
       </section>
+
+      {/* Mobile Product Showcase */}
+      <MobileProductShowcase category="EARRINGS" tableName="earring_products" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
@@ -526,8 +511,8 @@ const Earrings = () => {
 
       {/* Product Modal */}
       {selectedProduct && (
-        <EarringProductModal 
-          product={selectedProduct} 
+        <EarringProductModal
+          product={selectedProduct}
           onClose={() => setSelectedProduct(null)}
         />
       )}
@@ -538,4 +523,3 @@ const Earrings = () => {
 };
 
 export default Earrings;
-

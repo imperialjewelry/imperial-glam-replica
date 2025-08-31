@@ -12,6 +12,7 @@ import { Tables } from '@/integrations/supabase/types';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
+import MobileProductShowcase from '@/components/MobileProductShowcase';
 
 type DiamondProduct = Tables<'diamond_products'>;
 
@@ -99,6 +100,9 @@ const Diamond = () => {
           </div>
         </div>
       </section>
+
+      {/* Mobile Product Showcase */}
+      <MobileProductShowcase category="CHAINS" tableName="diamond_products" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

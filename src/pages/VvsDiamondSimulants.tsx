@@ -12,6 +12,7 @@ import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import VvsSimulantProductModal from '../components/VvsSimulantProductModal';
+import MobileProductShowcase from '@/components/MobileProductShowcase';
 
 type VvsSimulantProduct = Tables<'vvs_simulant_products'>;
 
@@ -425,14 +426,17 @@ const VvsDiamondSimulants = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              VVS DIAMOND SIMULANTS
+              VVS DIAMOND SIMULANTS COLLECTION
             </h1>
             <p className="text-lg text-gray-600 mb-8">
-              Premium VVS Grade Diamond Simulants - Exceptional Clarity & Brilliance
+              Premium VVS Diamond Simulants - Hip Hop Jewelry
             </p>
           </div>
         </div>
       </section>
+
+      {/* Mobile Product Showcase */}
+      <MobileProductShowcase category="VVS SIMULANTS" tableName="vvs_simulant_products" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

@@ -12,6 +12,7 @@ import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import CustomProductModal from '../components/CustomProductModal';
+import MobileProductShowcase from '@/components/MobileProductShowcase';
 
 type CustomProduct = Tables<'custom_products'>;
 
@@ -364,14 +365,17 @@ const Custom = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              CUSTOM MOISSANITE JEWELRY
+              CUSTOM JEWELRY COLLECTION
             </h1>
             <p className="text-lg text-gray-600 mb-8">
-              Personalized Moissanite Iced Out 14K White, Yellow and Rose Gold Custom Jewelry
+              Premium Custom Moissanite Jewelry - Made to Order
             </p>
           </div>
         </div>
       </section>
+
+      {/* Mobile Product Showcase */}
+      <MobileProductShowcase category="CUSTOM" tableName="custom_products" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

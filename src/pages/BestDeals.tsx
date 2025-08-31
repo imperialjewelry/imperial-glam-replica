@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Star, Filter } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import MobileProductShowcase from '@/components/MobileProductShowcase';
 import ChainProductModal from '@/components/ChainProductModal';
 import BraceletProductModal from '@/components/BraceletProductModal';
 import EarringProductModal from '@/components/EarringProductModal';
@@ -14,6 +15,7 @@ import GrillzProductModal from '@/components/GrillzProductModal';
 import WatchProductModal from '@/components/WatchProductModal';
 import PendantProductModal from '@/components/PendantProductModal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 const BestDeals = () => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [fullProductData, setFullProductData] = useState<any>(null);
@@ -133,9 +135,11 @@ const BestDeals = () => {
           <div className="max-w-7xl mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">BEST DEALS</h1>
             <p className="text-xl opacity-90 mb-8">Incredible savings on premium jewelry</p>
-            
           </div>
         </div>
+
+        {/* Mobile Product Showcase */}
+        <MobileProductShowcase category="DEALS" tableName="chain_products" />
 
         <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Filters */}
@@ -249,4 +253,5 @@ const BestDeals = () => {
       <Footer />
     </>;
 };
+
 export default BestDeals;
