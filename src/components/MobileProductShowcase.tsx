@@ -18,16 +18,25 @@ const MobileProductShowcase = ({ category, tableName }: MobileProductShowcasePro
     queryKey: [`mobile-showcase-${tableName}`],
     queryFn: async () => {
       try {
+        // First, let's check what columns exist in this table
         const { data, error } = await supabase
           .from(tableName as any)
-          .select('id, name, image_url')
+          .select('*')
           .limit(4);
         
         if (error) {
           console.error(`Error fetching ${tableName}:`, error);
           return [];
         }
-        return (data || []) as ProductImage[];
+
+        // Convert the data to our expected format, handling different column names
+        const processedData = (data || []).map((item: any) => ({
+          id: item.id || '',
+          name: item.name || item.title || 'Product',
+          image_url: item.image_url || item.image || '/placeholder.svg'
+        })) as ProductImage[];
+
+        return processedData;
       } catch (error) {
         console.error(`Error fetching ${tableName}:`, error);
         return [];
