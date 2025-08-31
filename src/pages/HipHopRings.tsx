@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -310,39 +311,5 @@ const HipHopRings = () => {
     </div>
   );
 };
-
-const toggleSection = (section: keyof typeof openSections) => {
-  setOpenSections(prev => ({
-    ...prev,
-    [section]: !prev[section]
-  }));
-};
-
-const productTypes = [
-  { name: "Cuban Chains", count: 4 },
-  { name: "Tennis Chains", count: 3 },
-  { name: "Figaro Chains", count: 2 },
-  { name: "Rope Chains", count: 2 },
-  { name: "Franco Chains", count: 1 }
-];
-
-const colors = [
-  { name: "Yellow Gold", count: 6 },
-  { name: "White Gold", count: 5 },
-  { name: "Rose Gold", count: 4 }
-];
-
-const materials = [
-  { name: "14K Solid Gold", count: 8 },
-  { name: "18K Solid Gold", count: 3 },
-  { name: "925 Silver", count: 2 }
-];
-
-const chainTypes = [
-  { name: "Cuban Link", count: 4 },
-  { name: "Tennis", count: 3 },
-  { name: "Figaro", count: 2 },
-  { name: "Rope", count: 2 }
-];
 
 export default HipHopRings;

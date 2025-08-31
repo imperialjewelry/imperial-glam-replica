@@ -11,7 +11,6 @@ import { Tables } from '@/integrations/supabase/types';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
-import BraceletProductModal from '../components/BraceletProductModal';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
 
 type BraceletProduct = Tables<'bracelet_products'>;
@@ -22,7 +21,6 @@ const Bracelets = () => {
   const [sortBy, setSortBy] = useState('featured');
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState<BraceletProduct | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [openSections, setOpenSections] = useState({
     productType: false,
@@ -57,8 +55,11 @@ const Bracelets = () => {
   };
 
   const productTypes = [
-    { name: "Cuban Bracelets", count: 4 },
-    { name: "Tennis Bracelets", count: 3 },
+    { name: "Cuban Chains", count: 4 },
+    { name: "Tennis Chains", count: 3 },
+    { name: "Figaro Chains", count: 2 },
+    { name: "Rope Chains", count: 2 },
+    { name: "Franco Chains", count: 1 }
   ];
 
   const colors = [
@@ -90,10 +91,10 @@ const Bracelets = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              MOISSANITE BRACELETS COLLECTION
+              BRACELETS COLLECTION
             </h1>
             <p className="text-lg text-gray-600 mb-8">
-              Premium Moissanite Iced Out Bracelets - Hip Hop Jewelry
+              Premium Moissanite Iced Out Bracelets
             </p>
           </div>
         </div>
@@ -246,7 +247,7 @@ const Bracelets = () => {
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
             {products.map((product) => (
-              <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow" onClick={() => setSelectedProduct(product)}>
+              <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
                 
                 {/* Product Image */}
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
@@ -304,14 +305,6 @@ const Bracelets = () => {
           </div>
         </div>
       </div>
-
-      {/* Product Modal */}
-      {selectedProduct && (
-        <BraceletProductModal
-          product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-        />
-      )}
 
       <Footer />
     </div>
