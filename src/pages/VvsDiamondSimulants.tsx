@@ -13,9 +13,7 @@ import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import VvsSimulantProductModal from '../components/VvsSimulantProductModal';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
-
 type VvsSimulantProduct = Tables<'vvs_simulant_products'>;
-
 const VvsDiamondSimulants = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<VvsSimulantProduct[]>([]);
@@ -42,71 +40,56 @@ const VvsDiamondSimulants = () => {
     cutQuality: false,
     clarityGrade: false
   });
-
   useEffect(() => {
     fetchProducts();
   }, []);
-
   useEffect(() => {
     applyFilters();
   }, [products, selectedFilters, priceFrom, priceTo, sortBy]);
-
   const fetchProducts = async () => {
-    const { data, error } = await supabase
-      .from('vvs_simulant_products')
-      .select('*')
-      .order('created_at', { ascending: false });
-
+    const {
+      data,
+      error
+    } = await supabase.from('vvs_simulant_products').select('*').order('created_at', {
+      ascending: false
+    });
     if (error) {
       console.error('Error fetching VVS simulant products:', error);
     } else {
       setProducts(data || []);
     }
   };
-
   const applyFilters = () => {
     let filtered = [...products];
 
     // Apply product type filter
     if (selectedFilters.productType.length > 0) {
-      filtered = filtered.filter(product => 
-        selectedFilters.productType.includes(product.product_type)
-      );
+      filtered = filtered.filter(product => selectedFilters.productType.includes(product.product_type));
     }
 
     // Apply color filter
     if (selectedFilters.color.length > 0) {
-      filtered = filtered.filter(product => 
-        selectedFilters.color.includes(product.color)
-      );
+      filtered = filtered.filter(product => selectedFilters.color.includes(product.color));
     }
 
     // Apply material filter
     if (selectedFilters.material.length > 0) {
-      filtered = filtered.filter(product => 
-        selectedFilters.material.includes(product.material)
-      );
+      filtered = filtered.filter(product => selectedFilters.material.includes(product.material));
     }
 
     // Apply carat weight filter
     if (selectedFilters.caratWeight.length > 0) {
-      filtered = filtered.filter(product => 
-        product.carat_weight && selectedFilters.caratWeight.includes(product.carat_weight)
-      );
+      filtered = filtered.filter(product => product.carat_weight && selectedFilters.caratWeight.includes(product.carat_weight));
     }
 
     // Apply cut quality filter
     if (selectedFilters.cutQuality.length > 0) {
-      filtered = filtered.filter(product => 
-        product.cut_quality && selectedFilters.cutQuality.includes(product.cut_quality)
-      );
+      filtered = filtered.filter(product => product.cut_quality && selectedFilters.cutQuality.includes(product.cut_quality));
     }
 
     // Apply clarity grade filter
     if (selectedFilters.clarityGrade.length > 0) {
-      filtered = filtered.filter(product => 
-        product.clarity_grade && selectedFilters.clarityGrade.includes(product.clarity_grade)
-      );
+      filtered = filtered.filter(product => product.clarity_grade && selectedFilters.clarityGrade.includes(product.clarity_grade));
     }
 
     // Apply price range filter
@@ -134,24 +117,18 @@ const VvsDiamondSimulants = () => {
         // Keep original order for featured
         break;
     }
-
     setFilteredProducts(filtered);
   };
-
   const handleFilterChange = (filterType: keyof typeof selectedFilters, value: string) => {
     setSelectedFilters(prev => {
       const currentFilters = prev[filterType];
-      const newFilters = currentFilters.includes(value)
-        ? currentFilters.filter(item => item !== value)
-        : [...currentFilters, value];
-      
+      const newFilters = currentFilters.includes(value) ? currentFilters.filter(item => item !== value) : [...currentFilters, value];
       return {
         ...prev,
         [filterType]: newFilters
       };
     });
   };
-
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
       ...prev,
@@ -161,57 +138,50 @@ const VvsDiamondSimulants = () => {
 
   // Get unique values and counts from products
   const getFilterOptions = (field: keyof VvsSimulantProduct) => {
-    const counts: { [key: string]: number } = {};
+    const counts: {
+      [key: string]: number;
+    } = {};
     products.forEach(product => {
       const value = product[field] as string;
       if (value) {
         counts[value] = (counts[value] || 0) + 1;
       }
     });
-    return Object.entries(counts).map(([name, count]) => ({ name, count }));
+    return Object.entries(counts).map(([name, count]) => ({
+      name,
+      count
+    }));
   };
-
   const productTypes = getFilterOptions('product_type');
   const colors = getFilterOptions('color');
   const materials = getFilterOptions('material');
   const caratWeights = getFilterOptions('carat_weight');
   const cutQualities = getFilterOptions('cut_quality');
   const clarityGrades = getFilterOptions('clarity_grade');
-
-  const renderFilterCheckbox = (
-    filterType: keyof typeof selectedFilters,
-    option: { name: string; count: number },
-    prefix: string = ''
-  ) => {
+  const renderFilterCheckbox = (filterType: keyof typeof selectedFilters, option: {
+    name: string;
+    count: number;
+  }, prefix: string = '') => {
     const isChecked = selectedFilters[filterType].includes(option.name);
     const checkboxId = `${prefix}${option.name}`;
-    
-    return (
-      <div key={option.name} className="flex items-center justify-between">
+    return <div key={option.name} className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Checkbox 
-            id={checkboxId}
-            checked={isChecked}
-            onCheckedChange={() => handleFilterChange(filterType, option.name)}
-          />
+          <Checkbox id={checkboxId} checked={isChecked} onCheckedChange={() => handleFilterChange(filterType, option.name)} />
           <label htmlFor={checkboxId} className="text-sm text-gray-700">
             {option.name}
           </label>
         </div>
         <span className="text-sm text-gray-500">({option.count})</span>
-      </div>
-    );
+      </div>;
   };
-
-  const renderDesktopFilters = () => (
-    <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
+  const renderDesktopFilters = () => <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
       <h2 className="text-lg font-semibold mb-6">Filters</h2>
       
       {/* Product Type */}
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">PRODUCT TYPE</h3>
         <div className="space-y-3">
-          {productTypes.map((type) => renderFilterCheckbox('productType', type, 'desktop-'))}
+          {productTypes.map(type => renderFilterCheckbox('productType', type, 'desktop-'))}
         </div>
       </div>
 
@@ -221,23 +191,11 @@ const VvsDiamondSimulants = () => {
         <div className="flex space-x-2">
           <div className="flex-1">
             <label className="block text-xs text-gray-500 mb-1">FROM</label>
-            <input
-              type="number"
-              value={priceFrom}
-              onChange={(e) => setPriceFrom(e.target.value)}
-              placeholder="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-            />
+            <input type="number" value={priceFrom} onChange={e => setPriceFrom(e.target.value)} placeholder="0" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
           </div>
           <div className="flex-1">
             <label className="block text-xs text-gray-500 mb-1">TO</label>
-            <input
-              type="number"
-              value={priceTo}
-              onChange={(e) => setPriceTo(e.target.value)}
-              placeholder="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-            />
+            <input type="number" value={priceTo} onChange={e => setPriceTo(e.target.value)} placeholder="0" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
           </div>
         </div>
       </div>
@@ -246,7 +204,7 @@ const VvsDiamondSimulants = () => {
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">COLOR</h3>
         <div className="space-y-3">
-          {colors.map((color) => renderFilterCheckbox('color', color, 'desktop-'))}
+          {colors.map(color => renderFilterCheckbox('color', color, 'desktop-'))}
         </div>
       </div>
 
@@ -254,7 +212,7 @@ const VvsDiamondSimulants = () => {
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">MATERIAL</h3>
         <div className="space-y-3">
-          {materials.map((material) => renderFilterCheckbox('material', material, 'desktop-'))}
+          {materials.map(material => renderFilterCheckbox('material', material, 'desktop-'))}
         </div>
       </div>
 
@@ -262,7 +220,7 @@ const VvsDiamondSimulants = () => {
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">CARAT WEIGHT</h3>
         <div className="space-y-3">
-          {caratWeights.map((weight) => renderFilterCheckbox('caratWeight', weight, 'desktop-'))}
+          {caratWeights.map(weight => renderFilterCheckbox('caratWeight', weight, 'desktop-'))}
         </div>
       </div>
 
@@ -270,7 +228,7 @@ const VvsDiamondSimulants = () => {
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">CUT QUALITY</h3>
         <div className="space-y-3">
-          {cutQualities.map((quality) => renderFilterCheckbox('cutQuality', quality, 'desktop-'))}
+          {cutQualities.map(quality => renderFilterCheckbox('cutQuality', quality, 'desktop-'))}
         </div>
       </div>
 
@@ -278,15 +236,11 @@ const VvsDiamondSimulants = () => {
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">CLARITY GRADE</h3>
         <div className="space-y-3">
-          {clarityGrades.map((grade) => renderFilterCheckbox('clarityGrade', grade, 'desktop-'))}
+          {clarityGrades.map(grade => renderFilterCheckbox('clarityGrade', grade, 'desktop-'))}
         </div>
       </div>
-    </div>
-  );
-
-  const renderMobileFilters = () => (
-    showFilters && (
-      <div className="bg-white border rounded-lg mb-6 overflow-hidden">
+    </div>;
+  const renderMobileFilters = () => showFilters && <div className="bg-white border rounded-lg mb-6 overflow-hidden">
         {/* Sort By */}
         <div className="p-4 border-b">
           <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
@@ -311,7 +265,7 @@ const VvsDiamondSimulants = () => {
           </CollapsibleTrigger>
           <CollapsibleContent className="p-4 border-b">
             <div className="space-y-3">
-              {productTypes.map((type) => renderFilterCheckbox('productType', type))}
+              {productTypes.map(type => renderFilterCheckbox('productType', type))}
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -326,23 +280,11 @@ const VvsDiamondSimulants = () => {
             <div className="flex space-x-2">
               <div className="flex-1">
                 <label className="block text-xs text-gray-500 mb-1">FROM</label>
-                <input
-                  type="number"
-                  value={priceFrom}
-                  onChange={(e) => setPriceFrom(e.target.value)}
-                  placeholder="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                />
+                <input type="number" value={priceFrom} onChange={e => setPriceFrom(e.target.value)} placeholder="0" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
               </div>
               <div className="flex-1">
                 <label className="block text-xs text-gray-500 mb-1">TO</label>
-                <input
-                  type="number"
-                  value={priceTo}
-                  onChange={(e) => setPriceTo(e.target.value)}
-                  placeholder="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                />
+                <input type="number" value={priceTo} onChange={e => setPriceTo(e.target.value)} placeholder="0" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
               </div>
             </div>
           </CollapsibleContent>
@@ -356,7 +298,7 @@ const VvsDiamondSimulants = () => {
           </CollapsibleTrigger>
           <CollapsibleContent className="p-4 border-b">
             <div className="space-y-3">
-              {colors.map((color) => renderFilterCheckbox('color', color))}
+              {colors.map(color => renderFilterCheckbox('color', color))}
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -369,7 +311,7 @@ const VvsDiamondSimulants = () => {
           </CollapsibleTrigger>
           <CollapsibleContent className="p-4 border-b">
             <div className="space-y-3">
-              {materials.map((material) => renderFilterCheckbox('material', material))}
+              {materials.map(material => renderFilterCheckbox('material', material))}
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -382,7 +324,7 @@ const VvsDiamondSimulants = () => {
           </CollapsibleTrigger>
           <CollapsibleContent className="p-4 border-b">
             <div className="space-y-3">
-              {caratWeights.map((weight) => renderFilterCheckbox('caratWeight', weight))}
+              {caratWeights.map(weight => renderFilterCheckbox('caratWeight', weight))}
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -395,7 +337,7 @@ const VvsDiamondSimulants = () => {
           </CollapsibleTrigger>
           <CollapsibleContent className="p-4 border-b">
             <div className="space-y-3">
-              {cutQualities.map((quality) => renderFilterCheckbox('cutQuality', quality))}
+              {cutQualities.map(quality => renderFilterCheckbox('cutQuality', quality))}
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -408,32 +350,17 @@ const VvsDiamondSimulants = () => {
           </CollapsibleTrigger>
           <CollapsibleContent className="p-4">
             <div className="space-y-3">
-              {clarityGrades.map((grade) => renderFilterCheckbox('clarityGrade', grade))}
+              {clarityGrades.map(grade => renderFilterCheckbox('clarityGrade', grade))}
             </div>
           </CollapsibleContent>
         </Collapsible>
-      </div>
-    )
-  );
-
-  return (
-    <div className="min-h-screen bg-white">
+      </div>;
+  return <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
       
       {/* Hero Section */}
-      <section className="bg-gray-50 py-12 px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              VVS DIAMOND SIMULANTS COLLECTION
-            </h1>
-            <p className="text-lg text-gray-600 mb-8">
-              Premium VVS Diamond Simulants - Hip Hop Jewelry
-            </p>
-          </div>
-        </div>
-      </section>
+      
 
       {/* Mobile Product Showcase */}
       <MobileProductShowcase category="VVS SIMULANTS" tableName="vvs_simulant_products" />
@@ -449,8 +376,7 @@ const VvsDiamondSimulants = () => {
           <div className="flex items-center justify-between mb-6">
             <span className="text-lg font-semibold">{filteredProducts.length} Products</span>
             <div className="flex items-center space-x-4">
-              {!isMobile && (
-                <Select value={sortBy} onValueChange={setSortBy}>
+              {!isMobile && <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Sort By" />
                   </SelectTrigger>
@@ -460,19 +386,11 @@ const VvsDiamondSimulants = () => {
                     <SelectItem value="price-high">Price: High to Low</SelectItem>
                     <SelectItem value="newest">Newest</SelectItem>
                   </SelectContent>
-                </Select>
-              )}
-              {isMobile && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center space-x-2"
-                >
+                </Select>}
+              {isMobile && <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)} className="flex items-center space-x-2">
                   <Filter className="w-4 h-4" />
                   <span>FILTER</span>
-                </Button>
-              )}
+                </Button>}
             </div>
           </div>
 
@@ -481,40 +399,23 @@ const VvsDiamondSimulants = () => {
 
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
-            {filteredProducts
-              .filter(product => product.stripe_price_id)
-              .map((product) => (
-                <div 
-                  key={product.id} 
-                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() => setSelectedProduct(product)}
-                >
+            {filteredProducts.filter(product => product.stripe_price_id).map(product => <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setSelectedProduct(product)}>
                   
                   {/* Product Image */}
                   <div className="relative aspect-square overflow-hidden rounded-t-lg">
-                    <img
-                      src={product.image_url}
-                      alt={product.name}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                    />
+                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                     
                     {/* Badges */}
                     <div className="absolute top-2 left-2 flex flex-col space-y-1">
-                      {product.in_stock && (
-                        <Badge className="text-xs font-semibold bg-green-500 text-white">
+                      {product.in_stock && <Badge className="text-xs font-semibold bg-green-500 text-white">
                           IN STOCK
-                        </Badge>
-                      )}
-                      {product.discount_percentage && product.discount_percentage > 0 && (
-                        <Badge className="text-xs font-semibold bg-red-500 text-white">
+                        </Badge>}
+                      {product.discount_percentage && product.discount_percentage > 0 && <Badge className="text-xs font-semibold bg-red-500 text-white">
                           {product.discount_percentage}% OFF
-                        </Badge>
-                      )}
-                      {product.clarity_grade && (
-                        <Badge className="text-xs font-semibold bg-purple-500 text-white">
+                        </Badge>}
+                      {product.clarity_grade && <Badge className="text-xs font-semibold bg-purple-500 text-white">
                           {product.clarity_grade}
-                        </Badge>
-                      )}
+                        </Badge>}
                     </div>
                   </div>
 
@@ -537,60 +438,46 @@ const VvsDiamondSimulants = () => {
                     
                     <div className="flex items-center space-x-1">
                       <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                        ))}
+                        {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}
                       </div>
                       <span className="text-xs text-gray-500">({product.review_count})</span>
                     </div>
                     
                     <div className="flex items-center space-x-2">
                       <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
-                      {product.original_price && (
-                        <span className="text-sm text-gray-500 line-through">
+                      {product.original_price && <span className="text-sm text-gray-500 line-through">
                           ${(product.original_price / 100).toFixed(2)}
-                        </span>
-                      )}
+                        </span>}
                     </div>
                   </div>
-                </div>
-              ))}
+                </div>)}
           </div>
 
           {/* Empty state */}
-          {filteredProducts.length === 0 && (
-            <div className="text-center py-12">
+          {filteredProducts.length === 0 && <div className="text-center py-12">
               <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
               <Button variant="outline" onClick={() => {
-                setSelectedFilters({
-                  productType: [],
-                  color: [],
-                  material: [],
-                  caratWeight: [],
-                  cutQuality: [],
-                  clarityGrade: []
-                });
-                setPriceFrom('');
-                setPriceTo('');
-              }} className="mt-4">
+            setSelectedFilters({
+              productType: [],
+              color: [],
+              material: [],
+              caratWeight: [],
+              cutQuality: [],
+              clarityGrade: []
+            });
+            setPriceFrom('');
+            setPriceTo('');
+          }} className="mt-4">
                 Clear Filters
               </Button>
-            </div>
-          )}
+            </div>}
         </div>
       </div>
 
       {/* Product Modal */}
-      {selectedProduct && (
-        <VvsSimulantProductModal 
-          product={selectedProduct} 
-          onClose={() => setSelectedProduct(null)}
-        />
-      )}
+      {selectedProduct && <VvsSimulantProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default VvsDiamondSimulants;
