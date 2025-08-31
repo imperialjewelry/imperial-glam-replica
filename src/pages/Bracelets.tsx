@@ -16,14 +16,24 @@ import MobileProductShowcase from '@/components/MobileProductShowcase';
 
 type BraceletProduct = Tables<'bracelet_products'>;
 
+interface LengthPrice {
+  length: string;
+  price: number;
+  stripe_price_id: string;
+}
+
+interface ProcessedBraceletProduct extends Omit<BraceletProduct, 'lengths_and_prices'> {
+  lengths_and_prices?: LengthPrice[];
+}
+
 const Bracelets = () => {
   const isMobile = useIsMobile();
-  const [products, setProducts] = useState<BraceletProduct[]>([]);
+  const [products, setProducts] = useState<ProcessedBraceletProduct[]>([]);
   const [sortBy, setSortBy] = useState('featured');
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<BraceletProduct | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProcessedBraceletProduct | null>(null);
   const [openSections, setOpenSections] = useState({
     productType: false,
     price: false,
@@ -45,7 +55,14 @@ const Bracelets = () => {
     if (error) {
       console.error('Error fetching bracelet products:', error);
     } else {
-      setProducts(data || []);
+      // Process the data to ensure proper type conversion
+      const processedProducts = (data || []).map(product => ({
+        ...product,
+        lengths_and_prices: Array.isArray(product.lengths_and_prices) 
+          ? product.lengths_and_prices as LengthPrice[]
+          : []
+      }));
+      setProducts(processedProducts);
     }
   };
 
