@@ -22,6 +22,11 @@ import Diamond from "./pages/Diamond";
 import Product from "./pages/Product";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import SearchResults from "./pages/SearchResults";
+import About from "./pages/About";
+import Reviews from "./pages/Reviews";
+import Financing from "./pages/Financing";
+import Certificates from "./pages/Certificates";
+import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import ShoppingCart from "./components/ShoppingCart";
 
@@ -55,6 +60,14 @@ const AppContent = () => {
         <Route path="/product/:id" element={<Product />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/search" element={<SearchResults />} />
+        
+        {/* Company Pages */}
+        <Route path="/about" element={<About />} />
+        <Route path="/reviews" element={<Reviews />} />
+        <Route path="/financing" element={<Financing />} />
+        <Route path="/certificates" element={<Certificates />} />
+        <Route path="/contact" element={<Contact />} />
+        
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
