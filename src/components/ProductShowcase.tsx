@@ -23,7 +23,7 @@ interface ProductShowcaseProps {
   title: string;
   subtitle?: string;
   category: string;
-  tableName: string;
+  tableName: 'diamond_products' | 'bracelet_products' | 'chain_products' | 'custom_products' | 'earring_products' | 'engagement_ring_products' | 'glasses_products' | 'grillz_products' | 'hip_hop_ring_products' | 'pendant_products' | 'vvs_simulant_products' | 'watch_products';
 }
 
 const ProductShowcase = ({ title, subtitle, category, tableName }: ProductShowcaseProps) => {
@@ -34,12 +34,10 @@ const ProductShowcase = ({ title, subtitle, category, tableName }: ProductShowca
     queryFn: async () => {
       console.log(`Fetching products from ${tableName} for category: ${category}`);
       
-      let query = supabase
+      const { data, error } = await supabase
         .from(tableName)
         .select('*')
         .eq('category', category);
-
-      const { data, error } = await query;
       
       if (error) {
         console.error(`Error fetching ${tableName}:`, error);
@@ -47,7 +45,23 @@ const ProductShowcase = ({ title, subtitle, category, tableName }: ProductShowca
       }
 
       console.log(`Fetched ${data?.length || 0} products from ${tableName}`);
-      return data || [];
+      
+      // Transform the data to match our Product interface
+      const transformedData = (data || []).map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        image_url: item.image_url,
+        price: item.price,
+        original_price: item.original_price,
+        rating: item.rating || 5,
+        review_count: item.review_count || 0,
+        category: item.category,
+        discount_percentage: item.discount_percentage || 0,
+        sizes: item.sizes || [],
+        ships_today: item.ships_today || false,
+      }));
+
+      return transformedData as Product[];
     },
   });
 
