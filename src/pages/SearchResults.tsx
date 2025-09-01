@@ -1,4 +1,3 @@
-
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -42,27 +41,25 @@ const SearchResults = () => {
       const searchPattern = `%${searchTerm}%`;
       const allResults: Product[] = [];
 
-      // Define all product tables to search
-      const productTables = [
-        'chain_products',
-        'bracelet_products', 
-        'watch_products',
-        'pendant_products',
-        'earring_products',
-        'grillz_products',
-        'vvs_simulant_products',
-        'hip_hop_ring_products',
-        'engagement_ring_products',
-        'diamond_products',
-        'glasses_products',
-        'custom_products'
+      // Search each table with proper typing
+      const searchQueries = [
+        { table: 'chain_products' as const, query: supabase.from('chain_products') },
+        { table: 'bracelet_products' as const, query: supabase.from('bracelet_products') },
+        { table: 'watch_products' as const, query: supabase.from('watch_products') },
+        { table: 'pendant_products' as const, query: supabase.from('pendant_products') },
+        { table: 'earring_products' as const, query: supabase.from('earring_products') },
+        { table: 'grillz_products' as const, query: supabase.from('grillz_products') },
+        { table: 'vvs_simulant_products' as const, query: supabase.from('vvs_simulant_products') },
+        { table: 'hip_hop_ring_products' as const, query: supabase.from('hip_hop_ring_products') },
+        { table: 'engagement_ring_products' as const, query: supabase.from('engagement_ring_products') },
+        { table: 'diamond_products' as const, query: supabase.from('diamond_products') },
+        { table: 'glasses_products' as const, query: supabase.from('glasses_products') },
+        { table: 'custom_products' as const, query: supabase.from('custom_products') }
       ];
 
-      // Search each table
-      for (const table of productTables) {
+      for (const { table, query } of searchQueries) {
         try {
-          const { data, error } = await supabase
-            .from(table)
+          const { data, error } = await query
             .select('id, name, description, price, original_price, category, image_url, discount_percentage, in_stock, featured, created_at')
             .or(`name.ilike.${searchPattern},description.ilike.${searchPattern},category.ilike.${searchPattern}`)
             .eq('in_stock', true);
