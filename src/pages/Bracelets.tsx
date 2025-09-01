@@ -29,7 +29,7 @@ interface ProcessedBraceletProduct {
   color: string;
   material: string;
   gemstone?: string;
-  diamond_cut?: string;
+  diamond_cut: string; // Changed from optional to required
   image_url: string;
   price: number;
   original_price?: number;
