@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,6 +14,9 @@ import EarringProductModal from '@/components/EarringProductModal';
 import GrillzProductModal from '@/components/GrillzProductModal';
 import WatchProductModal from '@/components/WatchProductModal';
 import PendantProductModal from '@/components/PendantProductModal';
+import HipHopRingProductModal from '@/components/HipHopRingProductModal';
+import EngagementRingProductModal from '@/components/EngagementRingProductModal';
+import GlassesProductModal from '@/components/GlassesProductModal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const BestDeals = () => {
@@ -64,7 +66,12 @@ const BestDeals = () => {
           if (data && Array.isArray(data) && data.length > 0) {
             // Add source table info to each product - ensure each item is a valid object
             const productsWithSource = data
-              .filter(product => product && typeof product === 'object' && product.id)
+              .filter((product): product is Record<string, any> => 
+                product !== null && 
+                typeof product === 'object' && 
+                'id' in product && 
+                product.id !== null
+              )
               .map(product => ({
                 ...product,
                 source_table: tableName,
@@ -146,6 +153,21 @@ const BestDeals = () => {
         }} />;
       case 'pendant_products':
         return <PendantProductModal product={fullProductData} onClose={() => {
+          setSelectedProduct(null);
+          setFullProductData(null);
+        }} />;
+      case 'hip_hop_ring_products':
+        return <HipHopRingProductModal product={fullProductData} onClose={() => {
+          setSelectedProduct(null);
+          setFullProductData(null);
+        }} />;
+      case 'engagement_ring_products':
+        return <EngagementRingProductModal product={fullProductData} onClose={() => {
+          setSelectedProduct(null);
+          setFullProductData(null);
+        }} />;
+      case 'glasses_products':
+        return <GlassesProductModal product={fullProductData} onClose={() => {
           setSelectedProduct(null);
           setFullProductData(null);
         }} />;
