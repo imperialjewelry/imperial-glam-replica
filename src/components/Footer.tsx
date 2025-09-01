@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { FaInstagram } from 'react-icons/fa';
@@ -227,7 +226,15 @@ const Footer = () => {
 
             <div className="flex flex-col items-start md:items-end space-y-4">
               <div className="flex space-x-3">
-                <FaInstagram className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer" />
+                <a
+                  href="https://www.instagram.com/shopimperialjewelry"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="inline-flex"
+                >
+                  <FaInstagram className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer" />
+                </a>
               </div>
 
               <div className="text-sm">
@@ -252,3 +259,4 @@ const Footer = () => {
 };
 
 export default Footer;
+
