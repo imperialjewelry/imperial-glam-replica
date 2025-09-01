@@ -38,7 +38,7 @@ interface ProcessedBraceletProduct {
   discount_percentage?: number;
   in_stock: boolean;
   ships_today?: boolean;
-  featured?: boolean;
+  featured: boolean; // Changed from optional to required
   created_at: string;
   updated_at: string;
   stripe_price_id?: string;
