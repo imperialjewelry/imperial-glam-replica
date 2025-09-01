@@ -1,20 +1,18 @@
+
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { supabase } from '@/integrations/supabase/client';
-import { Tables } from '@/integrations/supabase/types';
+import { useProductFilters } from '@/hooks/useProductFilters';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import BraceletProductModal from '../components/BraceletProductModal';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
-
-type BraceletProduct = Tables<'bracelet_products'>;
+import FilterSection from '@/components/FilterSection';
 
 interface LengthPrice {
   length: string;
@@ -22,18 +20,48 @@ interface LengthPrice {
   stripe_price_id: string;
 }
 
-interface ProcessedBraceletProduct extends Omit<BraceletProduct, 'lengths_and_prices'> {
+interface ProcessedBraceletProduct {
+  id: string;
+  name: string;
+  description?: string;
+  category: string;
+  product_type: string;
+  color: string;
+  material: string;
+  gemstone?: string;
+  diamond_cut?: string;
+  image_url: string;
+  price: number;
+  original_price?: number;
+  rating: number;
+  review_count: number;
+  discount_percentage?: number;
+  in_stock: boolean;
+  ships_today?: boolean;
+  featured?: boolean;
+  created_at: string;
+  updated_at: string;
+  stripe_price_id?: string;
+  stripe_product_id: string;
+  sizes?: string[];
   lengths_and_prices?: LengthPrice[];
 }
 
 const Bracelets = () => {
   const isMobile = useIsMobile();
-  const [products, setProducts] = useState<ProcessedBraceletProduct[]>([]);
+  const { products, filters, loading } = useProductFilters('bracelet_products');
+  const [filteredProducts, setFilteredProducts] = useState<ProcessedBraceletProduct[]>([]);
   const [sortBy, setSortBy] = useState('featured');
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProcessedBraceletProduct | null>(null);
+  const [selectedFilters, setSelectedFilters] = useState({
+    productType: [] as string[],
+    color: [] as string[],
+    material: [] as string[],
+    chainType: [] as string[]
+  });
   const [openSections, setOpenSections] = useState({
     productType: false,
     price: false,
@@ -43,27 +71,71 @@ const Bracelets = () => {
   });
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    applyFilters();
+  }, [products, selectedFilters, priceFrom, priceTo, sortBy]);
 
-  const fetchProducts = async () => {
-    const { data, error } = await supabase
-      .from('bracelet_products')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (error) {
-      console.error('Error fetching bracelet products:', error);
-    } else {
-      // Process the data to ensure proper type conversion
-      const processedProducts = (data || []).map(product => ({
-        ...product,
-        lengths_and_prices: Array.isArray(product.lengths_and_prices) 
-          ? (product.lengths_and_prices as unknown as LengthPrice[])
-          : []
-      }));
-      setProducts(processedProducts);
+  const applyFilters = () => {
+    let filtered = [...products];
+
+    // Apply filters
+    if (selectedFilters.productType.length > 0) {
+      filtered = filtered.filter(product => 
+        selectedFilters.productType.includes(product.product_type)
+      );
     }
+
+    if (selectedFilters.color.length > 0) {
+      filtered = filtered.filter(product => 
+        selectedFilters.color.includes(product.color)
+      );
+    }
+
+    if (selectedFilters.material.length > 0) {
+      filtered = filtered.filter(product => 
+        selectedFilters.material.includes(product.material)
+      );
+    }
+
+    // Apply price range filter
+    if (priceFrom || priceTo) {
+      filtered = filtered.filter(product => {
+        const price = product.price / 100;
+        const fromPrice = priceFrom ? parseFloat(priceFrom) : 0;
+        const toPrice = priceTo ? parseFloat(priceTo) : Infinity;
+        return price >= fromPrice && price <= toPrice;
+      });
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+      default:
+        break;
+    }
+
+    setFilteredProducts(filtered);
+  };
+
+  const handleFilterToggle = (filterType: keyof typeof selectedFilters, value: string) => {
+    setSelectedFilters(prev => {
+      const currentFilters = prev[filterType];
+      const newFilters = currentFilters.includes(value)
+        ? currentFilters.filter(item => item !== value)
+        : [...currentFilters, value];
+      
+      return {
+        ...prev,
+        [filterType]: newFilters
+      };
+    });
   };
 
   const toggleSection = (section: keyof typeof openSections) => {
@@ -73,32 +145,21 @@ const Bracelets = () => {
     }));
   };
 
-  const productTypes = [
-    { name: "Cuban Chains", count: 4 },
-    { name: "Tennis Chains", count: 3 },
-    { name: "Figaro Chains", count: 2 },
-    { name: "Rope Chains", count: 2 },
-    { name: "Franco Chains", count: 1 }
-  ];
-
-  const colors = [
-    { name: "Yellow Gold", count: 6 },
-    { name: "White Gold", count: 5 },
-    { name: "Rose Gold", count: 4 }
-  ];
-
-  const materials = [
-    { name: "14K Solid Gold", count: 8 },
-    { name: "18K Solid Gold", count: 3 },
-    { name: "925 Silver", count: 2 }
-  ];
-
-  const chainTypes = [
-    { name: "Cuban Link", count: 4 },
-    { name: "Tennis", count: 3 },
-    { name: "Figaro", count: 2 },
-    { name: "Rope", count: 2 }
-  ];
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <PromoBar />
+        <Header />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading products...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -129,23 +190,12 @@ const Bracelets = () => {
           <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
             <h2 className="text-lg font-semibold mb-6">Filters</h2>
             
-            {/* Product Type */}
-            <div className="mb-8">
-              <h3 className="font-medium text-gray-900 mb-4 uppercase">PRODUCT TYPE</h3>
-              <div className="space-y-3">
-                {productTypes.map(type => (
-                  <div key={type.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id={`desktop-${type.name}`} />
-                      <label htmlFor={`desktop-${type.name}`} className="text-sm text-gray-700">
-                        {type.name}
-                      </label>
-                    </div>
-                    <span className="text-sm text-gray-500">({type.count})</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <FilterSection
+              title="PRODUCT TYPE"
+              items={filters.productTypes}
+              selectedItems={selectedFilters.productType}
+              onToggle={(item) => handleFilterToggle('productType', item)}
+            />
 
             {/* Price */}
             <div className="mb-8">
@@ -174,59 +224,28 @@ const Bracelets = () => {
               </div>
             </div>
 
-            {/* Color */}
-            <div className="mb-8">
-              <h3 className="font-medium text-gray-900 mb-4 uppercase">COLOR</h3>
-              <div className="space-y-3">
-                {colors.map(color => (
-                  <div key={color.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id={`desktop-${color.name}`} />
-                      <label htmlFor={`desktop-${color.name}`} className="text-sm text-gray-700">
-                        {color.name}
-                      </label>
-                    </div>
-                    <span className="text-sm text-gray-500">({color.count})</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <FilterSection
+              title="COLOR"
+              items={filters.colors}
+              selectedItems={selectedFilters.color}
+              onToggle={(item) => handleFilterToggle('color', item)}
+            />
 
-            {/* Material */}
-            <div className="mb-8">
-              <h3 className="font-medium text-gray-900 mb-4 uppercase">MATERIAL</h3>
-              <div className="space-y-3">
-                {materials.map(material => (
-                  <div key={material.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id={`desktop-${material.name}`} />
-                      <label htmlFor={`desktop-${material.name}`} className="text-sm text-gray-700">
-                        {material.name}
-                      </label>
-                    </div>
-                    <span className="text-sm text-gray-500">({material.count})</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <FilterSection
+              title="MATERIAL"
+              items={filters.materials}
+              selectedItems={selectedFilters.material}
+              onToggle={(item) => handleFilterToggle('material', item)}
+            />
 
-            {/* Chain Type */}
-            <div className="mb-8">
-              <h3 className="font-medium text-gray-900 mb-4 uppercase">CHAIN TYPE</h3>
-              <div className="space-y-3">
-                {chainTypes.map(chainType => (
-                  <div key={chainType.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id={`desktop-${chainType.name}`} />
-                      <label htmlFor={`desktop-${chainType.name}`} className="text-sm text-gray-700">
-                        {chainType.name}
-                      </label>
-                    </div>
-                    <span className="text-sm text-gray-500">({chainType.count})</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {filters.chainTypes && filters.chainTypes.length > 0 && (
+              <FilterSection
+                title="CHAIN TYPE"
+                items={filters.chainTypes}
+                selectedItems={selectedFilters.chainType}
+                onToggle={(item) => handleFilterToggle('chainType', item)}
+              />
+            )}
           </div>
         )}
 
@@ -234,7 +253,7 @@ const Bracelets = () => {
         <div className={`flex-1 ${isMobile ? 'py-4 px-4' : 'py-8 px-8'}`}>
           {/* Product count and controls */}
           <div className="flex items-center justify-between mb-6">
-            <span className="text-lg font-semibold">{products.length} Products</span>
+            <span className="text-lg font-semibold">{filteredProducts.length} Products</span>
             <div className="flex items-center space-x-4">
               {!isMobile && (
                 <Select value={sortBy} onValueChange={setSortBy}>
@@ -258,9 +277,122 @@ const Bracelets = () => {
             </div>
           </div>
 
+          {/* Mobile Filters */}
+          {isMobile && showFilters && (
+            <div className="bg-white border rounded-lg mb-6 overflow-hidden">
+              <div className="p-4 border-b">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="featured">Featured</SelectItem>
+                    <SelectItem value="price-low">Price: Low to High</SelectItem>
+                    <SelectItem value="price-high">Price: High to Low</SelectItem>
+                    <SelectItem value="newest">Newest</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Collapsible open={openSections.productType} onOpenChange={() => toggleSection('productType')}>
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+                  <span className="font-medium">PRODUCT TYPE</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${openSections.productType ? 'rotate-180' : ''}`} />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 border-b">
+                  <FilterSection
+                    title=""
+                    items={filters.productTypes}
+                    selectedItems={selectedFilters.productType}
+                    onToggle={(item) => handleFilterToggle('productType', item)}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
+
+              <Collapsible open={openSections.price} onOpenChange={() => toggleSection('price')}>
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+                  <span className="font-medium">PRICE</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${openSections.price ? 'rotate-180' : ''}`} />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 border-b">
+                  <div className="flex space-x-2">
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">FROM</label>
+                      <input
+                        type="number"
+                        value={priceFrom}
+                        onChange={e => setPriceFrom(e.target.value)}
+                        placeholder="0"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">TO</label>
+                      <input
+                        type="number"
+                        value={priceTo}
+                        onChange={e => setPriceTo(e.target.value)}
+                        placeholder="0"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                      />
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
+              <Collapsible open={openSections.color} onOpenChange={() => toggleSection('color')}>
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+                  <span className="font-medium">COLOR</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${openSections.color ? 'rotate-180' : ''}`} />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 border-b">
+                  <FilterSection
+                    title=""
+                    items={filters.colors}
+                    selectedItems={selectedFilters.color}
+                    onToggle={(item) => handleFilterToggle('color', item)}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
+
+              <Collapsible open={openSections.material} onOpenChange={() => toggleSection('material')}>
+                <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left border-b hover:bg-gray-50">
+                  <span className="font-medium">MATERIAL</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${openSections.material ? 'rotate-180' : ''}`} />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="p-4 border-b">
+                  <FilterSection
+                    title=""
+                    items={filters.materials}
+                    selectedItems={selectedFilters.material}
+                    onToggle={(item) => handleFilterToggle('material', item)}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
+
+              {filters.chainTypes && filters.chainTypes.length > 0 && (
+                <Collapsible open={openSections.chainType} onOpenChange={() => toggleSection('chainType')}>
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left hover:bg-gray-50">
+                    <span className="font-medium">CHAIN TYPE</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${openSections.chainType ? 'rotate-180' : ''}`} />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="p-4">
+                    <FilterSection
+                      title=""
+                      items={filters.chainTypes}
+                      selectedItems={selectedFilters.chainType}
+                      onToggle={(item) => handleFilterToggle('chainType', item)}
+                    />
+                  </CollapsibleContent>
+                </Collapsible>
+              )}
+            </div>
+          )}
+
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
-            {products.map(product => (
+            {filteredProducts.map(product => (
               <div
                 key={product.id}
                 className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer"
