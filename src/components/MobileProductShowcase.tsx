@@ -65,7 +65,7 @@ const MobileProductShowcase = ({ category, tableName }: MobileProductShowcasePro
       
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          MOISSANITE DIAMOND {category.toUpperCase()}
+          ALL JEWELRY {category.toUpperCase()}
         </h2>
         <p className="text-sm text-gray-600">
           All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop {category}
