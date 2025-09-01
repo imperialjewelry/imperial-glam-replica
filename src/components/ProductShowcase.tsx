@@ -15,20 +15,21 @@ const ProductShowcase = () => {
   const [activeTab, setActiveTab] = useState('BEST SELLERS');
   const [selectedProduct, setSelectedProduct] = useState<DiamondProduct | null>(null);
 
-  const { data: products = [], isLoading } = useQuery({
+  const { data: products = [], isLoading, error } = useQuery({
     queryKey: ['diamond-products-showcase'],
     queryFn: async () => {
+      console.log('Fetching diamond products...');
       const { data, error } = await supabase
         .from('diamond_products')
         .select('*')
-        .eq('featured', true)
-        .limit(3);
+        .limit(6);
       
       if (error) {
         console.error('Error fetching diamond products:', error);
-        return [];
+        throw error;
       }
       
+      console.log('Fetched diamond products:', data);
       return data || [];
     }
   });
@@ -42,6 +43,18 @@ const ProductShowcase = () => {
       length: 5
     }, (_, i) => <Star key={i} className={`w-4 h-4 ${i < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />);
   };
+
+  if (error) {
+    console.error('Query error:', error);
+    return (
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">MEN'S DIAMOND JEWELRY</h2>
+          <p className="text-red-500">Error loading products. Please try again later.</p>
+        </div>
+      </section>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -69,6 +82,8 @@ const ProductShowcase = () => {
     );
   }
 
+  console.log('Products to display:', products);
+
   return (
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4">
@@ -87,74 +102,88 @@ const ProductShowcase = () => {
 
         {/* Product grid - horizontal scroll on mobile */}
         <div className="relative">
-          <div className="flex overflow-x-auto lg:grid lg:grid-cols-3 gap-6 pb-4 lg:pb-0 scrollbar-hide">
-            {products.map(product => 
-              <div key={product.id} className="flex-shrink-0 w-80 lg:w-auto bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 cursor-pointer" onClick={() => handleProductClick(product)}>
-                {/* Product image */}
-                <div className="relative aspect-square overflow-hidden">
-                  <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
-                  
-                  {/* Badges */}
-                  <div className="absolute top-4 left-4 flex flex-col space-y-2">
-                    {product.discount_percentage > 0 && (
-                      <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
-                        {product.discount_percentage}% OFF
-                      </Badge>
-                    )}
-                    {product.ships_today && (
-                      <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">
-                        SHIPS TODAY
-                      </Badge>
-                    )}
-                  </div>
-
-                  {/* Size options */}
-                  {product.sizes && product.sizes.length > 0 && (
-                    <div className="absolute bottom-4 left-4 flex flex-wrap gap-1">
-                      {product.sizes.slice(0, 3).map((size, index) => 
-                        <Badge key={index} className="bg-gray-800 text-white text-xs px-2 py-1">
-                          {size}
+          {products.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">No products available at the moment.</p>
+              <p className="text-gray-400 text-sm mt-2">Please check back later or contact us for assistance.</p>
+            </div>
+          ) : (
+            <div className="flex overflow-x-auto lg:grid lg:grid-cols-3 gap-6 pb-4 lg:pb-0 scrollbar-hide">
+              {products.map(product => (
+                <div key={product.id} className="flex-shrink-0 w-80 lg:w-auto bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 cursor-pointer" onClick={() => handleProductClick(product)}>
+                  {/* Product image */}
+                  <div className="relative aspect-square overflow-hidden">
+                    <img 
+                      src={product.image_url || '/placeholder.svg'} 
+                      alt={product.name} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder.svg';
+                      }}
+                    />
+                    
+                    {/* Badges */}
+                    <div className="absolute top-4 left-4 flex flex-col space-y-2">
+                      {product.discount_percentage && product.discount_percentage > 0 && (
+                        <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                          {product.discount_percentage}% OFF
+                        </Badge>
+                      )}
+                      {product.ships_today && (
+                        <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">
+                          SHIPS TODAY
                         </Badge>
                       )}
                     </div>
-                  )}
-                </div>
 
-                {/* Product info */}
-                <div className="p-4">
-                  <div className="text-xs text-gray-500 mb-2 uppercase tracking-wide">
-                    {product.category}
-                  </div>
-                  
-                  <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                    {product.name}
-                  </h3>
-                  
-                  {/* Rating */}
-                  <div className="flex items-center mb-3">
-                    <div className="flex">
-                      {renderStars(product.rating)}
-                    </div>
-                    <span className="ml-2 text-sm text-gray-600">
-                      ({product.review_count.toLocaleString()})
-                    </span>
-                  </div>
-                  
-                  {/* Price */}
-                  <div className="flex items-center mb-4">
-                    <span className="text-2xl font-bold text-blue-600">
-                      ${(product.price / 100).toFixed(2)}
-                    </span>
-                    {product.original_price && (
-                      <span className="ml-2 text-lg text-gray-400 line-through">
-                        ${(product.original_price / 100).toFixed(2)}
-                      </span>
+                    {/* Size options */}
+                    {product.sizes && product.sizes.length > 0 && (
+                      <div className="absolute bottom-4 left-4 flex flex-wrap gap-1">
+                        {product.sizes.slice(0, 3).map((size, index) => (
+                          <Badge key={index} className="bg-gray-800 text-white text-xs px-2 py-1">
+                            {size}
+                          </Badge>
+                        ))}
+                      </div>
                     )}
                   </div>
+
+                  {/* Product info */}
+                  <div className="p-4">
+                    <div className="text-xs text-gray-500 mb-2 uppercase tracking-wide">
+                      {product.category}
+                    </div>
+                    
+                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                      {product.name}
+                    </h3>
+                    
+                    {/* Rating */}
+                    <div className="flex items-center mb-3">
+                      <div className="flex">
+                        {renderStars(product.rating || 5)}
+                      </div>
+                      <span className="ml-2 text-sm text-gray-600">
+                        ({(product.review_count || 0).toLocaleString()})
+                      </span>
+                    </div>
+                    
+                    {/* Price */}
+                    <div className="flex items-center mb-4">
+                      <span className="text-2xl font-bold text-blue-600">
+                        ${(product.price / 100).toFixed(2)}
+                      </span>
+                      {product.original_price && (
+                        <span className="ml-2 text-lg text-gray-400 line-through">
+                          ${(product.original_price / 100).toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Shop button */}
