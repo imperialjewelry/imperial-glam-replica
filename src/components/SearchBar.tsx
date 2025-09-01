@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -24,7 +23,6 @@ interface Product {
   discount_percentage: number;
   source_table: string;
   source_id: string;
-  // Additional properties that might be present
   [key: string]: any;
 }
 
@@ -40,19 +38,60 @@ const SearchBar = () => {
     queryFn: async () => {
       if (!searchTerm.trim()) return [];
       
-      const { data, error } = await supabase
-        .from('products')
-        .select('id, name, description, price, original_price, category, image_url, discount_percentage, source_table, source_id')
-        .or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%`)
-        .eq('in_stock', true)
-        .limit(6);
+      const searchPattern = `%${searchTerm}%`;
+      const allResults: Product[] = [];
 
-      if (error) {
-        console.error('Search error:', error);
-        return [];
+      // Define all product tables to search
+      const productTables = [
+        'chain_products',
+        'bracelet_products', 
+        'watch_products',
+        'pendant_products',
+        'earring_products',
+        'grillz_products',
+        'vvs_simulant_products',
+        'hip_hop_ring_products',
+        'engagement_ring_products',
+        'diamond_products',
+        'glasses_products',
+        'custom_products'
+      ];
+
+      // Search each table
+      for (const table of productTables) {
+        try {
+          const { data, error } = await supabase
+            .from(table as any)
+            .select('id, name, description, price, original_price, category, image_url, discount_percentage, in_stock')
+            .or(`name.ilike.${searchPattern},description.ilike.${searchPattern},category.ilike.${searchPattern}`)
+            .eq('in_stock', true)
+            .limit(20);
+
+          if (!error && data) {
+            const formattedResults = data.map(product => ({
+              ...product,
+              source_table: table,
+              source_id: product.id
+            }));
+            allResults.push(...formattedResults);
+          }
+        } catch (error) {
+          console.error(`Error searching ${table}:`, error);
+        }
       }
 
-      return data as Product[];
+      // Sort by relevance (name matches first, then description matches)
+      return allResults
+        .sort((a, b) => {
+          const aNameMatch = a.name.toLowerCase().includes(searchTerm.toLowerCase());
+          const bNameMatch = b.name.toLowerCase().includes(searchTerm.toLowerCase());
+          
+          if (aNameMatch && !bNameMatch) return -1;
+          if (!aNameMatch && bNameMatch) return 1;
+          
+          return a.name.localeCompare(b.name);
+        })
+        .slice(0, 6); // Limit to 6 results for display
     },
     enabled: searchTerm.length > 2,
   });
@@ -84,7 +123,6 @@ const SearchBar = () => {
     setSelectedProduct(product);
     setIsOpen(false);
 
-    // Fetch the complete product data from the source table
     try {
       const { data, error } = await supabase
         .from(product.source_table as any)
@@ -94,13 +132,13 @@ const SearchBar = () => {
 
       if (error) {
         console.error('Error fetching full product data:', error);
-        setFullProductData(product); // Fallback to basic data
+        setFullProductData(product);
       } else {
         setFullProductData(data);
       }
     } catch (error) {
       console.error('Error fetching full product data:', error);
-      setFullProductData(product); // Fallback to basic data
+      setFullProductData(product);
     }
   };
 
@@ -206,7 +244,7 @@ const SearchBar = () => {
               <>
                 {searchResults.map((product) => (
                   <div
-                    key={product.id}
+                    key={`${product.source_table}-${product.id}`}
                     className="flex items-center p-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 cursor-pointer"
                     onClick={() => handleProductClick(product)}
                   >
@@ -231,7 +269,7 @@ const SearchBar = () => {
                             {formatPrice(product.original_price)}
                           </span>
                         )}
-                        {product.discount_percentage > 0 && (
+                        {product.discount_percentage && product.discount_percentage > 0 && (
                           <span className="text-xs text-red-600 font-medium">
                             -{product.discount_percentage}%
                           </span>
@@ -240,17 +278,15 @@ const SearchBar = () => {
                     </div>
                   </div>
                 ))}
-                {searchResults.length === 6 && (
-                  <div className="p-3 text-center">
-                    <Link
-                      to={`/search?q=${encodeURIComponent(searchTerm)}`}
-                      className="text-sm text-blue-600 hover:text-blue-800"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      View all results
-                    </Link>
-                  </div>
-                )}
+                <div className="p-3 text-center">
+                  <Link
+                    to={`/search?q=${encodeURIComponent(searchTerm)}`}
+                    className="text-sm text-blue-600 hover:text-blue-800"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    View all results
+                  </Link>
+                </div>
               </>
             ) : (
               <div className="p-4 text-center text-gray-500">
@@ -261,7 +297,6 @@ const SearchBar = () => {
         )}
       </div>
 
-      {/* Product Modal */}
       {renderProductModal()}
     </>
   );

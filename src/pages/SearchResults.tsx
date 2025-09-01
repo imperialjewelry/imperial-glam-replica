@@ -37,20 +37,63 @@ const SearchResults = () => {
     queryFn: async () => {
       if (!searchTerm.trim()) return [];
       
-      const { data, error } = await supabase
-        .from('products')
-        .select('id, name, description, price, original_price, category, image_url, discount_percentage, source_table, source_id')
-        .or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,category.ilike.%${searchTerm}%`)
-        .eq('in_stock', true)
-        .order('featured', { ascending: false })
-        .order('created_at', { ascending: false });
+      const searchPattern = `%${searchTerm}%`;
+      const allResults: Product[] = [];
 
-      if (error) {
-        console.error('Search error:', error);
-        return [];
+      // Define all product tables to search
+      const productTables = [
+        'chain_products',
+        'bracelet_products', 
+        'watch_products',
+        'pendant_products',
+        'earring_products',
+        'grillz_products',
+        'vvs_simulant_products',
+        'hip_hop_ring_products',
+        'engagement_ring_products',
+        'diamond_products',
+        'glasses_products',
+        'custom_products'
+      ];
+
+      // Search each table
+      for (const table of productTables) {
+        try {
+          const { data, error } = await supabase
+            .from(table as any)
+            .select('id, name, description, price, original_price, category, image_url, discount_percentage, in_stock, featured, created_at')
+            .or(`name.ilike.${searchPattern},description.ilike.${searchPattern},category.ilike.${searchPattern}`)
+            .eq('in_stock', true);
+
+          if (!error && data) {
+            const formattedResults = data.map(product => ({
+              ...product,
+              source_table: table,
+              source_id: product.id
+            }));
+            allResults.push(...formattedResults);
+          }
+        } catch (error) {
+          console.error(`Error searching ${table}:`, error);
+        }
       }
 
-      return data as Product[];
+      // Sort by relevance and featured status
+      return allResults.sort((a, b) => {
+        // Featured products first
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        
+        // Then by name relevance
+        const aNameMatch = a.name.toLowerCase().includes(searchTerm.toLowerCase());
+        const bNameMatch = b.name.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        if (aNameMatch && !bNameMatch) return -1;
+        if (!aNameMatch && bNameMatch) return 1;
+        
+        // Finally by creation date (newest first)
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
     },
     enabled: searchTerm.length > 0,
   });
@@ -177,7 +220,7 @@ const SearchResults = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {searchResults.map((product) => (
               <div
-                key={product.id}
+                key={`${product.source_table}-${product.id}`}
                 className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
                 onClick={() => handleProductClick(product)}
               >
@@ -204,7 +247,7 @@ const SearchResults = () => {
                         </span>
                       )}
                     </div>
-                    {product.discount_percentage > 0 && (
+                    {product.discount_percentage && product.discount_percentage > 0 && (
                       <span className="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded">
                         -{product.discount_percentage}%
                       </span>
