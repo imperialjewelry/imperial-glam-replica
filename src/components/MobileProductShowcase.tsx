@@ -1,4 +1,4 @@
-
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -23,7 +23,7 @@ const MobileProductShowcase = ({ category, tableName }: MobileProductShowcasePro
           .from(tableName as any)
           .select('*')
           .limit(4);
-        
+
         if (error) {
           console.error(`Error fetching ${tableName}:`, error);
           return [];
@@ -33,7 +33,7 @@ const MobileProductShowcase = ({ category, tableName }: MobileProductShowcasePro
         const processedData = (data || []).map((item: any) => ({
           id: item.id || '',
           name: item.name || item.title || 'Product',
-          image_url: item.image_url || item.image || '/placeholder.svg'
+          image_url: item.image_url || item.image || '/placeholder.svg',
         })) as ProductImage[];
 
         return processedData;
@@ -41,7 +41,7 @@ const MobileProductShowcase = ({ category, tableName }: MobileProductShowcasePro
         console.error(`Error fetching ${tableName}:`, error);
         return [];
       }
-    }
+    },
   });
 
   if (products.length === 0) return null;
@@ -55,18 +55,16 @@ const MobileProductShowcase = ({ category, tableName }: MobileProductShowcasePro
               src={product.image_url}
               alt={product.name}
               className="w-full h-full object-cover rounded-lg"
-              onError={(e) => {
+              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                 e.currentTarget.src = '/placeholder.svg';
               }}
             />
           </div>
         ))}
       </div>
-      
+
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          MOISSANITE DIAMOND {category.toUpperCase()}
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">ALL JEWELRY</h2>
         <p className="text-sm text-gray-600">
           All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold
         </p>
