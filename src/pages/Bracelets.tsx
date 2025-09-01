@@ -31,10 +31,10 @@ interface ProcessedBraceletProduct {
   diamond_cut: string;
   image_url: string;
   price: number;
-  original_price: number;
+  original_price: number | null;
   rating: number;
   review_count: number;
-  discount_percentage: number;
+  discount_percentage: number | null;
   in_stock: boolean;
   ships_today: boolean;
   featured: boolean;
@@ -107,10 +107,10 @@ const Bracelets = () => {
         ...product,
         description: product.description || '',
         diamond_cut: product.diamond_cut || '',
-        discount_percentage: product.discount_percentage || 0,
+        discount_percentage: product.discount_percentage || null,
         featured: product.featured || false,
         gemstone: product.gemstone || '',
-        original_price: product.original_price || product.price,
+        original_price: product.original_price || null,
         ships_today: product.ships_today || false,
         sizes: Array.isArray(product.sizes) ? product.sizes : [],
         stripe_price_id: product.stripe_price_id || '',
@@ -539,7 +539,7 @@ const Bracelets = () => {
                   
                   <div className="flex items-center space-x-2">
                     <span className="text-lg font-bold text-blue-600">${(product.price / 100).toFixed(2)}</span>
-                    {product.original_price && (
+                    {product.original_price && product.original_price > product.price && (
                       <span className="text-sm text-gray-500 line-through">
                         ${(product.original_price / 100).toFixed(2)}
                       </span>
