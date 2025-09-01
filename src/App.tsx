@@ -27,6 +27,10 @@ import Reviews from "./pages/Reviews";
 import Financing from "./pages/Financing";
 import Certificates from "./pages/Certificates";
 import Contact from "./pages/Contact";
+import Shipping from "./pages/Shipping";
+import Returns from "./pages/Returns";
+import SizeGuides from "./pages/SizeGuides";
+import Faqs from "./pages/Faqs";
 import NotFound from "./pages/NotFound";
 import ShoppingCart from "./components/ShoppingCart";
 
@@ -67,6 +71,12 @@ const AppContent = () => {
         <Route path="/financing" element={<Financing />} />
         <Route path="/certificates" element={<Certificates />} />
         <Route path="/contact" element={<Contact />} />
+        
+        {/* Help Pages */}
+        <Route path="/policies/shipping" element={<Shipping />} />
+        <Route path="/policies/returns" element={<Returns />} />
+        <Route path="/size-guides" element={<SizeGuides />} />
+        <Route path="/faqs" element={<Faqs />} />
         
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
