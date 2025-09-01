@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -31,6 +30,8 @@ import Shipping from "./pages/Shipping";
 import Returns from "./pages/Returns";
 import SizeGuides from "./pages/SizeGuides";
 import Faqs from "./pages/Faqs";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import ShoppingCart from "./components/ShoppingCart";
 
@@ -77,6 +78,10 @@ const AppContent = () => {
         <Route path="/policies/returns" element={<Returns />} />
         <Route path="/size-guides" element={<SizeGuides />} />
         <Route path="/faqs" element={<Faqs />} />
+        
+        {/* Legal Pages */}
+        <Route path="/legal/privacy" element={<Privacy />} />
+        <Route path="/legal/terms" element={<Terms />} />
         
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
