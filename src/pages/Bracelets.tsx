@@ -23,7 +23,7 @@ interface LengthPrice {
 interface ProcessedBraceletProduct {
   id: string;
   name: string;
-  description?: string;
+  description: string; // Changed from optional to required
   category: string;
   product_type: string;
   color: string;
