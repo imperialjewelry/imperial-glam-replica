@@ -61,13 +61,15 @@ const BestDeals = () => {
             continue;
           }
 
-          if (data && Array.isArray(data)) {
-            // Add source table info to each product
-            const productsWithSource = data.map(product => ({
-              ...product,
-              source_table: tableName,
-              source_id: product.id
-            }));
+          if (data && Array.isArray(data) && data.length > 0) {
+            // Add source table info to each product - ensure each item is a valid object
+            const productsWithSource = data
+              .filter(product => product && typeof product === 'object' && product.id)
+              .map(product => ({
+                ...product,
+                source_table: tableName,
+                source_id: product.id
+              }));
 
             allProducts.push(...productsWithSource);
             console.log(`Fetched ${productsWithSource.length} products from ${tableName}`);
