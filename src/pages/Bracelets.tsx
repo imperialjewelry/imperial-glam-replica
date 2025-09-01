@@ -6,13 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useProductFilters } from '@/hooks/useProductFilters';
 import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import BraceletProductModal from '../components/BraceletProductModal';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
 import FilterSection from '@/components/FilterSection';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LengthPrice {
   length: string;
@@ -23,22 +23,22 @@ interface LengthPrice {
 interface ProcessedBraceletProduct {
   id: string;
   name: string;
-  description: string; // Changed from optional to required
+  description: string; // Required
   category: string;
   product_type: string;
   color: string;
   material: string;
   gemstone?: string;
-  diamond_cut: string; // Changed from optional to required
+  diamond_cut: string; // Required
   image_url: string;
   price: number;
   original_price?: number;
   rating: number;
   review_count: number;
-  discount_percentage?: number;
+  discount_percentage: number; // Changed from optional to required
   in_stock: boolean;
   ships_today?: boolean;
-  featured: boolean; // Changed from optional to required
+  featured: boolean; // Required
   created_at: string;
   updated_at: string;
   stripe_price_id?: string;
@@ -47,9 +47,23 @@ interface ProcessedBraceletProduct {
   lengths_and_prices?: LengthPrice[];
 }
 
+interface FilterOptions {
+  productTypes: Array<{ name: string; count: number }>;
+  colors: Array<{ name: string; count: number }>;
+  materials: Array<{ name: string; count: number }>;
+  chainTypes?: Array<{ name: string; count: number }>;
+}
+
 const Bracelets = () => {
   const isMobile = useIsMobile();
-  const { products, filters, loading } = useProductFilters('bracelet_products');
+  const [products, setProducts] = useState<ProcessedBraceletProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState<FilterOptions>({
+    productTypes: [],
+    colors: [],
+    materials: [],
+    chainTypes: []
+  });
   const [filteredProducts, setFilteredProducts] = useState<ProcessedBraceletProduct[]>([]);
   const [sortBy, setSortBy] = useState('featured');
   const [priceFrom, setPriceFrom] = useState('');
@@ -71,8 +85,83 @@ const Bracelets = () => {
   });
 
   useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
     applyFilters();
   }, [products, selectedFilters, priceFrom, priceTo, sortBy]);
+
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('bracelet_products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching bracelet products:', error);
+        return;
+      }
+
+      const processedProducts = (data || []).map(product => ({
+        ...product,
+        description: product.description || '',
+        diamond_cut: product.diamond_cut || '',
+        discount_percentage: product.discount_percentage || 0,
+        featured: product.featured || false
+      }));
+
+      setProducts(processedProducts);
+      generateFilters(processedProducts);
+    } catch (error) {
+      console.error('Error fetching bracelet products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateFilters = (productData: ProcessedBraceletProduct[]) => {
+    const productTypeCounts = new Map();
+    const colorCounts = new Map();
+    const materialCounts = new Map();
+    const chainTypeCounts = new Map();
+
+    productData.forEach(product => {
+      // Count product types
+      if (product.product_type) {
+        productTypeCounts.set(
+          product.product_type,
+          (productTypeCounts.get(product.product_type) || 0) + 1
+        );
+      }
+
+      // Count colors
+      if (product.color) {
+        colorCounts.set(
+          product.color,
+          (colorCounts.get(product.color) || 0) + 1
+        );
+      }
+
+      // Count materials
+      if (product.material) {
+        materialCounts.set(
+          product.material,
+          (materialCounts.get(product.material) || 0) + 1
+        );
+      }
+    });
+
+    const newFilters: FilterOptions = {
+      productTypes: Array.from(productTypeCounts.entries()).map(([name, count]) => ({ name, count })),
+      colors: Array.from(colorCounts.entries()).map(([name, count]) => ({ name, count })),
+      materials: Array.from(materialCounts.entries()).map(([name, count]) => ({ name, count })),
+      chainTypes: Array.from(chainTypeCounts.entries()).map(([name, count]) => ({ name, count }))
+    };
+
+    setFilters(newFilters);
+  };
 
   const applyFilters = () => {
     let filtered = [...products];
