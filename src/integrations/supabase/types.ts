@@ -255,10 +255,8 @@ export type Database = {
           color: string
           created_at: string
           description: string | null
-          diamond_cut: string | null
           discount_percentage: number | null
           featured: boolean | null
-          gemstone: string | null
           id: string
           image_url: string
           in_stock: boolean | null
@@ -282,10 +280,8 @@ export type Database = {
           color: string
           created_at?: string
           description?: string | null
-          diamond_cut?: string | null
           discount_percentage?: number | null
           featured?: boolean | null
-          gemstone?: string | null
           id?: string
           image_url: string
           in_stock?: boolean | null
@@ -309,10 +305,8 @@ export type Database = {
           color?: string
           created_at?: string
           description?: string | null
-          diamond_cut?: string | null
           discount_percentage?: number | null
           featured?: boolean | null
-          gemstone?: string | null
           id?: string
           image_url?: string
           in_stock?: boolean | null
