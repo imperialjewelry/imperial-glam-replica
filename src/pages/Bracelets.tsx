@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,22 +22,22 @@ interface LengthPrice {
 interface ProcessedBraceletProduct {
   id: string;
   name: string;
-  description: string; // Required
+  description: string;
   category: string;
   product_type: string;
   color: string;
   material: string;
-  gemstone?: string;
-  diamond_cut: string; // Required
+  gemstone: string;
+  diamond_cut: string;
   image_url: string;
   price: number;
   original_price?: number;
   rating: number;
   review_count: number;
-  discount_percentage: number; // Changed from optional to required
+  discount_percentage: number;
   in_stock: boolean;
   ships_today?: boolean;
-  featured: boolean; // Required
+  featured: boolean;
   created_at: string;
   updated_at: string;
   stripe_price_id?: string;
@@ -109,8 +108,12 @@ const Bracelets = () => {
         description: product.description || '',
         diamond_cut: product.diamond_cut || '',
         discount_percentage: product.discount_percentage || 0,
-        featured: product.featured || false
-      }));
+        featured: product.featured || false,
+        gemstone: product.gemstone || '',
+        lengths_and_prices: Array.isArray(product.lengths_and_prices) 
+          ? product.lengths_and_prices as LengthPrice[]
+          : []
+      })) as ProcessedBraceletProduct[];
 
       setProducts(processedProducts);
       generateFilters(processedProducts);
