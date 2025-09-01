@@ -31,7 +31,7 @@ interface ProcessedBraceletProduct {
   diamond_cut: string;
   image_url: string;
   price: number;
-  original_price?: number;
+  original_price: number;
   rating: number;
   review_count: number;
   discount_percentage: number;
@@ -110,8 +110,9 @@ const Bracelets = () => {
         discount_percentage: product.discount_percentage || 0,
         featured: product.featured || false,
         gemstone: product.gemstone || '',
+        original_price: product.original_price || product.price,
         lengths_and_prices: Array.isArray(product.lengths_and_prices) 
-          ? product.lengths_and_prices as LengthPrice[]
+          ? (product.lengths_and_prices as unknown as LengthPrice[])
           : []
       })) as ProcessedBraceletProduct[];
 
