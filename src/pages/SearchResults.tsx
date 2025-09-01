@@ -1,3 +1,4 @@
+
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,6 +23,8 @@ interface Product {
   discount_percentage: number;
   source_table: string;
   source_id: string;
+  featured?: boolean;
+  created_at?: string;
   [key: string]: any;
 }
 
@@ -59,14 +62,23 @@ const SearchResults = () => {
       for (const table of productTables) {
         try {
           const { data, error } = await supabase
-            .from(table as any)
+            .from(table)
             .select('id, name, description, price, original_price, category, image_url, discount_percentage, in_stock, featured, created_at')
             .or(`name.ilike.${searchPattern},description.ilike.${searchPattern},category.ilike.${searchPattern}`)
             .eq('in_stock', true);
 
           if (!error && data && Array.isArray(data)) {
-            const formattedResults = data.map(product => ({
-              ...product,
+            const formattedResults = data.map((product: any) => ({
+              id: product.id,
+              name: product.name || '',
+              description: product.description || '',
+              price: product.price || 0,
+              original_price: product.original_price || 0,
+              category: product.category || '',
+              image_url: product.image_url || '',
+              discount_percentage: product.discount_percentage || 0,
+              featured: product.featured || false,
+              created_at: product.created_at || new Date().toISOString(),
               source_table: table,
               source_id: product.id
             }));
@@ -91,7 +103,7 @@ const SearchResults = () => {
         if (!aNameMatch && bNameMatch) return 1;
         
         // Finally by creation date (newest first)
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        return new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime();
       });
     },
     enabled: searchTerm.length > 0,
