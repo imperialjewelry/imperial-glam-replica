@@ -13,9 +13,7 @@ import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import GlassesProductModal from '../components/GlassesProductModal';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
-
 type GlassesProduct = Tables<'glasses_products'>;
-
 const Glasses = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<GlassesProduct[]>([]);
@@ -31,11 +29,9 @@ const Glasses = () => {
     chainType: false
   });
   const [selectedProduct, setSelectedProduct] = useState<GlassesProduct | null>(null);
-
   useEffect(() => {
     fetchProducts();
   }, []);
-
   const fetchProducts = async () => {
     const {
       data,
@@ -49,14 +45,12 @@ const Glasses = () => {
       setProducts(data || []);
     }
   };
-
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
       ...prev,
       [section]: !prev[section]
     }));
   };
-
   const productTypes = [{
     name: "Sunglasses",
     count: 4
@@ -67,7 +61,6 @@ const Glasses = () => {
     name: "Blue Light Glasses",
     count: 2
   }];
-
   const colors = [{
     name: "Black",
     count: 6
@@ -78,7 +71,6 @@ const Glasses = () => {
     name: "Silver",
     count: 4
   }];
-
   const materials = [{
     name: "Metal",
     count: 8
@@ -89,7 +81,6 @@ const Glasses = () => {
     name: "Titanium",
     count: 2
   }];
-
   const chainTypes = [{
     name: "Round",
     count: 4
@@ -100,15 +91,12 @@ const Glasses = () => {
     name: "Oval",
     count: 2
   }];
-
-  return (
-    <div className="min-h-screen bg-white">
+  return <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
       
       {/* Desktop Hero Section */}
-      {!isMobile && (
-        <div className="bg-gray-50 py-12 px-8">
+      {!isMobile && <div className="bg-gray-50 py-12 px-8">
           <div className="max-w-7xl mx-auto text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
               MOISSANITE DIAMOND GLASSES
@@ -117,8 +105,7 @@ const Glasses = () => {
               All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Glasses
             </p>
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Mobile Product Showcase */}
       <MobileProductShowcase category="GLASSES" tableName="glasses_products" />
@@ -194,17 +181,9 @@ const Glasses = () => {
 
             {/* Chain Type */}
             <div className="mb-8">
-              <h3 className="font-medium text-gray-900 mb-4 uppercase">CHAIN TYPE</h3>
+              
               <div className="space-y-3">
-                {chainTypes.map(chainType => <div key={chainType.name} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id={`desktop-${chainType.name}`} />
-                      <label htmlFor={`desktop-${chainType.name}`} className="text-sm text-gray-700">
-                        {chainType.name}
-                      </label>
-                    </div>
-                    <span className="text-sm text-gray-500">({chainType.count})</span>
-                  </div>)}
+                {chainTypes.map(chainType => {})}
               </div>
             </div>
           </div>}
@@ -285,8 +264,6 @@ const Glasses = () => {
       {selectedProduct && <GlassesProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Glasses;
