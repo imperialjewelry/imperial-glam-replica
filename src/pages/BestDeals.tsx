@@ -33,45 +33,47 @@ const BestDeals = () => {
       
       // Fetch from all individual product tables
       const tableQueries = [
-        { table: 'chain_products', source: 'chain_products' },
-        { table: 'bracelet_products', source: 'bracelet_products' },
-        { table: 'earring_products', source: 'earring_products' },
-        { table: 'grillz_products', source: 'grillz_products' },
-        { table: 'watch_products', source: 'watch_products' },
-        { table: 'pendant_products', source: 'pendant_products' },
-        { table: 'hip_hop_ring_products', source: 'hip_hop_ring_products' },
-        { table: 'engagement_ring_products', source: 'engagement_ring_products' },
-        { table: 'glasses_products', source: 'glasses_products' },
-        { table: 'diamond_products', source: 'diamond_products' },
-        { table: 'vvs_simulant_products', source: 'vvs_simulant_products' },
-        { table: 'custom_products', source: 'custom_products' }
+        'chain_products',
+        'bracelet_products',
+        'earring_products',
+        'grillz_products',
+        'watch_products',
+        'pendant_products',
+        'hip_hop_ring_products',
+        'engagement_ring_products',
+        'glasses_products',
+        'diamond_products',
+        'vvs_simulant_products',
+        'custom_products'
       ];
 
-      const allProducts = [];
+      const allProducts: any[] = [];
 
-      for (const { table, source } of tableQueries) {
+      for (const tableName of tableQueries) {
         try {
           const { data, error } = await supabase
-            .from(table as any)
+            .from(tableName as any)
             .select('*')
             .eq('in_stock', true);
           
           if (error) {
-            console.error(`Error fetching from ${table}:`, error);
+            console.error(`Error fetching from ${tableName}:`, error);
             continue;
           }
 
-          // Add source table info to each product
-          const productsWithSource = (data || []).map(product => ({
-            ...product,
-            source_table: source,
-            source_id: product.id
-          }));
+          if (data && Array.isArray(data)) {
+            // Add source table info to each product
+            const productsWithSource = data.map(product => ({
+              ...product,
+              source_table: tableName,
+              source_id: product.id
+            }));
 
-          allProducts.push(...productsWithSource);
-          console.log(`Fetched ${productsWithSource.length} products from ${table}`);
+            allProducts.push(...productsWithSource);
+            console.log(`Fetched ${productsWithSource.length} products from ${tableName}`);
+          }
         } catch (error) {
-          console.error(`Error fetching from ${table}:`, error);
+          console.error(`Error fetching from ${tableName}:`, error);
         }
       }
 
@@ -151,7 +153,8 @@ const BestDeals = () => {
   };
 
   if (isLoading) {
-    return <>
+    return (
+      <>
         <Header />
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
@@ -160,10 +163,12 @@ const BestDeals = () => {
           </div>
         </div>
         <Footer />
-      </>;
+      </>
+    );
   }
 
-  return <>
+  return (
+    <>
       <Header />
       <div className="min-h-screen bg-gray-50">
         {/* Hero Section */}
@@ -191,9 +196,11 @@ const BestDeals = () => {
                   <SelectValue placeholder="Select Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map(category => <SelectItem key={category} value={category}>
+                  {categories.map(category => (
+                    <SelectItem key={category} value={category}>
                       {category === 'all' ? 'All Categories' : category.toUpperCase()}
-                    </SelectItem>)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
 
@@ -220,22 +227,38 @@ const BestDeals = () => {
           </div>
 
           {/* Products Grid */}
-          {filteredProducts.length > 0 ? <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {filteredProducts.map(product => <Card key={`${product.source_table}-${product.id}`} className="group cursor-pointer hover:shadow-lg transition-all duration-300 bg-white border-gray-200" onClick={() => handleProductClick(product)}>
+          {filteredProducts.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {filteredProducts.map(product => (
+                <Card 
+                  key={`${product.source_table}-${product.id}`} 
+                  className="group cursor-pointer hover:shadow-lg transition-all duration-300 bg-white border-gray-200" 
+                  onClick={() => handleProductClick(product)}
+                >
                   <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100">
-                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <img 
+                      src={product.image_url} 
+                      alt={product.name} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                    />
 
                     {/* Badges */}
                     <div className="absolute top-3 left-3 flex flex-col gap-2">
-                      {product.discount_percentage > 0 && <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                      {product.discount_percentage > 0 && (
+                        <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
                           {product.discount_percentage}% OFF
-                        </Badge>}
-                      {product.featured && <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">
+                        </Badge>
+                      )}
+                      {product.featured && (
+                        <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">
                           FEATURED
-                        </Badge>}
-                      {product.ships_today && <Badge className="bg-green-500 text-white text-xs font-semibold px-2 py-1">
+                        </Badge>
+                      )}
+                      {product.ships_today && (
+                        <Badge className="bg-green-500 text-white text-xs font-semibold px-2 py-1">
                           SHIPS TODAY
-                        </Badge>}
+                        </Badge>
+                      )}
                     </div>
                   </div>
 
@@ -250,7 +273,12 @@ const BestDeals = () => {
 
                     <div className="flex items-center space-x-1 mb-2">
                       <div className="flex">
-                        {[...Array(5)].map((_, i) => <Star key={i} className={`w-3 h-3 ${i < Math.floor(product.rating || 5) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />)}
+                        {[...Array(5)].map((_, i) => (
+                          <Star 
+                            key={i} 
+                            className={`w-3 h-3 ${i < Math.floor(product.rating || 5) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
+                          />
+                        ))}
                       </div>
                       <span className="text-xs text-gray-500">({product.review_count || 0})</span>
                     </div>
@@ -260,26 +288,35 @@ const BestDeals = () => {
                         <span className="text-lg font-bold text-blue-600">
                           {formatPrice(product.price)}
                         </span>
-                        {product.original_price && product.original_price > product.price && <span className="text-sm text-gray-400 line-through">
+                        {product.original_price && product.original_price > product.price && (
+                          <span className="text-sm text-gray-400 line-through">
                             {formatPrice(product.original_price)}
-                          </span>}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </CardContent>
-                </Card>)}
-            </div> : <div className="text-center py-12">
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
               <div className="text-gray-400 mb-4">
                 <Filter className="w-16 h-16 mx-auto" />
               </div>
               <h3 className="text-xl font-semibold text-gray-700 mb-2">No products found</h3>
               <p className="text-gray-500 mb-6">Try adjusting your filters to see more results</p>
-              <Button onClick={() => {
-            setCategoryFilter('all');
-            setSortBy('discount');
-          }} className="bg-blue-600 hover:bg-blue-700">
+              <Button 
+                onClick={() => {
+                  setCategoryFilter('all');
+                  setSortBy('discount');
+                }} 
+                className="bg-blue-600 hover:bg-blue-700"
+              >
                 Clear Filters
               </Button>
-            </div>}
+            </div>
+          )}
         </div>
       </div>
 
@@ -287,7 +324,8 @@ const BestDeals = () => {
       {renderProductModal()}
 
       <Footer />
-    </>;
+    </>
+  );
 };
 
 export default BestDeals;
