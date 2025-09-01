@@ -38,28 +38,69 @@ const SearchBar = () => {
   const { data: searchResults = [], isLoading } = useQuery({
     queryKey: ['search', searchTerm],
     queryFn: async () => {
-      if (!searchTerm.trim()) return [];
+      if (!searchTerm.trim() || searchTerm.length < 2) return [];
       
-      console.log('Searching for:', searchTerm);
-      const searchPattern = `%${searchTerm}%`;
+      console.log('Searching for term:', searchTerm);
+      const searchPattern = `%${searchTerm.toLowerCase()}%`;
       
       try {
-        // Search the unified products table
+        // First, let's check what products exist in the database
+        const { data: allProducts, error: allError } = await supabase
+          .from('products')
+          .select('*')
+          .eq('in_stock', true)
+          .limit(5);
+          
+        console.log('All products sample:', allProducts);
+        
+        // Now perform the actual search with multiple search strategies
         const { data, error } = await supabase
           .from('products')
           .select('*')
-          .or(`name.ilike.${searchPattern},description.ilike.${searchPattern},category.ilike.${searchPattern}`)
+          .or(`name.ilike.${searchPattern},description.ilike.${searchPattern},category.ilike.${searchPattern},product_type.ilike.${searchPattern},material.ilike.${searchPattern},color.ilike.${searchPattern}`)
           .eq('in_stock', true)
           .order('featured', { ascending: false })
           .order('created_at', { ascending: false })
           .limit(6);
 
         if (error) {
-          console.error('Error searching products:', error);
+          console.error('Search error:', error);
           return [];
         }
 
-        console.log('Search results found:', data?.length || 0);
+        console.log('Search results for', searchTerm, ':', data);
+        console.log('Number of results found:', data?.length || 0);
+        
+        if (!data || data.length === 0) {
+          // Try a broader search without case sensitivity
+          console.log('No results found, trying broader search...');
+          const { data: broadData, error: broadError } = await supabase
+            .from('products')
+            .select('*')
+            .textSearch('name', searchTerm, { type: 'websearch' })
+            .eq('in_stock', true)
+            .limit(6);
+            
+          if (broadError) {
+            console.error('Broad search error:', broadError);
+          } else {
+            console.log('Broad search results:', broadData);
+          }
+          
+          return (broadData || []).map((product: any) => ({
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            original_price: product.original_price,
+            category: product.category,
+            image_url: product.image_url,
+            discount_percentage: product.discount_percentage,
+            source_table: product.source_table,
+            source_id: product.source_id,
+          }));
+        }
+
         return (data || []).map((product: any) => ({
           id: product.id,
           name: product.name,
@@ -77,7 +118,7 @@ const SearchBar = () => {
         return [];
       }
     },
-    enabled: searchTerm.length > 2,
+    enabled: searchTerm.length > 1,
   });
 
   useEffect(() => {
@@ -230,7 +271,7 @@ const SearchBar = () => {
           )}
         </div>
 
-        {isOpen && searchTerm.length > 2 && (
+        {isOpen && searchTerm.length > 1 && (
           <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg z-50 mt-1 max-h-96 overflow-y-auto">
             {isLoading ? (
               <div className="p-4 text-center text-gray-500">Searching...</div>

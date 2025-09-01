@@ -40,25 +40,59 @@ const SearchResults = () => {
     queryFn: async () => {
       if (!searchTerm.trim()) return [];
       
-      console.log('Searching for:', searchTerm);
-      const searchPattern = `%${searchTerm}%`;
+      console.log('Search Results Page - Searching for:', searchTerm);
+      const searchPattern = `%${searchTerm.toLowerCase()}%`;
 
       try {
-        // Search the unified products table
+        // Enhanced search with multiple field matching
         const { data, error } = await supabase
           .from('products')
           .select('*')
-          .or(`name.ilike.${searchPattern},description.ilike.${searchPattern},category.ilike.${searchPattern}`)
+          .or(`name.ilike.${searchPattern},description.ilike.${searchPattern},category.ilike.${searchPattern},product_type.ilike.${searchPattern},material.ilike.${searchPattern},color.ilike.${searchPattern},gemstone.ilike.${searchPattern}`)
           .eq('in_stock', true)
           .order('featured', { ascending: false })
           .order('created_at', { ascending: false });
 
         if (error) {
-          console.error('Error searching products:', error);
+          console.error('Search Results Page - Error searching products:', error);
           return [];
         }
 
-        console.log('Search results found:', data?.length || 0);
+        console.log('Search Results Page - Results found:', data?.length || 0);
+        console.log('Search Results Page - Sample results:', data?.slice(0, 3));
+        
+        if (!data || data.length === 0) {
+          // Try a text search as fallback
+          console.log('No results with ilike, trying text search...');
+          const { data: textData, error: textError } = await supabase
+            .from('products')
+            .select('*')
+            .textSearch('name', searchTerm, { type: 'websearch' })
+            .eq('in_stock', true)
+            .order('featured', { ascending: false });
+            
+          if (textError) {
+            console.error('Text search error:', textError);
+          } else {
+            console.log('Text search results:', textData?.length || 0);
+          }
+          
+          return (textData || []).map((product: any) => ({
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            original_price: product.original_price,
+            category: product.category,
+            image_url: product.image_url,
+            discount_percentage: product.discount_percentage,
+            featured: product.featured,
+            created_at: product.created_at,
+            source_table: product.source_table,
+            source_id: product.source_id,
+          }));
+        }
+
         return (data || []).map((product: any) => ({
           id: product.id,
           name: product.name,
@@ -74,7 +108,7 @@ const SearchResults = () => {
           source_id: product.source_id,
         }));
       } catch (error) {
-        console.error('Search error:', error);
+        console.error('Search Results Page - Search error:', error);
         return [];
       }
     },
