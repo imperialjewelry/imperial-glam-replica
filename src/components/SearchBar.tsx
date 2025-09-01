@@ -39,36 +39,46 @@ const SearchBar = () => {
     queryFn: async () => {
       if (!searchTerm.trim()) return [];
       
+      console.log('Searching for:', searchTerm);
       const searchPattern = `%${searchTerm}%`;
       const allResults: Product[] = [];
 
-      // Search each table with proper typing
-      const searchQueries = [
-        { table: 'chain_products' as const, query: supabase.from('chain_products') },
-        { table: 'bracelet_products' as const, query: supabase.from('bracelet_products') },
-        { table: 'watch_products' as const, query: supabase.from('watch_products') },
-        { table: 'pendant_products' as const, query: supabase.from('pendant_products') },
-        { table: 'earring_products' as const, query: supabase.from('earring_products') },
-        { table: 'grillz_products' as const, query: supabase.from('grillz_products') },
-        { table: 'vvs_simulant_products' as const, query: supabase.from('vvs_simulant_products') },
-        { table: 'hip_hop_ring_products' as const, query: supabase.from('hip_hop_ring_products') },
-        { table: 'engagement_ring_products' as const, query: supabase.from('engagement_ring_products') },
-        { table: 'diamond_products' as const, query: supabase.from('diamond_products') },
-        { table: 'glasses_products' as const, query: supabase.from('glasses_products') },
-        { table: 'custom_products' as const, query: supabase.from('custom_products') }
+      // Define all tables to search
+      const tables = [
+        'chain_products',
+        'bracelet_products', 
+        'watch_products',
+        'pendant_products',
+        'earring_products',
+        'grillz_products',
+        'vvs_simulant_products',
+        'hip_hop_ring_products',
+        'engagement_ring_products',
+        'diamond_products',
+        'glasses_products',
+        'custom_products'
       ];
 
-      for (const { table, query } of searchQueries) {
+      // Search each table individually
+      for (const tableName of tables) {
         try {
-          const { data, error } = await query
+          console.log(`Searching table: ${tableName}`);
+          const { data, error } = await supabase
+            .from(tableName as any)
             .select('id, name, description, price, original_price, category, image_url, discount_percentage, in_stock')
             .or(`name.ilike.${searchPattern},description.ilike.${searchPattern},category.ilike.${searchPattern}`)
             .eq('in_stock', true)
-            .limit(20);
+            .limit(10);
 
-          if (!error && data && Array.isArray(data)) {
+          if (error) {
+            console.error(`Error searching ${tableName}:`, error);
+            continue;
+          }
+
+          if (data && data.length > 0) {
+            console.log(`Found ${data.length} results in ${tableName}`);
             const formattedResults = data.map((product: any) => ({
-              id: product.id,
+              id: product.id || '',
               name: product.name || '',
               description: product.description || '',
               price: product.price || 0,
@@ -76,16 +86,18 @@ const SearchBar = () => {
               category: product.category || '',
               image_url: product.image_url || '',
               discount_percentage: product.discount_percentage || 0,
-              source_table: table,
-              source_id: product.id
+              source_table: tableName,
+              source_id: product.id || ''
             }));
             allResults.push(...formattedResults);
           }
         } catch (error) {
-          console.error(`Error searching ${table}:`, error);
+          console.error(`Error searching ${tableName}:`, error);
         }
       }
 
+      console.log('Total search results:', allResults.length);
+      
       // Sort by relevance (name matches first, then description matches)
       return allResults
         .sort((a, b) => {
