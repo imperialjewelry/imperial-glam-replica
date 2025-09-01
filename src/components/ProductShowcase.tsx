@@ -22,7 +22,7 @@ const ProductShowcase = () => {
       const { data, error } = await supabase
         .from('diamond_products')
         .select('*')
-        .limit(6);
+        .limit(3);
       
       if (error) {
         console.error('Error fetching diamond products:', error);
@@ -100,7 +100,7 @@ const ProductShowcase = () => {
           </div>
         </div>
 
-        {/* Product grid - horizontal scroll on mobile */}
+        {/* Product grid */}
         <div className="relative">
           {products.length === 0 ? (
             <div className="text-center py-12">
@@ -108,9 +108,9 @@ const ProductShowcase = () => {
               <p className="text-gray-400 text-sm mt-2">Please check back later or contact us for assistance.</p>
             </div>
           ) : (
-            <div className="flex overflow-x-auto lg:grid lg:grid-cols-3 gap-6 pb-4 lg:pb-0 scrollbar-hide">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {products.map(product => (
-                <div key={product.id} className="flex-shrink-0 w-80 lg:w-auto bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 cursor-pointer" onClick={() => handleProductClick(product)}>
+                <div key={product.id} className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 cursor-pointer" onClick={() => handleProductClick(product)}>
                   {/* Product image */}
                   <div className="relative aspect-square overflow-hidden">
                     <img 
