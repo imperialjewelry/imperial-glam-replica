@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,23 +16,67 @@ import GrillzProductModal from '@/components/GrillzProductModal';
 import WatchProductModal from '@/components/WatchProductModal';
 import PendantProductModal from '@/components/PendantProductModal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 const BestDeals = () => {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [fullProductData, setFullProductData] = useState<any>(null);
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [sortBy, setSortBy] = useState('discount');
+
   const {
     data: products = [],
     isLoading
   } = useQuery({
-    queryKey: ['all-products'],
+    queryKey: ['all-products-combined'],
     queryFn: async () => {
-      const {
-        data,
-        error
-      } = await supabase.from('products').select('*').eq('in_stock', true);
-      if (error) throw error;
-      return data || [];
+      console.log('Fetching products from all tables...');
+      
+      // Fetch from all individual product tables
+      const tableQueries = [
+        { table: 'chain_products', source: 'chain_products' },
+        { table: 'bracelet_products', source: 'bracelet_products' },
+        { table: 'earring_products', source: 'earring_products' },
+        { table: 'grillz_products', source: 'grillz_products' },
+        { table: 'watch_products', source: 'watch_products' },
+        { table: 'pendant_products', source: 'pendant_products' },
+        { table: 'hip_hop_ring_products', source: 'hip_hop_ring_products' },
+        { table: 'engagement_ring_products', source: 'engagement_ring_products' },
+        { table: 'glasses_products', source: 'glasses_products' },
+        { table: 'diamond_products', source: 'diamond_products' },
+        { table: 'vvs_simulant_products', source: 'vvs_simulant_products' },
+        { table: 'custom_products', source: 'custom_products' }
+      ];
+
+      const allProducts = [];
+
+      for (const { table, source } of tableQueries) {
+        try {
+          const { data, error } = await supabase
+            .from(table as any)
+            .select('*')
+            .eq('in_stock', true);
+          
+          if (error) {
+            console.error(`Error fetching from ${table}:`, error);
+            continue;
+          }
+
+          // Add source table info to each product
+          const productsWithSource = (data || []).map(product => ({
+            ...product,
+            source_table: source,
+            source_id: product.id
+          }));
+
+          allProducts.push(...productsWithSource);
+          console.log(`Fetched ${productsWithSource.length} products from ${table}`);
+        } catch (error) {
+          console.error(`Error fetching from ${table}:`, error);
+        }
+      }
+
+      console.log(`Total products fetched: ${allProducts.length}`);
+      return allProducts;
     }
   });
 
@@ -48,7 +93,7 @@ const BestDeals = () => {
       case 'price-high':
         return b.price - a.price;
       case 'rating':
-        return b.rating - a.rating;
+        return (b.rating || 0) - (a.rating || 0);
       default:
         return 0;
     }
@@ -56,29 +101,19 @@ const BestDeals = () => {
 
   // Get unique categories
   const categories = ['all', ...new Set(products.map(p => p.category).filter(category => category && category.trim() !== '').map(category => category.toLowerCase()))];
+  
   const formatPrice = (price: number) => {
     return `$${(price / 100).toLocaleString()}`;
   };
+
   const handleProductClick = async (product: any) => {
     setSelectedProduct(product);
-    try {
-      const {
-        data,
-        error
-      } = await supabase.from(product.source_table).select('*').eq('id', product.source_id).single();
-      if (error) {
-        console.error('Error fetching full product data:', error);
-        setFullProductData(product);
-      } else {
-        setFullProductData(data);
-      }
-    } catch (error) {
-      console.error('Error fetching full product data:', error);
-      setFullProductData(product);
-    }
+    setFullProductData(product);
   };
+
   const renderProductModal = () => {
     if (!selectedProduct || !fullProductData) return null;
+    
     switch (selectedProduct.source_table) {
       case 'chain_products':
         return <ChainProductModal product={fullProductData} onClose={() => {
@@ -114,6 +149,7 @@ const BestDeals = () => {
         return null;
     }
   };
+
   if (isLoading) {
     return <>
         <Header />
@@ -126,6 +162,7 @@ const BestDeals = () => {
         <Footer />
       </>;
   }
+
   return <>
       <Header />
       <div className="min-h-screen bg-gray-50">
@@ -184,7 +221,7 @@ const BestDeals = () => {
 
           {/* Products Grid */}
           {filteredProducts.length > 0 ? <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {filteredProducts.map(product => <Card key={product.id} className="group cursor-pointer hover:shadow-lg transition-all duration-300 bg-white border-gray-200" onClick={() => handleProductClick(product)}>
+              {filteredProducts.map(product => <Card key={`${product.source_table}-${product.id}`} className="group cursor-pointer hover:shadow-lg transition-all duration-300 bg-white border-gray-200" onClick={() => handleProductClick(product)}>
                   <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100">
                     <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
 
@@ -213,9 +250,9 @@ const BestDeals = () => {
 
                     <div className="flex items-center space-x-1 mb-2">
                       <div className="flex">
-                        {[...Array(5)].map((_, i) => <Star key={i} className={`w-3 h-3 ${i < Math.floor(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />)}
+                        {[...Array(5)].map((_, i) => <Star key={i} className={`w-3 h-3 ${i < Math.floor(product.rating || 5) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />)}
                       </div>
-                      <span className="text-xs text-gray-500">({product.review_count})</span>
+                      <span className="text-xs text-gray-500">({product.review_count || 0})</span>
                     </div>
 
                     <div className="flex items-center justify-between">
@@ -252,4 +289,5 @@ const BestDeals = () => {
       <Footer />
     </>;
 };
+
 export default BestDeals;
