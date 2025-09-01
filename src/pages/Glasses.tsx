@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -138,7 +137,10 @@ const Glasses = () => {
     return acc;
   }, {});
 
-  const frameStyleOptions = Object.entries(frameStyles).map(([name, count]) => ({ name, count }));
+  const frameStyleOptions = Object.entries(frameStyles).map(([name, count]) => ({ 
+    name, 
+    count: count as number // Explicitly cast count to number
+  }));
 
   return (
     <div className="min-h-screen bg-white">
