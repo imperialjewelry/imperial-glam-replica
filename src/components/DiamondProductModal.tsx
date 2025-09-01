@@ -6,11 +6,14 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from 'sonner';
+import { Tables } from '@/integrations/supabase/types';
+
+type DiamondProduct = Tables<'diamond_products'>;
 
 interface DiamondProductModalProps {
-  product: any | null;
+  product: DiamondProduct | null;
   onClose: () => void;
-  allProducts?: any[];
+  allProducts?: DiamondProduct[];
 }
 
 interface LengthOption {
@@ -197,7 +200,7 @@ const DiamondProductModal = ({ product, onClose, allProducts = [] }: DiamondProd
                     <Star key={i} className="w-6 h-6 fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
-                <span className="text-lg text-gray-500">({currentProduct.review_count || 0} reviews)</span>
+                <span className="text-lg text-gray-500">({currentProduct.review_count} reviews)</span>
               </div>
 
               <div className="flex items-center space-x-4 mb-8">
@@ -297,7 +300,7 @@ const DiamondProductModal = ({ product, onClose, allProducts = [] }: DiamondProd
                       <SelectValue placeholder="Select Size" />
                     </SelectTrigger>
                     <SelectContent>
-                      {currentProduct.sizes.filter((size: string) => size && size.trim() !== '').map((size: string) => (
+                      {currentProduct.sizes.filter(size => size && size.trim() !== '').map((size) => (
                         <SelectItem key={size} value={size}>
                           {size}
                         </SelectItem>

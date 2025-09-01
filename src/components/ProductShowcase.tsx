@@ -23,21 +23,23 @@ interface ProductShowcaseProps {
   title: string;
   subtitle?: string;
   category: string;
-  tableName: 'diamond_products' | 'bracelet_products' | 'chain_products' | 'custom_products' | 'earring_products' | 'engagement_ring_products' | 'glasses_products' | 'grillz_products' | 'hip_hop_ring_products' | 'pendant_products' | 'vvs_simulant_products' | 'watch_products';
+  tableName: string;
 }
 
 const ProductShowcase = ({ title, subtitle, category, tableName }: ProductShowcaseProps) => {
-  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const { data: products = [], isLoading, error } = useQuery({
     queryKey: ['products', tableName, category],
     queryFn: async () => {
       console.log(`Fetching products from ${tableName} for category: ${category}`);
       
-      const { data, error } = await supabase
+      let query = supabase
         .from(tableName)
         .select('*')
         .eq('category', category);
+
+      const { data, error } = await query;
       
       if (error) {
         console.error(`Error fetching ${tableName}:`, error);
@@ -45,48 +47,12 @@ const ProductShowcase = ({ title, subtitle, category, tableName }: ProductShowca
       }
 
       console.log(`Fetched ${data?.length || 0} products from ${tableName}`);
-      
-      // Transform the data to match our Product interface
-      const transformedData = (data || []).map((item: any) => ({
-        id: item.id,
-        name: item.name,
-        image_url: item.image_url,
-        price: item.price,
-        original_price: item.original_price,
-        rating: item.rating || 5,
-        review_count: item.review_count || 0,
-        category: item.category,
-        discount_percentage: item.discount_percentage || 0,
-        sizes: item.sizes || [],
-        ships_today: item.ships_today || false,
-      }));
-
-      return transformedData as Product[];
-    },
-  });
-
-  // Store raw data for modal
-  const { data: rawProducts = [] } = useQuery({
-    queryKey: ['raw-products', tableName, category],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from(tableName)
-        .select('*')
-        .eq('category', category);
-      
-      if (error) {
-        console.error(`Error fetching raw ${tableName}:`, error);
-        throw error;
-      }
-
       return data || [];
     },
   });
 
   const handleProductClick = (product: Product) => {
-    // Find the corresponding raw product
-    const rawProduct = rawProducts.find((raw: any) => raw.id === product.id);
-    setSelectedProduct(rawProduct);
+    setSelectedProduct(product);
   };
 
   const handleCloseModal = () => {
@@ -226,7 +192,7 @@ const ProductShowcase = ({ title, subtitle, category, tableName }: ProductShowca
       {selectedProduct && (
         <DiamondProductModal
           product={selectedProduct}
-          allProducts={rawProducts}
+          allProducts={products}
           onClose={handleCloseModal}
         />
       )}
