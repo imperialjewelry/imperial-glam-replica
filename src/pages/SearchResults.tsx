@@ -1,4 +1,3 @@
-
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -40,44 +39,51 @@ const SearchResults = () => {
     queryFn: async () => {
       if (!searchTerm.trim()) return [];
       
-      console.log('Search Results Page - Searching for:', searchTerm);
+      console.log('SearchResults - Searching for:', searchTerm);
       const searchPattern = `%${searchTerm.toLowerCase()}%`;
 
       try {
-        // Enhanced search with multiple field matching
+        // Check what's in the database first
+        const { data: sampleProducts, error: sampleError } = await supabase
+          .from('products')
+          .select('name, category, product_type, material, in_stock')
+          .limit(10);
+          
+        console.log('SearchResults - Sample products:', sampleProducts);
+        
+        // Enhanced search with specific fields
         const { data, error } = await supabase
           .from('products')
           .select('*')
-          .or(`name.ilike.${searchPattern},description.ilike.${searchPattern},category.ilike.${searchPattern},product_type.ilike.${searchPattern},material.ilike.${searchPattern},color.ilike.${searchPattern},gemstone.ilike.${searchPattern}`)
+          .or(`name.ilike.${searchPattern},category.ilike.${searchPattern},product_type.ilike.${searchPattern},material.ilike.${searchPattern}`)
           .eq('in_stock', true)
           .order('featured', { ascending: false })
           .order('created_at', { ascending: false });
 
         if (error) {
-          console.error('Search Results Page - Error searching products:', error);
+          console.error('SearchResults - Error searching products:', error);
           return [];
         }
 
-        console.log('Search Results Page - Results found:', data?.length || 0);
-        console.log('Search Results Page - Sample results:', data?.slice(0, 3));
+        console.log('SearchResults - Results found:', data?.length || 0);
+        console.log('SearchResults - Sample results:', data?.slice(0, 3));
         
         if (!data || data.length === 0) {
-          // Try a text search as fallback
-          console.log('No results with ilike, trying text search...');
-          const { data: textData, error: textError } = await supabase
+          // Try without in_stock filter
+          console.log('SearchResults - No results with in_stock filter, trying without...');
+          const { data: allData, error: allError } = await supabase
             .from('products')
             .select('*')
-            .textSearch('name', searchTerm, { type: 'websearch' })
-            .eq('in_stock', true)
+            .or(`name.ilike.${searchPattern},category.ilike.${searchPattern},product_type.ilike.${searchPattern},material.ilike.${searchPattern}`)
             .order('featured', { ascending: false });
             
-          if (textError) {
-            console.error('Text search error:', textError);
-          } else {
-            console.log('Text search results:', textData?.length || 0);
+          console.log('SearchResults - Results without in_stock filter:', allData?.length || 0);
+          
+          if (allError) {
+            console.error('SearchResults - All search error:', allError);
           }
           
-          return (textData || []).map((product: any) => ({
+          return (allData || []).map((product: any) => ({
             id: product.id,
             name: product.name,
             description: product.description,
@@ -108,7 +114,7 @@ const SearchResults = () => {
           source_id: product.source_id,
         }));
       } catch (error) {
-        console.error('Search Results Page - Search error:', error);
+        console.error('SearchResults - Search error:', error);
         return [];
       }
     },

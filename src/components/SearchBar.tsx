@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -40,54 +39,53 @@ const SearchBar = () => {
     queryFn: async () => {
       if (!searchTerm.trim() || searchTerm.length < 2) return [];
       
-      console.log('Searching for term:', searchTerm);
+      console.log('SearchBar - Searching for term:', searchTerm);
       const searchPattern = `%${searchTerm.toLowerCase()}%`;
       
       try {
-        // First, let's check what products exist in the database
-        const { data: allProducts, error: allError } = await supabase
+        // First let's see what products exist in the database
+        const { data: sampleProducts, error: sampleError } = await supabase
           .from('products')
-          .select('*')
-          .eq('in_stock', true)
-          .limit(5);
+          .select('name, category, product_type, material')
+          .limit(10);
           
-        console.log('All products sample:', allProducts);
+        console.log('SearchBar - Sample products in database:', sampleProducts);
         
-        // Now perform the actual search with multiple search strategies
+        // Direct search on specific fields
         const { data, error } = await supabase
           .from('products')
           .select('*')
-          .or(`name.ilike.${searchPattern},description.ilike.${searchPattern},category.ilike.${searchPattern},product_type.ilike.${searchPattern},material.ilike.${searchPattern},color.ilike.${searchPattern}`)
+          .or(`name.ilike.${searchPattern},category.ilike.${searchPattern},product_type.ilike.${searchPattern},material.ilike.${searchPattern}`)
           .eq('in_stock', true)
           .order('featured', { ascending: false })
           .order('created_at', { ascending: false })
           .limit(6);
 
         if (error) {
-          console.error('Search error:', error);
+          console.error('SearchBar - Search error:', error);
           return [];
         }
 
-        console.log('Search results for', searchTerm, ':', data);
-        console.log('Number of results found:', data?.length || 0);
+        console.log('SearchBar - Search results found:', data?.length || 0);
+        console.log('SearchBar - First few results:', data?.slice(0, 3));
         
         if (!data || data.length === 0) {
-          // Try a broader search without case sensitivity
-          console.log('No results found, trying broader search...');
-          const { data: broadData, error: broadError } = await supabase
+          // Try searching without the in_stock filter
+          console.log('SearchBar - No results with in_stock filter, trying without...');
+          const { data: allData, error: allError } = await supabase
             .from('products')
             .select('*')
-            .textSearch('name', searchTerm, { type: 'websearch' })
-            .eq('in_stock', true)
+            .or(`name.ilike.${searchPattern},category.ilike.${searchPattern},product_type.ilike.${searchPattern},material.ilike.${searchPattern}`)
+            .order('featured', { ascending: false })
             .limit(6);
             
-          if (broadError) {
-            console.error('Broad search error:', broadError);
-          } else {
-            console.log('Broad search results:', broadData);
+          console.log('SearchBar - Results without in_stock filter:', allData?.length || 0);
+          
+          if (allError) {
+            console.error('SearchBar - All search error:', allError);
           }
           
-          return (broadData || []).map((product: any) => ({
+          return (allData || []).map((product: any) => ({
             id: product.id,
             name: product.name,
             description: product.description,
@@ -114,7 +112,7 @@ const SearchBar = () => {
           source_id: product.source_id,
         }));
       } catch (error) {
-        console.error('Search error:', error);
+        console.error('SearchBar - Search error:', error);
         return [];
       }
     },
