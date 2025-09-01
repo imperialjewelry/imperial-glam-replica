@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
+import DiamondProductModal from '@/components/DiamondProductModal';
 
 type DiamondProduct = Tables<'diamond_products'>;
 
@@ -22,6 +24,7 @@ const Diamond = () => {
   const [priceFrom, setPriceFrom] = useState('');
   const [priceTo, setPriceTo] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<DiamondProduct | null>(null);
   const [openSections, setOpenSections] = useState({
     productType: false,
     price: false,
@@ -107,6 +110,10 @@ const Diamond = () => {
     name: "Rope",
     count: 2
   }];
+
+  const handleProductClick = (product: DiamondProduct) => {
+    setSelectedProduct(product);
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -242,7 +249,7 @@ const Diamond = () => {
 
           {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} gap-4`}>
-            {products.map(product => <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow">
+            {products.map(product => <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleProductClick(product)}>
                 
                 {/* Product Image */}
                 <div className="relative aspect-square overflow-hidden rounded-t-lg">
@@ -287,6 +294,12 @@ const Diamond = () => {
           </div>
         </div>
       </div>
+
+      {/* Product Modal */}
+      <DiamondProductModal 
+        product={selectedProduct} 
+        onClose={() => setSelectedProduct(null)} 
+      />
 
       <Footer />
     </div>
