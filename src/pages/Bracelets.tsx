@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -42,7 +43,7 @@ interface ProcessedBraceletProduct {
   updated_at: string;
   stripe_price_id?: string;
   stripe_product_id: string;
-  sizes?: string[];
+  sizes: string[];
   lengths_and_prices?: LengthPrice[];
 }
 
@@ -112,6 +113,7 @@ const Bracelets = () => {
         gemstone: product.gemstone || '',
         original_price: product.original_price || product.price,
         ships_today: product.ships_today || false,
+        sizes: Array.isArray(product.sizes) ? product.sizes : [],
         lengths_and_prices: Array.isArray(product.lengths_and_prices) 
           ? (product.lengths_and_prices as unknown as LengthPrice[])
           : []
