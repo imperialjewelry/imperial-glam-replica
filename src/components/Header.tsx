@@ -11,7 +11,7 @@ const Header = () => {
     dispatch,
     getTotalItems
   } = useCart();
-  const navigation = ['BEST DEALS', 'CHAINS', 'BRACELETS', 'WATCHES', 'PENDANTS', 'EARRINGS', 'CUSTOM', 'GRILLZ', 'GLASSES', 'RINGS', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
+  const navigation = ['ALL PRODUCTS', 'CHAINS', 'BRACELETS', 'WATCHES', 'PENDANTS', 'EARRINGS', 'CUSTOM', 'GRILLZ', 'GLASSES', 'RINGS', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
   const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
   return <>
       {/* Desktop Header */}
@@ -87,7 +87,7 @@ const Header = () => {
                       </DropdownMenuContent>
                     </DropdownMenu>;
               }
-              return <Link key={item} to={item === 'BEST DEALS' ? '/best-deals' : item === 'CHAINS' ? '/chains' : item === 'BRACELETS' ? '/bracelets' : item === 'WATCHES' ? '/watches' : item === 'PENDANTS' ? '/pendants' : item === 'EARRINGS' ? '/earrings' : item === 'CUSTOM' ? '/custom' : item === 'GRILLZ' ? '/grillz' : item === 'GLASSES' ? '/glasses' : item === 'DIAMOND' ? '/diamond' : item === 'VVS DIAMOND SIMULANTS' ? '/vvs-diamond-simulants' : '/'} className="text-gray-700 hover:text-black transition-colors">
+              return <Link key={item} to={item === 'ALL PRODUCTS' ? '/best-deals' : item === 'CHAINS' ? '/chains' : item === 'BRACELETS' ? '/bracelets' : item === 'WATCHES' ? '/watches' : item === 'PENDANTS' ? '/pendants' : item === 'EARRINGS' ? '/earrings' : item === 'CUSTOM' ? '/custom' : item === 'GRILLZ' ? '/grillz' : item === 'GLASSES' ? '/glasses' : item === 'DIAMOND' ? '/diamond' : item === 'VVS DIAMOND SIMULANTS' ? '/vvs-diamond-simulants' : '/'} className="text-gray-700 hover:text-black transition-colors">
                     {item}
                   </Link>;
             })}
