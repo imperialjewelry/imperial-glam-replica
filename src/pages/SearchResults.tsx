@@ -11,6 +11,7 @@ import EarringProductModal from '@/components/EarringProductModal';
 import GrillzProductModal from '@/components/GrillzProductModal';
 import WatchProductModal from '@/components/WatchProductModal';
 import PendantProductModal from '@/components/PendantProductModal';
+import CustomProductModal from '@/components/CustomProductModal';
 
 interface Product {
   id: string;
@@ -41,80 +42,41 @@ const SearchResults = () => {
       
       console.log('Searching for:', searchTerm);
       const searchPattern = `%${searchTerm}%`;
-      const allResults: Product[] = [];
 
-      // Define all tables to search
-      const tables = [
-        'chain_products',
-        'bracelet_products',
-        'watch_products',
-        'pendant_products',
-        'earring_products',
-        'grillz_products',
-        'vvs_simulant_products',
-        'hip_hop_ring_products',
-        'engagement_ring_products',
-        'diamond_products',
-        'glasses_products',
-        'custom_products'
-      ];
+      try {
+        // Search the unified products table
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .or(`name.ilike.${searchPattern},description.ilike.${searchPattern},category.ilike.${searchPattern}`)
+          .eq('in_stock', true)
+          .order('featured', { ascending: false })
+          .order('created_at', { ascending: false });
 
-      // Search each table individually
-      for (const tableName of tables) {
-        try {
-          console.log(`Searching table: ${tableName}`);
-          const { data, error } = await supabase
-            .from(tableName as any)
-            .select('id, name, description, price, original_price, category, image_url, discount_percentage, in_stock, featured, created_at')
-            .or(`name.ilike.${searchPattern},description.ilike.${searchPattern},category.ilike.${searchPattern}`)
-            .eq('in_stock', true);
-
-          if (error) {
-            console.error(`Error searching ${tableName}:`, error);
-            continue;
-          }
-
-          if (data && data.length > 0) {
-            console.log(`Found ${data.length} results in ${tableName}`);
-            const formattedResults = data.map((product: any) => ({
-              id: product.id || '',
-              name: product.name || '',
-              description: product.description || '',
-              price: product.price || 0,
-              original_price: product.original_price || 0,
-              category: product.category || '',
-              image_url: product.image_url || '',
-              discount_percentage: product.discount_percentage || 0,
-              featured: product.featured || false,
-              created_at: product.created_at || new Date().toISOString(),
-              source_table: tableName,
-              source_id: product.id || ''
-            }));
-            allResults.push(...formattedResults);
-          }
-        } catch (error) {
-          console.error(`Error searching ${tableName}:`, error);
+        if (error) {
+          console.error('Error searching products:', error);
+          return [];
         }
+
+        console.log('Search results found:', data?.length || 0);
+        return (data || []).map((product: any) => ({
+          id: product.id,
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          original_price: product.original_price,
+          category: product.category,
+          image_url: product.image_url,
+          discount_percentage: product.discount_percentage,
+          featured: product.featured,
+          created_at: product.created_at,
+          source_table: product.source_table,
+          source_id: product.source_id,
+        }));
+      } catch (error) {
+        console.error('Search error:', error);
+        return [];
       }
-
-      console.log('Total search results:', allResults.length);
-
-      // Sort by relevance and featured status
-      return allResults.sort((a, b) => {
-        // Featured products first
-        if (a.featured && !b.featured) return -1;
-        if (!a.featured && b.featured) return 1;
-        
-        // Then by name relevance
-        const aNameMatch = a.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const bNameMatch = b.name.toLowerCase().includes(searchTerm.toLowerCase());
-        
-        if (aNameMatch && !bNameMatch) return -1;
-        if (!aNameMatch && bNameMatch) return 1;
-        
-        // Finally by creation date (newest first)
-        return new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime();
-      });
     },
     enabled: searchTerm.length > 0,
   });
@@ -200,6 +162,16 @@ const SearchResults = () => {
       case 'pendant_products':
         return (
           <PendantProductModal
+            product={fullProductData}
+            onClose={() => {
+              setSelectedProduct(null);
+              setFullProductData(null);
+            }}
+          />
+        );
+      case 'custom_products':
+        return (
+          <CustomProductModal
             product={fullProductData}
             onClose={() => {
               setSelectedProduct(null);
