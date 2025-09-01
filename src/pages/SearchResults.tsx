@@ -1,4 +1,3 @@
-
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -65,7 +64,7 @@ const SearchResults = () => {
             .or(`name.ilike.${searchPattern},description.ilike.${searchPattern},category.ilike.${searchPattern}`)
             .eq('in_stock', true);
 
-          if (!error && data) {
+          if (!error && data && Array.isArray(data)) {
             const formattedResults = data.map(product => ({
               ...product,
               source_table: table,

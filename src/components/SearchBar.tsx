@@ -67,7 +67,7 @@ const SearchBar = () => {
             .eq('in_stock', true)
             .limit(20);
 
-          if (!error && data) {
+          if (!error && data && Array.isArray(data)) {
             const formattedResults = data.map(product => ({
               ...product,
               source_table: table,
