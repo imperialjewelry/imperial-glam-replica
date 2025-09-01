@@ -27,7 +27,7 @@ interface ProductShowcaseProps {
 }
 
 const ProductShowcase = ({ title, subtitle, category, tableName }: ProductShowcaseProps) => {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
 
   const { data: products = [], isLoading, error } = useQuery({
     queryKey: ['products', tableName, category],
@@ -65,8 +65,28 @@ const ProductShowcase = ({ title, subtitle, category, tableName }: ProductShowca
     },
   });
 
+  // Store raw data for modal
+  const { data: rawProducts = [] } = useQuery({
+    queryKey: ['raw-products', tableName, category],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from(tableName)
+        .select('*')
+        .eq('category', category);
+      
+      if (error) {
+        console.error(`Error fetching raw ${tableName}:`, error);
+        throw error;
+      }
+
+      return data || [];
+    },
+  });
+
   const handleProductClick = (product: Product) => {
-    setSelectedProduct(product);
+    // Find the corresponding raw product
+    const rawProduct = rawProducts.find((raw: any) => raw.id === product.id);
+    setSelectedProduct(rawProduct);
   };
 
   const handleCloseModal = () => {
@@ -206,7 +226,7 @@ const ProductShowcase = ({ title, subtitle, category, tableName }: ProductShowca
       {selectedProduct && (
         <DiamondProductModal
           product={selectedProduct}
-          allProducts={products}
+          allProducts={rawProducts}
           onClose={handleCloseModal}
         />
       )}

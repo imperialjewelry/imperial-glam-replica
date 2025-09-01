@@ -24,7 +24,12 @@ const Index = () => {
       <CategoryNavigation />
       
       <LazySection fallback={<Skeleton className="w-full h-96" />}>
-        <ProductShowcase />
+        <ProductShowcase 
+          title="Diamond Collection"
+          subtitle="Premium VVS Diamonds"
+          category="diamonds"
+          tableName="diamond_products"
+        />
       </LazySection>
       
       <LazySection fallback={<Skeleton className="w-full h-80" />}>
