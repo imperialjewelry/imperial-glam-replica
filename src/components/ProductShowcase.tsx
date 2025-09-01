@@ -72,7 +72,7 @@ const ProductShowcase = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-3 gap-2 md:gap-6">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="bg-gray-200 animate-pulse rounded-lg h-96"></div>
             ))}
@@ -108,7 +108,7 @@ const ProductShowcase = () => {
               <p className="text-gray-400 text-sm mt-2">Please check back later or contact us for assistance.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-3 gap-2 md:gap-6">
               {products.map(product => (
                 <div key={product.id} className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 cursor-pointer" onClick={() => handleProductClick(product)}>
                   {/* Product image */}
@@ -123,22 +123,22 @@ const ProductShowcase = () => {
                     />
                     
                     {/* Badges */}
-                    <div className="absolute top-4 left-4 flex flex-col space-y-2">
+                    <div className="absolute top-1 md:top-4 left-1 md:left-4 flex flex-col space-y-1 md:space-y-2">
                       {product.discount_percentage && product.discount_percentage > 0 && (
-                        <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                        <Badge className="bg-red-500 text-white text-xs font-semibold px-1 md:px-2 py-1">
                           {product.discount_percentage}% OFF
                         </Badge>
                       )}
                       {product.ships_today && (
-                        <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">
+                        <Badge className="bg-blue-500 text-white text-xs font-semibold px-1 md:px-2 py-1">
                           SHIPS TODAY
                         </Badge>
                       )}
                     </div>
 
-                    {/* Size options */}
+                    {/* Size options - hidden on mobile */}
                     {product.sizes && product.sizes.length > 0 && (
-                      <div className="absolute bottom-4 left-4 flex flex-wrap gap-1">
+                      <div className="absolute bottom-1 md:bottom-4 left-1 md:left-4 flex flex-wrap gap-1 hidden md:flex">
                         {product.sizes.slice(0, 3).map((size, index) => (
                           <Badge key={index} className="bg-gray-800 text-white text-xs px-2 py-1">
                             {size}
@@ -149,32 +149,32 @@ const ProductShowcase = () => {
                   </div>
 
                   {/* Product info */}
-                  <div className="p-4">
-                    <div className="text-xs text-gray-500 mb-2 uppercase tracking-wide">
+                  <div className="p-2 md:p-4">
+                    <div className="text-xs text-gray-500 mb-1 md:mb-2 uppercase tracking-wide">
                       {product.category}
                     </div>
                     
-                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                    <h3 className="font-semibold text-gray-900 mb-1 md:mb-2 line-clamp-2 text-sm md:text-base">
                       {product.name}
                     </h3>
                     
                     {/* Rating */}
-                    <div className="flex items-center mb-3">
+                    <div className="flex items-center mb-2 md:mb-3">
                       <div className="flex">
                         {renderStars(product.rating || 5)}
                       </div>
-                      <span className="ml-2 text-sm text-gray-600">
+                      <span className="ml-1 md:ml-2 text-xs md:text-sm text-gray-600">
                         ({(product.review_count || 0).toLocaleString()})
                       </span>
                     </div>
                     
                     {/* Price */}
-                    <div className="flex items-center mb-4">
-                      <span className="text-2xl font-bold text-blue-600">
+                    <div className="flex items-center mb-2 md:mb-4">
+                      <span className="text-lg md:text-2xl font-bold text-blue-600">
                         ${(product.price / 100).toFixed(2)}
                       </span>
                       {product.original_price && (
-                        <span className="ml-2 text-lg text-gray-400 line-through">
+                        <span className="ml-1 md:ml-2 text-sm md:text-lg text-gray-400 line-through">
                           ${(product.original_price / 100).toFixed(2)}
                         </span>
                       )}
