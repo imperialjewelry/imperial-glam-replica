@@ -36,7 +36,7 @@ interface ProcessedBraceletProduct {
   review_count: number;
   discount_percentage: number;
   in_stock: boolean;
-  ships_today?: boolean;
+  ships_today: boolean;
   featured: boolean;
   created_at: string;
   updated_at: string;
@@ -111,6 +111,7 @@ const Bracelets = () => {
         featured: product.featured || false,
         gemstone: product.gemstone || '',
         original_price: product.original_price || product.price,
+        ships_today: product.ships_today || false,
         lengths_and_prices: Array.isArray(product.lengths_and_prices) 
           ? (product.lengths_and_prices as unknown as LengthPrice[])
           : []
