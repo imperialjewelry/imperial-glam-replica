@@ -13,7 +13,9 @@ import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import GlassesProductModal from '../components/GlassesProductModal';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
+
 type GlassesProduct = Tables<'glasses_products'>;
+
 const Glasses = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<GlassesProduct[]>([]);
@@ -29,9 +31,11 @@ const Glasses = () => {
     chainType: false
   });
   const [selectedProduct, setSelectedProduct] = useState<GlassesProduct | null>(null);
+
   useEffect(() => {
     fetchProducts();
   }, []);
+
   const fetchProducts = async () => {
     const {
       data,
@@ -45,22 +49,25 @@ const Glasses = () => {
       setProducts(data || []);
     }
   };
+
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
       ...prev,
       [section]: !prev[section]
     }));
   };
+
   const productTypes = [{
     name: "Sunglasses",
     count: 4
   }, {
-    name: "Reading Glasses",
+    name: "Reading Glasses", 
     count: 3
   }, {
     name: "Blue Light Glasses",
     count: 2
   }];
+
   const colors = [{
     name: "Black",
     count: 6
@@ -71,6 +78,7 @@ const Glasses = () => {
     name: "Silver",
     count: 4
   }];
+
   const materials = [{
     name: "Metal",
     count: 8
@@ -81,6 +89,7 @@ const Glasses = () => {
     name: "Titanium",
     count: 2
   }];
+
   const chainTypes = [{
     name: "Round",
     count: 4
@@ -91,6 +100,7 @@ const Glasses = () => {
     name: "Oval",
     count: 2
   }];
+
   return <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
@@ -179,11 +189,21 @@ const Glasses = () => {
               </div>
             </div>
 
-            {/* Chain Type */}
+            {/* Frame Shape */}
             <div className="mb-8">
-              
+              <h3 className="font-medium text-gray-900 mb-4 uppercase">FRAME SHAPE</h3>
               <div className="space-y-3">
-                {chainTypes.map(chainType => {})}
+                {chainTypes.map(frameShape => (
+                  <div key={frameShape.name} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id={`desktop-${frameShape.name}`} />
+                      <label htmlFor={`desktop-${frameShape.name}`} className="text-sm text-gray-700">
+                        {frameShape.name}
+                      </label>
+                    </div>
+                    <span className="text-sm text-gray-500">({frameShape.count})</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>}
@@ -266,4 +286,5 @@ const Glasses = () => {
       <Footer />
     </div>;
 };
+
 export default Glasses;
