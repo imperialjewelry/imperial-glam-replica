@@ -190,7 +190,7 @@ const ProductShowcase = () => {
         <div className="flex justify-center mt-8">
           <Link to="/diamond">
             <Button className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 text-lg">
-              SHOP BEST SELLERS →
+              SHOP DIAMOND JEWELRY →
             </Button>
           </Link>
         </div>
