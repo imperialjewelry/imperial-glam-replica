@@ -171,7 +171,7 @@ const Header = () => {
               <div className="space-y-4">
                 <div className="bg-gray-100 p-4 rounded-lg">
                   <Link to="/best-deals" onClick={() => setIsMenuOpen(false)}>
-                    <h3 className="font-semibold text-sm mb-2">ALL PRODUCTS</h3>
+                    <h3 className="font-semibold text-sm mb-2">ALL JEWELRY</h3>
                     <p className="text-xs text-gray-600">Shop our entire collection of jewelry</p>
                   </Link>
                 </div>
