@@ -280,11 +280,6 @@ const SearchResults = () => {
                         </span>
                       )}
                     </div>
-                    {product.discount_percentage && product.discount_percentage > 0 && (
-                      <span className="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded">
-                        -{product.discount_percentage}%
-                      </span>
-                    )}
                   </div>
                 </div>
               </div>
@@ -324,3 +319,4 @@ const SearchResults = () => {
 };
 
 export default SearchResults;
+
