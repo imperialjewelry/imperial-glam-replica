@@ -123,7 +123,6 @@ const Footer = () => {
             <div>
               <h3 className="text-sm font-semibold mb-4">CONTACT US</h3>
               <div className="space-y-2 text-sm text-gray-300">
-                <p>5085 Westheimer Rd</p>
                 <p>support@imperialjewelry.com</p>
                 <p>Whatsapp: +1 212 203 0584</p>
                 <p>Monday - Friday</p>
@@ -159,7 +158,6 @@ const Footer = () => {
           <div className="border-b border-gray-700 pb-4">
             <h3 className="text-sm font-semibold mb-4">CONTACT US</h3>
             <div className="space-y-2 text-sm text-gray-300">
-              <p>5085 Westheimer Rd</p>
               <p>support@imperialjewelry.com</p>
               <p>Whatsapp: +1 212 203 0584</p>
               <p>Monday - Friday</p>
@@ -239,7 +237,14 @@ const Footer = () => {
 
               <div className="text-sm">
                 <p className="text-gray-400 font-semibold">LOCATIONS</p>
-                <p className="text-gray-300">Houston, TX | Private Showroom</p>
+                <a 
+                  href="https://maps.google.com/?q=5085+Westheimer+Rd,+Houston,+TX" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  5085 Westheimer Rd, Houston, TX
+                </a>
               </div>
             </div>
           </div>
