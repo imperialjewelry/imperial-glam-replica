@@ -18,6 +18,7 @@ import PendantProductModal from '@/components/PendantProductModal';
 import HipHopRingProductModal from '@/components/HipHopRingProductModal';
 import EngagementRingProductModal from '@/components/EngagementRingProductModal';
 import GlassesProductModal from '@/components/GlassesProductModal';
+import CustomProductModal from '@/components/CustomProductModal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ProductData {
@@ -108,11 +109,11 @@ const BestDeals = () => {
           if (data && Array.isArray(data)) {
             console.log(`Raw data from ${tableName}:`, data.length, 'items');
             
-            // Process each product with minimal filtering - only exclude truly invalid items
+            // Process each product with proper type checking
             const productsWithSource = data
-              .filter((item) => {
-                // Only filter out items that are clearly invalid
-                if (!item || typeof item !== 'object') {
+              .filter((item): item is Record<string, any> => {
+                // Proper type guard to ensure item is a valid object
+                if (!item || typeof item !== 'object' || item === null) {
                   console.log(`Filtered out invalid item from ${tableName}:`, item);
                   return false;
                 }
@@ -122,9 +123,12 @@ const BestDeals = () => {
                 }
                 return true;
               })
-              .map((product) => {
-                const processedProduct = {
-                  ...product,
+              .map((product): ProductData => {
+                // Now we know product is a valid object with proper typing
+                const processedProduct: ProductData = {
+                  id: product.id,
+                  name: product.name || '',
+                  price: product.price || 0,
                   source_table: tableName,
                   source_id: product.id,
                   // Ensure required fields have default values
@@ -156,8 +160,10 @@ const BestDeals = () => {
                   discount_percentage: product.discount_percentage || 0,
                   in_stock: product.in_stock !== undefined ? product.in_stock : true,
                   ships_today: product.ships_today || false,
-                  featured: product.featured || false
-                } as ProductData;
+                  featured: product.featured || false,
+                  original_price: product.original_price,
+                  stripe_price_id: product.stripe_price_id
+                };
                 
                 return processedProduct;
               });
@@ -259,6 +265,11 @@ const BestDeals = () => {
         }} />;
       case 'glasses_products':
         return <GlassesProductModal product={fullProductData as any} onClose={() => {
+          setSelectedProduct(null);
+          setFullProductData(null);
+        }} />;
+      case 'custom_products':
+        return <CustomProductModal product={fullProductData as any} onClose={() => {
           setSelectedProduct(null);
           setFullProductData(null);
         }} />;
