@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -65,6 +66,14 @@ const BestDeals = () => {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [sortBy, setSortBy] = useState('discount');
 
+  const isValidProductItem = (item: any): item is Record<string, any> => {
+    return item !== null && 
+           typeof item === 'object' && 
+           'id' in item && 
+           typeof item.id === 'string' && 
+           item.id.trim() !== '';
+  };
+
   const {
     data: products = [],
     isLoading
@@ -107,8 +116,7 @@ const BestDeals = () => {
             // Add source table info to each product - ensure each item is a valid object
             const productsWithSource = data
               .filter((item): item is any => {
-                if (!item || typeof item !== 'object') return false;
-                if (!('id' in item) || !item.id || typeof item.id !== 'string') return false;
+                if (!isValidProductItem(item)) return false;
                 return true;
               })
               .map((product) => ({
@@ -123,7 +131,20 @@ const BestDeals = () => {
                 image_url: product.image_url || '',
                 created_at: product.created_at || new Date().toISOString(),
                 updated_at: product.updated_at || new Date().toISOString(),
-                stripe_product_id: product.stripe_product_id || ''
+                stripe_product_id: product.stripe_product_id || '',
+                description: product.description || '',
+                gemstone: product.gemstone || '',
+                diamond_cut: product.diamond_cut || '',
+                chain_type: product.chain_type || '',
+                frame_style: product.frame_style || '',
+                lens_color: product.lens_color || '',
+                style: product.style || '',
+                teeth_count: product.teeth_count || '',
+                shape: product.shape || '',
+                carat_weight: product.carat_weight || '',
+                cut_quality: product.cut_quality || '',
+                clarity_grade: product.clarity_grade || '',
+                customizable: product.customizable || false
               } as ProductData));
 
             allProducts.push(...productsWithSource);
