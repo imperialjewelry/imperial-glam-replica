@@ -24,9 +24,9 @@ interface ProductData {
   name: string;
   price: number;
   original_price?: number;
-  category?: string;
-  material?: string;
-  image_url?: string;
+  category: string;
+  material: string;
+  image_url: string;
   rating?: number;
   review_count?: number;
   discount_percentage?: number;
@@ -35,6 +35,27 @@ interface ProductData {
   featured?: boolean;
   source_table?: string;
   source_id?: string;
+  description?: string;
+  color: string;
+  product_type: string;
+  created_at: string;
+  updated_at: string;
+  stripe_product_id: string;
+  stripe_price_id?: string;
+  sizes?: string[];
+  lengths_and_prices?: any;
+  gemstone?: string;
+  diamond_cut?: string;
+  chain_type?: string;
+  frame_style?: string;
+  lens_color?: string;
+  style?: string;
+  teeth_count?: string;
+  shape?: string;
+  carat_weight?: string;
+  cut_quality?: string;
+  clarity_grade?: string;
+  customizable?: boolean;
   [key: string]: any;
 }
 
@@ -85,17 +106,24 @@ const BestDeals = () => {
           if (data && Array.isArray(data) && data.length > 0) {
             // Add source table info to each product - ensure each item is a valid object
             const productsWithSource = data
-              .filter((item): item is any => 
-                item !== null && 
-                typeof item === 'object' && 
-                'id' in item && 
-                item.id !== null &&
-                typeof item.id === 'string'
-              )
+              .filter((item): item is any => {
+                if (!item || typeof item !== 'object') return false;
+                if (!('id' in item) || !item.id || typeof item.id !== 'string') return false;
+                return true;
+              })
               .map((product) => ({
                 ...product,
                 source_table: tableName,
-                source_id: product.id
+                source_id: product.id,
+                // Ensure required fields have default values
+                category: product.category || '',
+                material: product.material || '',
+                color: product.color || '',
+                product_type: product.product_type || '',
+                image_url: product.image_url || '',
+                created_at: product.created_at || new Date().toISOString(),
+                updated_at: product.updated_at || new Date().toISOString(),
+                stripe_product_id: product.stripe_product_id || ''
               } as ProductData));
 
             allProducts.push(...productsWithSource);
@@ -147,47 +175,47 @@ const BestDeals = () => {
     
     switch (selectedProduct.source_table) {
       case 'chain_products':
-        return <ChainProductModal product={fullProductData} onClose={() => {
+        return <ChainProductModal product={fullProductData as any} onClose={() => {
           setSelectedProduct(null);
           setFullProductData(null);
         }} />;
       case 'bracelet_products':
-        return <BraceletProductModal product={fullProductData} onClose={() => {
+        return <BraceletProductModal product={fullProductData as any} onClose={() => {
           setSelectedProduct(null);
           setFullProductData(null);
         }} />;
       case 'earring_products':
-        return <EarringProductModal product={fullProductData} onClose={() => {
+        return <EarringProductModal product={fullProductData as any} onClose={() => {
           setSelectedProduct(null);
           setFullProductData(null);
         }} />;
       case 'grillz_products':
-        return <GrillzProductModal product={fullProductData} onClose={() => {
+        return <GrillzProductModal product={fullProductData as any} onClose={() => {
           setSelectedProduct(null);
           setFullProductData(null);
         }} />;
       case 'watch_products':
-        return <WatchProductModal product={fullProductData} onClose={() => {
+        return <WatchProductModal product={fullProductData as any} onClose={() => {
           setSelectedProduct(null);
           setFullProductData(null);
         }} />;
       case 'pendant_products':
-        return <PendantProductModal product={fullProductData} onClose={() => {
+        return <PendantProductModal product={fullProductData as any} onClose={() => {
           setSelectedProduct(null);
           setFullProductData(null);
         }} />;
       case 'hip_hop_ring_products':
-        return <HipHopRingProductModal product={fullProductData} onClose={() => {
+        return <HipHopRingProductModal product={fullProductData as any} onClose={() => {
           setSelectedProduct(null);
           setFullProductData(null);
         }} />;
       case 'engagement_ring_products':
-        return <EngagementRingProductModal product={fullProductData} onClose={() => {
+        return <EngagementRingProductModal product={fullProductData as any} onClose={() => {
           setSelectedProduct(null);
           setFullProductData(null);
         }} />;
       case 'glasses_products':
-        return <GlassesProductModal product={fullProductData} onClose={() => {
+        return <GlassesProductModal product={fullProductData as any} onClose={() => {
           setSelectedProduct(null);
           setFullProductData(null);
         }} />;
