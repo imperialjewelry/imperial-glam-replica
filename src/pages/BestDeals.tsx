@@ -66,14 +66,6 @@ const BestDeals = () => {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [sortBy, setSortBy] = useState('discount');
 
-  const isValidProductItem = (item: any): item is Record<string, any> => {
-    return item !== null && 
-           typeof item === 'object' && 
-           'id' in item && 
-           typeof item.id === 'string' && 
-           item.id.trim() !== '';
-  };
-
   const {
     data: products = [],
     isLoading
@@ -102,6 +94,7 @@ const BestDeals = () => {
 
       for (const tableName of tableQueries) {
         try {
+          console.log(`Fetching from ${tableName}...`);
           const { data, error } = await supabase
             .from(tableName as any)
             .select('*')
@@ -112,50 +105,79 @@ const BestDeals = () => {
             continue;
           }
 
-          if (data && Array.isArray(data) && data.length > 0) {
-            // Add source table info to each product - ensure each item is a valid object
+          if (data && Array.isArray(data)) {
+            console.log(`Raw data from ${tableName}:`, data.length, 'items');
+            
+            // Process each product with minimal filtering - only exclude truly invalid items
             const productsWithSource = data
-              .filter((item): item is any => {
-                if (!isValidProductItem(item)) return false;
+              .filter((item) => {
+                // Only filter out items that are clearly invalid
+                if (!item || typeof item !== 'object') {
+                  console.log(`Filtered out invalid item from ${tableName}:`, item);
+                  return false;
+                }
+                if (!item.id || typeof item.id !== 'string' || item.id.trim() === '') {
+                  console.log(`Filtered out item with invalid ID from ${tableName}:`, item);
+                  return false;
+                }
                 return true;
               })
-              .map((product) => ({
-                ...product,
-                source_table: tableName,
-                source_id: product.id,
-                // Ensure required fields have default values
-                category: product.category || '',
-                material: product.material || '',
-                color: product.color || '',
-                product_type: product.product_type || '',
-                image_url: product.image_url || '',
-                created_at: product.created_at || new Date().toISOString(),
-                updated_at: product.updated_at || new Date().toISOString(),
-                stripe_product_id: product.stripe_product_id || '',
-                description: product.description || '',
-                gemstone: product.gemstone || '',
-                diamond_cut: product.diamond_cut || '',
-                chain_type: product.chain_type || '',
-                frame_style: product.frame_style || '',
-                lens_color: product.lens_color || '',
-                style: product.style || '',
-                teeth_count: product.teeth_count || '',
-                shape: product.shape || '',
-                carat_weight: product.carat_weight || '',
-                cut_quality: product.cut_quality || '',
-                clarity_grade: product.clarity_grade || '',
-                customizable: product.customizable || false
-              } as ProductData));
+              .map((product) => {
+                const processedProduct = {
+                  ...product,
+                  source_table: tableName,
+                  source_id: product.id,
+                  // Ensure required fields have default values
+                  category: product.category || '',
+                  material: product.material || '',
+                  color: product.color || '',
+                  product_type: product.product_type || '',
+                  image_url: product.image_url || '',
+                  created_at: product.created_at || new Date().toISOString(),
+                  updated_at: product.updated_at || new Date().toISOString(),
+                  stripe_product_id: product.stripe_product_id || '',
+                  description: product.description || '',
+                  gemstone: product.gemstone || '',
+                  diamond_cut: product.diamond_cut || '',
+                  chain_type: product.chain_type || '',
+                  frame_style: product.frame_style || '',
+                  lens_color: product.lens_color || '',
+                  style: product.style || '',
+                  teeth_count: product.teeth_count || '',
+                  shape: product.shape || '',
+                  carat_weight: product.carat_weight || '',
+                  cut_quality: product.cut_quality || '',
+                  clarity_grade: product.clarity_grade || '',
+                  customizable: product.customizable || false,
+                  sizes: product.sizes || [],
+                  lengths_and_prices: product.lengths_and_prices || [],
+                  rating: product.rating || 5.0,
+                  review_count: product.review_count || 0,
+                  discount_percentage: product.discount_percentage || 0,
+                  in_stock: product.in_stock !== undefined ? product.in_stock : true,
+                  ships_today: product.ships_today || false,
+                  featured: product.featured || false
+                } as ProductData;
+                
+                return processedProduct;
+              });
 
             allProducts.push(...productsWithSource);
-            console.log(`Fetched ${productsWithSource.length} products from ${tableName}`);
+            console.log(`Successfully processed ${productsWithSource.length} products from ${tableName}`);
+          } else {
+            console.log(`No data returned from ${tableName} or data is not an array`);
           }
         } catch (error) {
-          console.error(`Error fetching from ${tableName}:`, error);
+          console.error(`Exception when fetching from ${tableName}:`, error);
         }
       }
 
       console.log(`Total products fetched: ${allProducts.length}`);
+      console.log('Products by table:', allProducts.reduce((acc, product) => {
+        acc[product.source_table || 'unknown'] = (acc[product.source_table || 'unknown'] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>));
+      
       return allProducts;
     }
   });
@@ -311,12 +333,21 @@ const BestDeals = () => {
             </div>
           </div>
 
-          {/* Results count */}
+          {/* Results count and breakdown */}
           <div className="mb-6">
-            <p className="text-gray-600">
+            <p className="text-gray-600 mb-2">
               Showing {filteredProducts.length} products
               {categoryFilter !== 'all' && ` in ${categoryFilter.toUpperCase()}`}
             </p>
+            <div className="text-sm text-gray-500">
+              Products by category: {Object.entries(
+                products.reduce((acc, product) => {
+                  const category = product.category || 'uncategorized';
+                  acc[category] = (acc[category] || 0) + 1;
+                  return acc;
+                }, {} as Record<string, number>)
+              ).map(([category, count]) => `${category}: ${count}`).join(', ')}
+            </div>
           </div>
 
           {/* Products Grid */}
