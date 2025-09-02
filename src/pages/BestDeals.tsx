@@ -111,9 +111,9 @@ const BestDeals = () => {
             
             // Process each product with proper type checking
             const productsWithSource = data
-              .filter((item): item is Record<string, any> => {
-                // Proper type guard to ensure item is a valid object
-                if (!item || typeof item !== 'object' || item === null) {
+              .filter((item: any) => {
+                // Simple validation - only exclude clearly invalid items
+                if (!item || typeof item !== 'object') {
                   console.log(`Filtered out invalid item from ${tableName}:`, item);
                   return false;
                 }
@@ -123,14 +123,14 @@ const BestDeals = () => {
                 }
                 return true;
               })
-              .map((product): ProductData => {
-                // Now we know product is a valid object with proper typing
+              .map((product: any): ProductData => {
+                // Create a properly typed product object
                 const processedProduct: ProductData = {
-                  id: product.id,
+                  id: product.id || '',
                   name: product.name || '',
                   price: product.price || 0,
                   source_table: tableName,
-                  source_id: product.id,
+                  source_id: product.id || '',
                   // Ensure required fields have default values
                   category: product.category || '',
                   material: product.material || '',
