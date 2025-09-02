@@ -9,40 +9,40 @@ import { Card, CardContent } from '@/components/ui/card';
 const Financing = () => {
   const financingOptions = [
     {
-      name: "0% APR for 6 Months",
-      description: "No interest if paid in full within 6 months",
-      minAmount: "$299",
-      features: ["No credit check impact", "Instant approval", "Easy monthly payments"]
+      name: "Buy Now, Pay Later",
+      description: "Split your purchase into 4 interest-free installments",
+      provider: "Klarna, Afterpay, or Affirm",
+      features: ["Pay in 4 installments", "No interest when paid on time", "Instant approval"]
     },
     {
-      name: "0% APR for 12 Months",
-      description: "Extended payment terms for larger purchases",
-      minAmount: "$599",
-      features: ["Flexible payment schedule", "No hidden fees", "Early payoff option"]
+      name: "Stripe Installments",
+      description: "Spread payments over 6-12 months through Stripe",
+      provider: "Available for eligible purchases",
+      features: ["Monthly payments", "Transparent terms", "Secure processing"]
     },
     {
-      name: "Low APR Extended Terms",
-      description: "Competitive rates for 18-36 month terms",
-      minAmount: "$1,000",
-      features: ["Low monthly payments", "Fixed interest rates", "Up to 36 months"]
+      name: "Credit/Debit Cards",
+      description: "Pay with any major credit or debit card",
+      provider: "Powered by Stripe",
+      features: ["Instant processing", "Secure encryption", "Global acceptance"]
     }
   ];
 
   const benefits = [
     {
       icon: <CreditCard className="w-8 h-8 text-blue-600" />,
-      title: "Easy Application",
-      description: "Quick online application with instant decision in most cases"
+      title: "Stripe Powered",
+      description: "Industry-leading payment processing trusted by millions of businesses"
     },
     {
       icon: <Calendar className="w-8 h-8 text-blue-600" />,
-      title: "Flexible Terms",
-      description: "Choose payment terms that work best for your budget"
+      title: "Flexible Options",
+      description: "Multiple payment methods including BNPL and installment plans"
     },
     {
       icon: <Shield className="w-8 h-8 text-blue-600" />,
-      title: "Secure & Safe",
-      description: "Your personal information is protected with bank-level security"
+      title: "Bank-Level Security",
+      description: "Your payment information is protected with advanced encryption"
     }
   ];
 
@@ -55,14 +55,14 @@ const Financing = () => {
         {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            JEWELRY FINANCING
+            FLEXIBLE PAYMENT OPTIONS
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Make your dream jewelry affordable with our flexible financing options. 
-            Get approved in minutes and enjoy your purchase today.
+            Make your dream jewelry affordable with flexible payment options powered by Stripe. 
+            Choose from multiple payment methods including Buy Now, Pay Later solutions.
           </p>
           <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg">
-            Apply Now
+            Shop Now
           </Button>
         </div>
 
@@ -82,8 +82,8 @@ const Financing = () => {
                     <p className="text-gray-600 mb-4">
                       {option.description}
                     </p>
-                    <div className="text-2xl font-bold text-blue-600">
-                      Min. {option.minAmount}
+                    <div className="text-lg font-semibold text-blue-600">
+                      {option.provider}
                     </div>
                   </div>
                   
@@ -108,7 +108,7 @@ const Financing = () => {
         {/* Benefits */}
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
-            Why Choose Our Financing?
+            Why Choose Our Payment Options?
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             {benefits.map((benefit, index) => (
@@ -126,7 +126,7 @@ const Financing = () => {
         {/* How It Works */}
         <div className="bg-gray-50 rounded-lg p-8 mb-16">
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
-            How It Works
+            How Payment Options Work
           </h2>
           <div className="grid md:grid-cols-4 gap-8">
             <div className="text-center">
@@ -140,22 +140,22 @@ const Financing = () => {
               <div className="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold">
                 2
               </div>
-              <h3 className="font-semibold mb-2">Apply</h3>
-              <p className="text-gray-600 text-sm">Complete our quick application at checkout</p>
+              <h3 className="font-semibold mb-2">Choose Payment</h3>
+              <p className="text-gray-600 text-sm">Select your preferred payment method at checkout</p>
             </div>
             <div className="text-center">
               <div className="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold">
                 3
               </div>
-              <h3 className="font-semibold mb-2">Get Approved</h3>
-              <p className="text-gray-600 text-sm">Receive instant decision in most cases</p>
+              <h3 className="font-semibold mb-2">Secure Processing</h3>
+              <p className="text-gray-600 text-sm">All payments processed securely through Stripe</p>
             </div>
             <div className="text-center">
               <div className="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold">
                 4
               </div>
               <h3 className="font-semibold mb-2">Enjoy</h3>
-              <p className="text-gray-600 text-sm">Receive your jewelry and start making payments</p>
+              <p className="text-gray-600 text-sm">Receive your jewelry and manage payments easily</p>
             </div>
           </div>
         </div>
@@ -168,29 +168,29 @@ const Financing = () => {
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                What do I need to apply for financing?
+                What payment methods do you accept?
               </h3>
               <p className="text-gray-600">
-                You'll need to be at least 18 years old, have a valid Social Security number, 
-                and provide basic information about your income and employment.
+                We accept all major credit and debit cards, as well as Buy Now, Pay Later options 
+                like Klarna, Afterpay, and Affirm, all processed securely through Stripe.
               </p>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Will applying affect my credit score?
+                How does Buy Now, Pay Later work?
               </h3>
               <p className="text-gray-600">
-                We perform a soft credit check initially, which doesn't affect your credit score. 
-                A hard inquiry only occurs if you're approved and accept the financing terms.
+                BNPL options allow you to split your purchase into smaller, interest-free installments. 
+                The approval process is quick and you can complete your purchase immediately.
               </p>
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Can I pay off my balance early?
+                Is my payment information secure?
               </h3>
               <p className="text-gray-600">
-                Yes! You can pay off your balance early without any prepayment penalties. 
-                This can also help you save on interest charges.
+                Absolutely! All payments are processed through Stripe, which meets the highest 
+                security standards and is PCI DSS compliant for your protection.
               </p>
             </div>
           </div>
@@ -202,10 +202,10 @@ const Financing = () => {
             Ready to Get Started?
           </h2>
           <p className="text-gray-600 mb-6">
-            Apply for financing today and make your dream jewelry purchase affordable.
+            Start shopping today and choose your preferred payment method at checkout.
           </p>
           <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg">
-            Apply for Financing
+            Start Shopping
           </Button>
         </div>
       </div>
