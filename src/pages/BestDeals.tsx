@@ -78,7 +78,7 @@ const BestDeals = () => {
       // Fetch from all individual product tables
       const tableQueries = [
         'chain_products',
-        'bracelet_products',
+        'bracelet_products', 
         'earring_products',
         'grillz_products',
         'watch_products',
@@ -98,8 +98,7 @@ const BestDeals = () => {
           console.log(`Fetching from ${tableName}...`);
           const { data, error } = await supabase
             .from(tableName as any)
-            .select('*')
-            .eq('in_stock', true);
+            .select('*');
           
           if (error) {
             console.error(`Error fetching from ${tableName}:`, error);
@@ -107,31 +106,27 @@ const BestDeals = () => {
           }
 
           if (data && Array.isArray(data)) {
-            console.log(`Raw data from ${tableName}:`, data.length, 'items');
+            console.log(`Found ${data.length} items in ${tableName}`);
             
-            // Process each product with proper type checking
+            // Process each product
             const productsWithSource = data
               .filter((item: any) => {
-                // Simple validation - only exclude clearly invalid items
+                // Only exclude truly invalid items
                 if (!item || typeof item !== 'object') {
-                  console.log(`Filtered out invalid item from ${tableName}:`, item);
                   return false;
                 }
                 if (!item.id || typeof item.id !== 'string' || item.id.trim() === '') {
-                  console.log(`Filtered out item with invalid ID from ${tableName}:`, item);
                   return false;
                 }
                 return true;
               })
               .map((product: any): ProductData => {
-                // Create a properly typed product object
-                const processedProduct: ProductData = {
+                return {
                   id: product.id || '',
                   name: product.name || '',
                   price: product.price || 0,
                   source_table: tableName,
                   source_id: product.id || '',
-                  // Ensure required fields have default values
                   category: product.category || '',
                   material: product.material || '',
                   color: product.color || '',
@@ -164,14 +159,10 @@ const BestDeals = () => {
                   original_price: product.original_price,
                   stripe_price_id: product.stripe_price_id
                 };
-                
-                return processedProduct;
               });
 
             allProducts.push(...productsWithSource);
-            console.log(`Successfully processed ${productsWithSource.length} products from ${tableName}`);
-          } else {
-            console.log(`No data returned from ${tableName} or data is not an array`);
+            console.log(`Processed ${productsWithSource.length} products from ${tableName}`);
           }
         } catch (error) {
           console.error(`Exception when fetching from ${tableName}:`, error);
@@ -179,11 +170,6 @@ const BestDeals = () => {
       }
 
       console.log(`Total products fetched: ${allProducts.length}`);
-      console.log('Products by table:', allProducts.reduce((acc, product) => {
-        acc[product.source_table || 'unknown'] = (acc[product.source_table || 'unknown'] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>));
-      
       return allProducts;
     }
   });
@@ -344,21 +330,12 @@ const BestDeals = () => {
             </div>
           </div>
 
-          {/* Results count and breakdown */}
+          {/* Results count */}
           <div className="mb-6">
-            <p className="text-gray-600 mb-2">
+            <p className="text-gray-600">
               Showing {filteredProducts.length} products
               {categoryFilter !== 'all' && ` in ${categoryFilter.toUpperCase()}`}
             </p>
-            <div className="text-sm text-gray-500">
-              Products by category: {Object.entries(
-                products.reduce((acc, product) => {
-                  const category = product.category || 'uncategorized';
-                  acc[category] = (acc[category] || 0) + 1;
-                  return acc;
-                }, {} as Record<string, number>)
-              ).map(([category, count]) => `${category}: ${count}`).join(', ')}
-            </div>
           </div>
 
           {/* Products Grid */}
