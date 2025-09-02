@@ -19,9 +19,28 @@ import EngagementRingProductModal from '@/components/EngagementRingProductModal'
 import GlassesProductModal from '@/components/GlassesProductModal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+interface ProductData {
+  id: string;
+  name: string;
+  price: number;
+  original_price?: number;
+  category?: string;
+  material?: string;
+  image_url?: string;
+  rating?: number;
+  review_count?: number;
+  discount_percentage?: number;
+  in_stock?: boolean;
+  ships_today?: boolean;
+  featured?: boolean;
+  source_table?: string;
+  source_id?: string;
+  [key: string]: any;
+}
+
 const BestDeals = () => {
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  const [fullProductData, setFullProductData] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
+  const [fullProductData, setFullProductData] = useState<ProductData | null>(null);
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [sortBy, setSortBy] = useState('discount');
 
@@ -49,7 +68,7 @@ const BestDeals = () => {
         'custom_products'
       ];
 
-      const allProducts: any[] = [];
+      const allProducts: ProductData[] = [];
 
       for (const tableName of tableQueries) {
         try {
@@ -66,17 +85,18 @@ const BestDeals = () => {
           if (data && Array.isArray(data) && data.length > 0) {
             // Add source table info to each product - ensure each item is a valid object
             const productsWithSource = data
-              .filter((product): product is Record<string, any> => 
-                product !== null && 
-                typeof product === 'object' && 
-                'id' in product && 
-                product.id !== null
+              .filter((item): item is any => 
+                item !== null && 
+                typeof item === 'object' && 
+                'id' in item && 
+                item.id !== null &&
+                typeof item.id === 'string'
               )
-              .map(product => ({
+              .map((product) => ({
                 ...product,
                 source_table: tableName,
                 source_id: product.id
-              }));
+              } as ProductData));
 
             allProducts.push(...productsWithSource);
             console.log(`Fetched ${productsWithSource.length} products from ${tableName}`);
@@ -117,7 +137,7 @@ const BestDeals = () => {
     return `$${(price / 100).toLocaleString()}`;
   };
 
-  const handleProductClick = async (product: any) => {
+  const handleProductClick = async (product: ProductData) => {
     setSelectedProduct(product);
     setFullProductData(product);
   };
@@ -261,14 +281,14 @@ const BestDeals = () => {
                 >
                   <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100">
                     <img 
-                      src={product.image_url} 
+                      src={product.image_url || 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80'} 
                       alt={product.name} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                     />
 
                     {/* Badges */}
                     <div className="absolute top-3 left-3 flex flex-col gap-2">
-                      {product.discount_percentage > 0 && (
+                      {(product.discount_percentage || 0) > 0 && (
                         <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
                           {product.discount_percentage}% OFF
                         </Badge>
