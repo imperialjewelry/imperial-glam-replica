@@ -95,7 +95,7 @@ const CustomerReviews = () => {
             {[...Array(6)].map((_, setIndex) => <div key={setIndex} className="flex items-center gap-16 min-w-max">
                 <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images//afterpaylogo.webp" alt="Afterpay" className="h-8" />
                 <img src="https://cdn-assets.affirm.com/images/black_logo-white_bg.svg" alt="Affirm" className="h-8" />
-                <img src="https://www.paypalobjects.com/webstatic/icon/pp258.png" alt="PayPal Pay Later" className="h-8" />
+                <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/klarnalogo.webp" alt="Klarna Pay Later" className="h-8" />
                 <span className="text-xs text-gray-600 whitespace-nowrap">
                   Payment plans for 12–36 months
                 </span>
