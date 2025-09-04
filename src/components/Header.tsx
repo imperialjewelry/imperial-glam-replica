@@ -174,7 +174,7 @@ const Header = () => {
             <Menu className="w-6 h-6" />
           </Button>
 
-          <Link to="/" className="text-lg font-bold text-black tracking-wide">
+        <Link to="/" className="text-lg font-bold text-black tracking-wide">
             IMPERIAL JEWELRY
           </Link>
 
@@ -377,10 +377,14 @@ const Header = () => {
                   </Link>
                 </div>
 
-                {/* POLO G 🐐 */}
+                {/* POLO G 🐐 (updated with image) */}
                 <div className="flex items-center space-x-3 py-2">
-                  <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden bg-black flex items-center justify-center">
-                    <span className="text-white text-xl">🐐</span>
+                  <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
+                    <img
+                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Polo-G-Hitmakers-Rising-Star.webp"
+                      alt="Polo G Collection"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <Link to="/polo-g" className="text-sm font-medium text-gray-700 hover:text-black" onClick={() => setIsMenuOpen(false)}>
                     POLO G 🐐
