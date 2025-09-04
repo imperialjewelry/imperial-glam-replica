@@ -239,8 +239,7 @@ const PoloG = () => {
                 POLO G 🐐 COLLECTION
               </h1>
               <p className="max-w-2xl mx-auto text-zinc-50/95 text-center font-medium lg:text-lg text-base">
-                Exclusive jewelry collection inspired by the GOAT himself. Premium pieces
-                for those who demand excellence.
+                GOAT-certified shine. Crafted to perform.
               </p>
             </div>
           </div>
