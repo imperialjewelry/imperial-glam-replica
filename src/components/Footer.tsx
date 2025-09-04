@@ -253,25 +253,25 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <p className="text-sm font-semibold text-gray-800">PAY OVER TIME WITH</p>
-            <div className="flex items-center gap-6 flex-wrap">
+            <div className="flex items-center justify-center sm:justify-between gap-4 sm:gap-6 flex-wrap w-full sm:w-auto">
               <img
                 src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images//afterpaylogo.webp"
                 alt="Afterpay"
-                className="h-8 w-auto"
+                className="h-6 sm:h-7 md:h-8 w-auto"
                 loading="lazy"
                 decoding="async"
               />
               <img
                 src="https://cdn-assets.affirm.com/images/black_logo-white_bg.svg"
                 alt="Affirm"
-                className="h-8 w-auto"
+                className="h-6 sm:h-7 md:h-8 w-auto"
                 loading="lazy"
                 decoding="async"
               />
               <img
                 src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/klarnalogo.webp"
                 alt="Klarna"
-                className="h-8 w-auto"
+                className="h-6 sm:h-7 md:h-8 w-auto"
                 loading="lazy"
                 decoding="async"
               />
@@ -281,7 +281,7 @@ const Footer = () => {
       </div>
 
       {/* Utility Strip (back to black) */}
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4 pb-10 md:pb-8">
         <div className="mt-8 pt-4 border-t border-gray-800 text-center">
           <div className="text-xs text-gray-400">
             © 2025 Imperial Jewelry ·
