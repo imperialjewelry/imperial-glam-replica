@@ -207,25 +207,24 @@ const PoloG = () => {
       <PromoBar />
       <Header />
 
-      {/* Hero Section – less crop on LG, fully zoomed out on XL */}
+      {/* Hero Section – cover on all screens, desktop focal shift + gradient for readability */}
       <div className="relative w-full bg-black">
         <img
           src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/c54573a7e376ed9a76012f19209e0766.webp"
           alt="Polo G Collection Hero"
           className="
             w-full
-            h-[340px]
-            md:h-[420px]
-            lg:h-[480px]
-            xl:h-[560px]
+            h-[360px]
+            md:h-[520px]
+            lg:h-[620px]
             object-cover
-            lg:object-[50%_42%]
-            xl:object-contain
+            lg:object-[50%_35%]
             mx-auto
           "
           loading="eager"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/20 to-black/60" />
+        {/* subtle vertical gradient for text contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/20 to-black/60" />
         <div className="absolute inset-0 flex items-center">
           <div className="max-w-7xl mx-auto px-4 w-full">
             <div className="text-center text-white">
@@ -269,7 +268,9 @@ const PoloG = () => {
             {filteredProducts.length === 0 ? (
               <div className="text-center py-16">
                 <h3 className="text-xl font-semibold mb-2">No products found</h3>
-                <p className="text-gray-600">Try adjusting your filters or check back later for new arrivals.</p>
+                <p className="text-gray-600">
+                  Try adjusting your filters or check back later for new arrivals.
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
