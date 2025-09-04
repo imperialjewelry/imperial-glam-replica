@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
-import { ChevronDown, Filter, X } from 'lucide-react';
+import { useState } from 'react';
+import { Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PromoBar from '@/components/PromoBar';
-import { supabase } from '@/integrations/supabase/client';
 import { useProductFilters } from '@/hooks/useProductFilters';
 import FilterSection from '@/components/FilterSection';
 import PoloGProductModal from '@/components/PoloGProductModal';
@@ -13,7 +12,7 @@ import { Tables } from '@/integrations/supabase/types';
 type PoloGProduct = Tables<'polo_g'>;
 
 const PoloG = () => {
-  const [selectedFilters, setSelectedFilters] = useState<{[key: string]: string[]}>({
+  const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string[] }>({
     productTypes: [],
     colors: [],
     materials: [],
@@ -30,29 +29,17 @@ const PoloG = () => {
     let filtered = [...products];
 
     if (selectedFilters.productTypes.length > 0) {
-      filtered = filtered.filter(product =>
-        selectedFilters.productTypes.includes(product.product_type)
-      );
+      filtered = filtered.filter(p => selectedFilters.productTypes.includes(p.product_type));
     }
-
     if (selectedFilters.colors.length > 0) {
-      filtered = filtered.filter(product =>
-        selectedFilters.colors.includes(product.color)
-      );
+      filtered = filtered.filter(p => selectedFilters.colors.includes(p.color));
     }
-
     if (selectedFilters.materials.length > 0) {
-      filtered = filtered.filter(product =>
-        selectedFilters.materials.includes(product.material)
-      );
+      filtered = filtered.filter(p => selectedFilters.materials.includes(p.material));
     }
 
-    if (priceFrom) {
-      filtered = filtered.filter(product => product.price >= parseInt(priceFrom) * 100);
-    }
-    if (priceTo) {
-      filtered = filtered.filter(product => product.price <= parseInt(priceTo) * 100);
-    }
+    if (priceFrom) filtered = filtered.filter(p => p.price >= parseInt(priceFrom) * 100);
+    if (priceTo) filtered = filtered.filter(p => p.price <= parseInt(priceTo) * 100);
 
     switch (sortBy) {
       case 'price-low':
@@ -70,7 +57,6 @@ const PoloG = () => {
             new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
         );
     }
-
     return filtered;
   };
 
@@ -78,8 +64,8 @@ const PoloG = () => {
     setSelectedFilters(prev => ({
       ...prev,
       [category]: prev[category].includes(value)
-        ? prev[category].filter(item => item !== value)
-        : [...prev[category], value]
+        ? prev[category].filter(i => i !== value)
+        : [...prev[category], value],
     }));
   };
 
@@ -93,21 +79,21 @@ const PoloG = () => {
         title="PRODUCT TYPE"
         items={filters.productTypes}
         selectedItems={selectedFilters.productTypes}
-        onToggle={(item) => handleFilterChange('productTypes', item)}
+        onToggle={item => handleFilterChange('productTypes', item)}
       />
 
       <FilterSection
         title="COLOR"
         items={filters.colors}
         selectedItems={selectedFilters.colors}
-        onToggle={(item) => handleFilterChange('colors', item)}
+        onToggle={item => handleFilterChange('colors', item)}
       />
 
       <FilterSection
         title="MATERIAL"
         items={filters.materials}
         selectedItems={selectedFilters.materials}
-        onToggle={(item) => handleFilterChange('materials', item)}
+        onToggle={item => handleFilterChange('materials', item)}
       />
 
       <div className="mb-8">
@@ -117,14 +103,14 @@ const PoloG = () => {
             type="number"
             placeholder="From"
             value={priceFrom}
-            onChange={(e) => setPriceFrom(e.target.value)}
+            onChange={e => setPriceFrom(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
           />
           <input
             type="number"
             placeholder="To"
             value={priceTo}
-            onChange={(e) => setPriceTo(e.target.value)}
+            onChange={e => setPriceTo(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
           />
         </div>
@@ -146,7 +132,7 @@ const PoloG = () => {
 
         <select
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
+          onChange={e => setSortBy(e.target.value)}
           className="px-3 py-2 border border-gray-300 rounded text-sm"
         >
           <option value="newest">NEWEST</option>
@@ -162,21 +148,21 @@ const PoloG = () => {
             title="PRODUCT TYPE"
             items={filters.productTypes}
             selectedItems={selectedFilters.productTypes}
-            onToggle={(item) => handleFilterChange('productTypes', item)}
+            onToggle={item => handleFilterChange('productTypes', item)}
           />
 
           <FilterSection
             title="COLOR"
             items={filters.colors}
             selectedItems={selectedFilters.colors}
-            onToggle={(item) => handleFilterChange('colors', item)}
+            onToggle={item => handleFilterChange('colors', item)}
           />
 
           <FilterSection
             title="MATERIAL"
             items={filters.materials}
             selectedItems={selectedFilters.materials}
-            onToggle={(item) => handleFilterChange('materials', item)}
+            onToggle={item => handleFilterChange('materials', item)}
           />
 
           <div>
@@ -186,14 +172,14 @@ const PoloG = () => {
                 type="number"
                 placeholder="From"
                 value={priceFrom}
-                onChange={(e) => setPriceFrom(e.target.value)}
+                onChange={e => setPriceFrom(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
               />
               <input
                 type="number"
                 placeholder="To"
                 value={priceTo}
-                onChange={(e) => setPriceTo(e.target.value)}
+                onChange={e => setPriceTo(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
               />
             </div>
@@ -221,23 +207,24 @@ const PoloG = () => {
       <PromoBar />
       <Header />
 
-      {/* Hero Section (desktop zoomed out) */}
+      {/* Hero Section – cover on all screens, desktop focal shift + gradient for readability */}
       <div className="relative w-full bg-black">
         <img
           src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/c54573a7e376ed9a76012f19209e0766.webp"
           alt="Polo G Collection Hero"
           className="
             w-full
-            h-[340px]
+            h-[360px]
             md:h-[520px]
+            lg:h-[620px]
             object-cover
-            lg:object-contain
-            lg:h-[520px]
+            lg:object-[50%_35%]
             mx-auto
           "
           loading="eager"
         />
-        <div className="absolute inset-0 bg-black/45" />
+        {/* subtle vertical gradient for text contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/20 to-black/60" />
         <div className="absolute inset-0 flex items-center">
           <div className="max-w-7xl mx-auto px-4 w-full">
             <div className="text-center text-white">
@@ -251,20 +238,22 @@ const PoloG = () => {
       </div>
 
       <div className="max-w-7xl mx-auto flex">
-        <div className="hidden lg:block">
-          {renderDesktopFilters()}
-        </div>
+        {/* Desktop Filters */}
+        <div className="hidden lg:block">{renderDesktopFilters()}</div>
 
+        {/* Main Content */}
         <div className="flex-1">
+          {/* Mobile Filters */}
           {renderMobileFilters()}
 
+          {/* Desktop Sort */}
           <div className="hidden lg:flex items-center justify-between p-6 border-b">
             <h2 className="text-lg font-semibold">
               POLO G COLLECTION ({filteredProducts.length} products)
             </h2>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+              onChange={e => setSortBy(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded text-sm"
             >
               <option value="newest">NEWEST</option>
@@ -274,15 +263,18 @@ const PoloG = () => {
             </select>
           </div>
 
+          {/* Products Grid */}
           <div className="p-6">
             {filteredProducts.length === 0 ? (
               <div className="text-center py-16">
                 <h3 className="text-xl font-semibold mb-2">No products found</h3>
-                <p className="text-gray-600">Try adjusting your filters or check back later for new arrivals.</p>
+                <p className="text-gray-600">
+                  Try adjusting your filters or check back later for new arrivals.
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProducts.map((product) => (
+                {filteredProducts.map(product => (
                   <div
                     key={product.id}
                     className="group cursor-pointer"
@@ -294,7 +286,7 @@ const PoloG = () => {
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         loading="lazy"
-                        onError={(e) => {
+                        onError={e => {
                           const target = e.target as HTMLImageElement;
                           target.src =
                             'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=400&q=80';
@@ -345,6 +337,7 @@ const PoloG = () => {
         </div>
       </div>
 
+      {/* Product Modal */}
       {selectedProduct && (
         <PoloGProductModal
           product={selectedProduct}
