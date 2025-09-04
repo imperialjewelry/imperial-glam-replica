@@ -176,7 +176,7 @@ const PoloGProductModal = ({ product, onClose }: PoloGProductModalProps) => {
             <div className="space-y-6">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge className="bg-purple-500 text-white">POLO G 🐐</Badge>
+                  <Badge className="bg-black text-white">POLO G 🐐</Badge>
                   <Badge className="bg-green-500 text-white">IN STOCK</Badge>
                   <Badge className="bg-green-500 text-white flex items-center gap-1">
                     <Gift className="w-3 h-3" />
@@ -196,7 +196,7 @@ const PoloGProductModal = ({ product, onClose }: PoloGProductModalProps) => {
                 </div>
 
                 <div className="flex items-center space-x-4 mb-6">
-                  <span className="text-3xl font-bold text-purple-600">
+                  <span className="text-3xl font-bold text-black">
                     ${(getCurrentPriceInfo().price / 100).toFixed(2)}
                   </span>
                   {product.original_price && product.original_price > getCurrentPriceInfo().price && (
@@ -285,7 +285,7 @@ const PoloGProductModal = ({ product, onClose }: PoloGProductModalProps) => {
               {/* Add to Cart Button */}
               <Button
                 onClick={handleAddToCart}
-                className="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 text-lg"
+                className="w-full bg-black hover:bg-gray-800 text-white py-3 text-lg"
                 disabled={!getCurrentPriceInfo().stripe_price_id}
               >
                 <ShoppingCart className="w-5 h-5 mr-2" />
