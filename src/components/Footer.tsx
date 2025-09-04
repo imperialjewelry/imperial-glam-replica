@@ -100,8 +100,9 @@ const Footer = () => {
 
   return (
     <footer className="bg-black text-white">
+      {/* Main black section */}
       <div className="max-w-7xl mx-auto px-4 py-12">
-        {/* Contact Info */}
+        {/* Brand */}
         <div className="mb-8">
           <div className="flex items-center mb-4">
             <img
@@ -115,9 +116,8 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Desktop Layout */}
+        {/* Desktop columns */}
         <div className="hidden md:grid md:grid-cols-4 gap-8">
-          {/* Contact Information */}
           <div className="space-y-8">
             <div>
               <h3 className="text-sm font-semibold mb-4">CONTACT US</h3>
@@ -131,12 +131,11 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Footer Sections */}
-          {footerSections.map((section) => (
+          {footerSections.map(section => (
             <div key={section.title}>
               <h3 className="text-sm font-semibold mb-4">{section.title}</h3>
               <ul className="space-y-2">
-                {section.links.map((link) => (
+                {section.links.map(link => (
                   <li key={link.name}>
                     <Link
                       to={link.path}
@@ -151,9 +150,8 @@ const Footer = () => {
           ))}
         </div>
 
-        {/* Mobile Layout with Dropdowns */}
+        {/* Mobile accordions */}
         <div className="md:hidden space-y-4">
-          {/* Contact Section - Always Visible on Mobile */}
           <div className="border-b border-gray-700 pb-4">
             <h3 className="text-sm font-semibold mb-4">CONTACT US</h3>
             <div className="space-y-2 text-sm text-gray-300">
@@ -165,8 +163,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Main Footer Sections */}
-          {footerSections.map((section) => (
+          {footerSections.map(section => (
             <div key={section.title} className="border-b border-gray-700 pb-4">
               <button
                 onClick={() => toggleSection(section.title)}
@@ -181,7 +178,7 @@ const Footer = () => {
               </button>
               {openSections.includes(section.title) && (
                 <ul className="mt-4 space-y-2">
-                  {section.links.map((link) => (
+                  {section.links.map(link => (
                     <li key={link.name}>
                       <Link
                         to={link.path}
@@ -197,7 +194,7 @@ const Footer = () => {
           ))}
         </div>
 
-        {/* Newsletter and Social */}
+        {/* Newsletter & social */}
         <div className="mt-12 pt-8 border-t border-gray-700">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-6 md:space-y-0">
             <div className="flex-1 max-w-md">
@@ -207,7 +204,7 @@ const Footer = () => {
                   type="email"
                   placeholder="Email address"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   disabled={isSubmitting}
                   className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-l-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-50"
                   required
@@ -249,40 +246,43 @@ const Footer = () => {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Payment Options */}
-        <div className="mt-10 pt-6 border-t border-gray-700">
+      {/* Payment Options — full-width WHITE stripe */}
+      <div className="bg-white text-black">
+        <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-            <p className="text-sm text-gray-400 font-semibold">PAY OVER TIME WITH</p>
+            <p className="text-sm font-semibold text-gray-800">PAY OVER TIME WITH</p>
             <div className="flex items-center gap-6 flex-wrap">
               <img
                 src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images//afterpaylogo.webp"
                 alt="Afterpay"
-                className="h-8 w-auto opacity-90"
+                className="h-8 w-auto"
                 loading="lazy"
                 decoding="async"
               />
               <img
                 src="https://cdn-assets.affirm.com/images/black_logo-white_bg.svg"
                 alt="Affirm"
-                className="h-8 w-auto opacity-90"
+                className="h-8 w-auto"
                 loading="lazy"
                 decoding="async"
               />
-              {/* Replaced PayPal with Klarna */}
               <img
                 src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/klarnalogo.webp"
                 alt="Klarna"
-                className="h-8 w-auto opacity-90"
+                className="h-8 w-auto"
                 loading="lazy"
                 decoding="async"
               />
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Utility Strip */}
-        <div className="mt-8 pt-4 border-t border-gray-700 text-center">
+      {/* Utility Strip (back to black) */}
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="mt-8 pt-4 border-t border-gray-800 text-center">
           <div className="text-xs text-gray-400">
             © 2025 Imperial Jewelry ·
             <Link to="/legal/privacy" className="hover:text-white ml-1">
