@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Star, ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -12,6 +11,7 @@ import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import PendantProductModal from '../components/PendantProductModal';
+
 interface LengthPrice {
   length: string;
   price: number;
@@ -20,6 +20,7 @@ interface LengthPrice {
 interface PendantProduct extends Omit<Tables<'pendant_products'>, 'lengths_and_prices'> {
   lengths_and_prices?: LengthPrice[];
 }
+
 const Pendants = () => {
   const isMobile = useIsMobile();
   const [products, setProducts] = useState<PendantProduct[]>([]);
@@ -45,27 +46,31 @@ const Pendants = () => {
     gemstone: false,
     diamondCut: false
   });
+
   useEffect(() => {
     fetchProducts();
   }, []);
+
   useEffect(() => {
     applyFilters();
   }, [products, selectedFilters, priceFrom, priceTo, sortBy]);
+
   const fetchProducts = async () => {
     try {
-      const {
-        data,
-        error
-      } = await supabase.from('pendant_products').select('*').order('created_at', {
-        ascending: false
-      });
+      const { data, error } = await supabase
+        .from('pendant_products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
       if (error) throw error;
 
-      // Transform the data to match our interface
       const transformedData: PendantProduct[] = (data || []).map(product => ({
         ...product,
-        lengths_and_prices: Array.isArray(product.lengths_and_prices) ? product.lengths_and_prices as unknown as LengthPrice[] : []
+        lengths_and_prices: Array.isArray(product.lengths_and_prices)
+          ? (product.lengths_and_prices as unknown as LengthPrice[])
+          : []
       }));
+
       setProducts(transformedData);
     } catch (error) {
       console.error('Error fetching pendant products:', error);
@@ -74,17 +79,16 @@ const Pendants = () => {
     }
   };
 
-  // Helper function to get the base price for filtering and display
+  // Helper: base price (min of lengths_and_prices if present)
   const getBasePrice = (product: PendantProduct) => {
     const lengthsAndPrices = product.lengths_and_prices || [];
     if (lengthsAndPrices.length > 0) {
-      // Return the lowest price from lengths_and_prices
       return Math.min(...lengthsAndPrices.map(lp => lp.price));
     }
     return product.price;
   };
 
-  // Helper function to check if product has valid pricing
+  // Helper: valid pricing check
   const hasValidPricing = (product: PendantProduct) => {
     const lengthsAndPrices = product.lengths_and_prices || [];
     if (lengthsAndPrices.length > 0) {
@@ -92,35 +96,27 @@ const Pendants = () => {
     }
     return !!product.stripe_price_id;
   };
+
   const applyFilters = () => {
     let filtered = [...products];
 
-    // Apply product type filter
     if (selectedFilters.productType.length > 0) {
       filtered = filtered.filter(product => selectedFilters.productType.includes(product.product_type));
     }
-
-    // Apply color filter
     if (selectedFilters.color.length > 0) {
       filtered = filtered.filter(product => selectedFilters.color.includes(product.color));
     }
-
-    // Apply material filter
     if (selectedFilters.material.length > 0) {
       filtered = filtered.filter(product => selectedFilters.material.includes(product.material));
     }
-
-    // Apply gemstone filter
     if (selectedFilters.gemstone.length > 0) {
       filtered = filtered.filter(product => product.gemstone && selectedFilters.gemstone.includes(product.gemstone));
     }
-
-    // Apply diamond cut filter
     if (selectedFilters.diamondCut.length > 0) {
       filtered = filtered.filter(product => product.diamond_cut && selectedFilters.diamondCut.includes(product.diamond_cut));
     }
 
-    // Apply price range filter using base price
+    // Price range (in dollars UI vs cents stored)
     if (priceFrom || priceTo) {
       filtered = filtered.filter(product => {
         const price = getBasePrice(product) / 100;
@@ -130,7 +126,6 @@ const Pendants = () => {
       });
     }
 
-    // Apply sorting using base price
     switch (sortBy) {
       case 'price-low':
         filtered.sort((a, b) => getBasePrice(a) - getBasePrice(b));
@@ -142,66 +137,70 @@ const Pendants = () => {
         filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         break;
       default:
-        // Keep original order for featured
+        // featured: keep current order
         break;
     }
+
     setFilteredProducts(filtered);
   };
+
   const handleFilterChange = (filterType: keyof typeof selectedFilters, value: string) => {
     setSelectedFilters(prev => {
-      const currentFilters = prev[filterType];
-      const newFilters = currentFilters.includes(value) ? currentFilters.filter(item => item !== value) : [...currentFilters, value];
-      return {
-        ...prev,
-        [filterType]: newFilters
-      };
+      const current = prev[filterType];
+      const next = current.includes(value)
+        ? current.filter(item => item !== value)
+        : [...current, value];
+      return { ...prev, [filterType]: next };
     });
   };
+
   const toggleSection = (section: keyof typeof openSections) => {
-    setOpenSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
+    setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
+
   const getFilterOptions = (field: keyof PendantProduct) => {
-    const counts: {
-      [key: string]: number;
-    } = {};
+    const counts: { [key: string]: number } = {};
     products.forEach(product => {
       const value = product[field] as string;
-      if (value) {
-        counts[value] = (counts[value] || 0) + 1;
-      }
+      if (value) counts[value] = (counts[value] || 0) + 1;
     });
-    return Object.entries(counts).map(([name, count]) => ({
-      name,
-      count
-    }));
+    return Object.entries(counts).map(([name, count]) => ({ name, count }));
   };
+
   const productTypes = getFilterOptions('product_type');
   const colors = getFilterOptions('color');
   const materials = getFilterOptions('material');
   const gemstones = getFilterOptions('gemstone');
   const diamondCuts = getFilterOptions('diamond_cut');
-  const renderFilterCheckbox = (filterType: keyof typeof selectedFilters, option: {
-    name: string;
-    count: number;
-  }, prefix: string = '') => {
+
+  const renderFilterCheckbox = (
+    filterType: keyof typeof selectedFilters,
+    option: { name: string; count: number },
+    prefix = ''
+  ) => {
     const isChecked = selectedFilters[filterType].includes(option.name);
     const checkboxId = `${prefix}${option.name}`;
-    return <div key={option.name} className="flex items-center justify-between">
+    return (
+      <div key={option.name} className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Checkbox id={checkboxId} checked={isChecked} onCheckedChange={() => handleFilterChange(filterType, option.name)} />
+          <Checkbox
+            id={checkboxId}
+            checked={isChecked}
+            onCheckedChange={() => handleFilterChange(filterType, option.name)}
+          />
           <label htmlFor={checkboxId} className="text-sm text-gray-700">
             {option.name}
           </label>
         </div>
         <span className="text-sm text-gray-500">({option.count})</span>
-      </div>;
+      </div>
+    );
   };
-  const renderDesktopFilters = () => <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
+
+  const renderDesktopFilters = () => (
+    <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
       <h2 className="text-lg font-semibold mb-6">Filters</h2>
-      
+
       {/* Product Type */}
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">PRODUCT TYPE</h3>
@@ -216,11 +215,23 @@ const Pendants = () => {
         <div className="flex space-x-2">
           <div className="flex-1">
             <label className="block text-xs text-gray-500 mb-1">FROM</label>
-            <input type="number" value={priceFrom} onChange={e => setPriceFrom(e.target.value)} placeholder="0" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
+            <input
+              type="number"
+              value={priceFrom}
+              onChange={e => setPriceFrom(e.target.value)}
+              placeholder="0"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+            />
           </div>
           <div className="flex-1">
             <label className="block text-xs text-gray-500 mb-1">TO</label>
-            <input type="number" value={priceTo} onChange={e => setPriceTo(e.target.value)} placeholder="0" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
+            <input
+              type="number"
+              value={priceTo}
+              onChange={e => setPriceTo(e.target.value)}
+              placeholder="0"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+            />
           </div>
         </div>
       </div>
@@ -251,14 +262,16 @@ const Pendants = () => {
 
       {/* Diamond Cut */}
       <div className="mb-8">
-        
         <div className="space-y-3">
           {diamondCuts.map(cut => renderFilterCheckbox('diamondCut', cut, 'desktop-'))}
         </div>
       </div>
-    </div>;
-  const renderMobileFilters = () => showFilters && <div className="bg-white border rounded-lg mb-6 overflow-hidden">
-        
+    </div>
+  );
+
+  const renderMobileFilters = () =>
+    showFilters && (
+      <div className="bg-white border rounded-lg mb-6 overflow-hidden">
         {/* Sort By */}
         <div className="p-4 border-b">
           <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
@@ -298,11 +311,23 @@ const Pendants = () => {
             <div className="flex space-x-2">
               <div className="flex-1">
                 <label className="block text-xs text-gray-500 mb-1">FROM</label>
-                <input type="number" value={priceFrom} onChange={e => setPriceFrom(e.target.value)} placeholder="0" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
+                <input
+                  type="number"
+                  value={priceFrom}
+                  onChange={e => setPriceFrom(e.target.value)}
+                  placeholder="0"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                />
               </div>
               <div className="flex-1">
                 <label className="block text-xs text-gray-500 mb-1">TO</label>
-                <input type="number" value={priceTo} onChange={e => setPriceTo(e.target.value)} placeholder="0" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
+                <input
+                  type="number"
+                  value={priceTo}
+                  onChange={e => setPriceTo(e.target.value)}
+                  placeholder="0"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                />
               </div>
             </div>
           </CollapsibleContent>
@@ -359,10 +384,12 @@ const Pendants = () => {
             </div>
           </CollapsibleContent>
         </Collapsible>
-      </div>;
-  const pendantTypes = ["TENNIS PENDANTS", "CUBAN LINK PENDANTS", "BAGUETTE PENDANTS"];
+      </div>
+    );
+
   if (loading) {
-    return <div className="min-h-screen bg-white">
+    return (
+      <div className="min-h-screen bg-white">
         <PromoBar />
         <Header />
         <div className="flex items-center justify-center h-64">
@@ -372,59 +399,60 @@ const Pendants = () => {
           </div>
         </div>
         <Footer />
-      </div>;
+      </div>
+    );
   }
-  return <div className="min-h-screen bg-white">
+
+  return (
+    <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
-      
-      {/* Desktop Hero Section */}
-      {!isMobile && <section className="bg-gray-50 py-12 px-8">
+
+      {/* Desktop Hero Section (row removed) */}
+      {!isMobile && (
+        <section className="bg-gray-50 py-12 px-8">
           <div className="max-w-7xl mx-auto">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 MOISSANITE DIAMOND PENDANTS
               </h1>
-              <p className="text-lg text-gray-600 mb-8">
+              <p className="text-lg text-gray-600 mb-0">
                 All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Pendants
               </p>
-              
-              <div className="flex justify-center space-x-8 text-sm text-gray-500">
-                {pendantTypes.map((type, index) => <span key={index} className="border-r border-gray-300 pr-8 last:border-r-0">
-                    {type}
-                  </span>)}
-              </div>
             </div>
           </div>
-        </section>}
+        </section>
+      )}
 
-      {/* Mobile Hero Section */}
-      {isMobile && <section className="bg-gray-50 py-6 px-3">
+      {/* Mobile Hero Section (row removed) */}
+      {isMobile && (
+        <section className="bg-gray-50 py-6 px-3">
           <div className="max-w-sm mx-auto">
             <div className="grid grid-cols-4 gap-1.5 mb-4">
-              {filteredProducts.slice(0, 4).map((product, index) => <img key={index} src={product.image_url} alt={`Pendant ${index + 1}`} className="w-full aspect-square rounded-lg object-cover" />)}
+              {filteredProducts.slice(0, 4).map((product, index) => (
+                <img
+                  key={index}
+                  src={product.image_url}
+                  alt={`Pendant ${index + 1}`}
+                  className="w-full aspect-square rounded-lg object-cover"
+                />
+              ))}
             </div>
-            
+
             <div className="text-center">
               <h1 className="text-xl font-bold text-gray-900 mb-2">
                 MOISSANITE DIAMOND PENDANTS
               </h1>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-600 mb-0">
                 All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Pendants
               </p>
-              
-              <div className="flex justify-center space-x-3 mb-4 text-xs">
-                {pendantTypes.map((type, index) => <span key={index} className="text-gray-500 border-r border-gray-300 pr-3 last:border-r-0">
-                    {type}
-                  </span>)}
-              </div>
             </div>
           </div>
-        </section>}
+        </section>
+      )}
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
-        {/* Desktop Sidebar Filters */}
         {!isMobile && renderDesktopFilters()}
 
         {/* Products Section */}
@@ -435,7 +463,8 @@ const Pendants = () => {
               {filteredProducts.filter(product => hasValidPricing(product)).length} Products
             </span>
             <div className="flex items-center space-x-4">
-              {!isMobile && <Select value={sortBy} onValueChange={setSortBy}>
+              {!isMobile && (
+                <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Sort By" />
                   </SelectTrigger>
@@ -445,68 +474,96 @@ const Pendants = () => {
                     <SelectItem value="price-high">Price: High to Low</SelectItem>
                     <SelectItem value="newest">Newest</SelectItem>
                   </SelectContent>
-                </Select>}
-              {isMobile && <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)} className="flex items-center space-x-2 text-xs px-3 py-1.5">
+                </Select>
+              )}
+              {isMobile && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center space-x-2 text-xs px-3 py-1.5"
+                >
                   <Filter className="w-3 h-3" />
                   <span>FILTER</span>
-                </Button>}
+                </Button>
+              )}
             </div>
           </div>
 
           {/* Mobile Collapsible Filters */}
           {isMobile && renderMobileFilters()}
 
-          {/* Products Grid - Clean design without badges or overlays */}
+          {/* Products Grid */}
           <div className={`grid ${isMobile ? 'grid-cols-2 gap-2' : 'grid-cols-4 gap-4'}`}>
-            {filteredProducts.filter(product => hasValidPricing(product)).map(product => {
-            const basePrice = getBasePrice(product);
-            const lengthsAndPrices = product.lengths_and_prices || [];
-            const hasVariablePricing = lengthsAndPrices.length > 0;
-            return <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer group" onClick={() => setSelectedProduct(product)}>
-                    
-                    {/* Product Image - Clean without overlays or badges */}
+            {filteredProducts
+              .filter(product => hasValidPricing(product))
+              .map(product => {
+                const basePrice = getBasePrice(product);
+                const lengthsAndPrices = product.lengths_and_prices || [];
+                const hasVariablePricing = lengthsAndPrices.length > 0;
+
+                return (
+                  <div
+                    key={product.id}
+                    className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer group"
+                    onClick={() => setSelectedProduct(product)}
+                  >
+                    {/* Image */}
                     <div className="relative aspect-square overflow-hidden rounded-t-lg">
-                      <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
                     </div>
 
-                    {/* Product Info */}
+                    {/* Info */}
                     <div className={`${isMobile ? 'p-2 space-y-1.5' : 'p-3 space-y-2'}`}>
                       <div className={`text-gray-500 uppercase ${isMobile ? 'text-xs' : 'text-xs'} font-medium`}>
                         {product.category}
                       </div>
-                      
+
                       <h3 className={`font-medium text-gray-900 line-clamp-2 leading-tight ${isMobile ? 'text-xs' : 'text-sm'}`}>
                         {product.name}
                       </h3>
-                      
+
                       <div className="flex items-center space-x-1">
                         <div className="flex">
-                          {[...Array(5)].map((_, i) => <Star key={i} className={`fill-yellow-400 text-yellow-400 ${isMobile ? 'w-2.5 h-2.5' : 'w-3 h-3'}`} />)}
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className={`fill-yellow-400 text-yellow-400 ${isMobile ? 'w-2.5 h-2.5' : 'w-3 h-3'}`} />
+                          ))}
                         </div>
                         <span className={`text-gray-500 ${isMobile ? 'text-xs' : 'text-xs'}`}>({product.review_count})</span>
                       </div>
-                      
+
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-1.5">
                           <span className={`font-bold text-blue-600 ${isMobile ? 'text-sm' : 'text-lg'}`}>
                             {hasVariablePricing ? 'From ' : ''}${(basePrice / 100).toFixed(2)}
                           </span>
-                          {product.original_price && product.original_price > basePrice && <span className={`text-gray-500 line-through ${isMobile ? 'text-xs' : 'text-sm'}`}>
+                          {product.original_price && product.original_price > basePrice && (
+                            <span className={`text-gray-500 line-through ${isMobile ? 'text-xs' : 'text-sm'}`}>
                               ${(product.original_price / 100).toFixed(2)}
-                            </span>}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
-                  </div>;
-          })}
+                  </div>
+                );
+              })}
           </div>
         </div>
       </div>
 
       {/* Product Modal */}
-      {selectedProduct && <PendantProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
+      {selectedProduct && (
+        <PendantProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
+      )}
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default Pendants;
