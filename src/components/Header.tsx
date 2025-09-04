@@ -10,7 +10,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { dispatch, getTotalItems } = useCart();
 
-  const navigation = ['ALL JEWELRY', 'CHAINS', 'BRACELETS', 'WATCHES', 'PENDANTS', 'EARRINGS', 'CUSTOM', 'GRILLZ', 'GLASSES', 'RINGS', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
+  const navigation = ['ALL JEWELRY', 'CHAINS', 'BRACELETS', 'WATCHES', 'PENDANTS', 'EARRINGS', 'CUSTOM', 'GRILLZ', 'GLASSES', 'RINGS', 'DIAMOND', 'VVS DIAMOND SIMULANTS', 'POLO G 🐐'];
   const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
 
   return (
@@ -117,7 +117,8 @@ const Header = () => {
                       item === 'GRILLZ' ? '/grillz' :
                       item === 'GLASSES' ? '/glasses' :
                       item === 'DIAMOND' ? '/diamond' :
-                      item === 'VVS DIAMOND SIMULANTS' ? '/vvs-diamond-simulants' :
+                       item === 'VVS DIAMOND SIMULANTS' ? '/vvs-diamond-simulants' :
+                       item === 'POLO G 🐐' ? '/polo-g' :
                       '/'
                     }
                     className="text-gray-700 hover:text-black transition-colors"
@@ -349,6 +350,16 @@ const Header = () => {
                   </div>
                   <Link to="/vvs-diamond-simulants" className="text-sm font-medium text-gray-700 hover:text-black" onClick={() => setIsMenuOpen(false)}>
                     VVS DIAMOND SIMULANTS
+                  </Link>
+                </div>
+
+                {/* POLO G 🐐 */}
+                <div className="flex items-center space-x-3 py-2">
+                  <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden bg-black flex items-center justify-center">
+                    <span className="text-white text-xl">🐐</span>
+                  </div>
+                  <Link to="/polo-g" className="text-sm font-medium text-gray-700 hover:text-black" onClick={() => setIsMenuOpen(false)}>
+                    POLO G 🐐
                   </Link>
                 </div>
               </div>

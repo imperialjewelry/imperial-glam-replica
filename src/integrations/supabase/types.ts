@@ -886,6 +886,84 @@ export type Database = {
         }
         Relationships: []
       }
+      polo_g: {
+        Row: {
+          category: string
+          color: string
+          created_at: string
+          description: string | null
+          discount_percentage: number | null
+          featured: boolean | null
+          gemstone: string | null
+          id: string
+          image_url: string
+          in_stock: boolean | null
+          lengths_and_prices: Json | null
+          material: string
+          name: string
+          original_price: number | null
+          price: number
+          product_type: string
+          rating: number | null
+          review_count: number | null
+          ships_today: boolean | null
+          sizes: string[] | null
+          stripe_price_id: string | null
+          stripe_product_id: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          color: string
+          created_at?: string
+          description?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
+          gemstone?: string | null
+          id?: string
+          image_url: string
+          in_stock?: boolean | null
+          lengths_and_prices?: Json | null
+          material: string
+          name: string
+          original_price?: number | null
+          price: number
+          product_type: string
+          rating?: number | null
+          review_count?: number | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          stripe_price_id?: string | null
+          stripe_product_id: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          color?: string
+          created_at?: string
+          description?: string | null
+          discount_percentage?: number | null
+          featured?: boolean | null
+          gemstone?: string | null
+          id?: string
+          image_url?: string
+          in_stock?: boolean | null
+          lengths_and_prices?: Json | null
+          material?: string
+          name?: string
+          original_price?: number | null
+          price?: number
+          product_type?: string
+          rating?: number | null
+          review_count?: number | null
+          ships_today?: boolean | null
+          sizes?: string[] | null
+          stripe_price_id?: string | null
+          stripe_product_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           carat_weight: string | null
