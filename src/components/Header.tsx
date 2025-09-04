@@ -79,7 +79,7 @@ const Header = () => {
         {/* Main navigation */}
         <div className="border-t border-gray-200">
           <div className="max-w-7xl mx-auto px-4 py-3">
-            <div className="flex items-center justify-center space-x-8 text-sm font-medium">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-medium">
               {navigation.map(item => {
                 if (item === 'RINGS') {
                   return (
@@ -103,6 +103,32 @@ const Header = () => {
                     </DropdownMenu>
                   );
                 }
+
+                if (item === 'VVS DIAMOND SIMULANTS') {
+                  return (
+                    <Link
+                      key={item}
+                      to="/vvs-diamond-simulants"
+                      className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors -mr-2"
+                    >
+                      VVS DIAMOND SIMULANTS
+                    </Link>
+                  );
+                }
+
+                if (item.startsWith('POLO G')) {
+                  return (
+                    <Link
+                      key="polo-g"
+                      to="/polo-g"
+                      className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors -ml-2"
+                    >
+                      <span>POLO G</span>
+                      <span aria-hidden className="text-base leading-none">🐐</span>
+                    </Link>
+                  );
+                }
+
                 return (
                   <Link
                     key={item}
@@ -117,11 +143,9 @@ const Header = () => {
                       item === 'GRILLZ' ? '/grillz' :
                       item === 'GLASSES' ? '/glasses' :
                       item === 'DIAMOND' ? '/diamond' :
-                       item === 'VVS DIAMOND SIMULANTS' ? '/vvs-diamond-simulants' :
-                       item === 'POLO G 🐐' ? '/polo-g' :
                       '/'
                     }
-                    className="text-gray-700 hover:text-black transition-colors"
+                    className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors"
                   >
                     {item}
                   </Link>
@@ -398,3 +422,5 @@ const Header = () => {
 };
 
 export default Header;
+
+
