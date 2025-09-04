@@ -31,24 +31,24 @@ const PoloG = () => {
 
     // Apply category filters
     if (selectedFilters.productTypes.length > 0) {
-      filtered = filtered.filter(product => 
+      filtered = filtered.filter(product =>
         selectedFilters.productTypes.includes(product.product_type)
       );
     }
 
     if (selectedFilters.colors.length > 0) {
-      filtered = filtered.filter(product => 
+      filtered = filtered.filter(product =>
         selectedFilters.colors.includes(product.color)
       );
     }
 
     if (selectedFilters.materials.length > 0) {
-      filtered = filtered.filter(product => 
+      filtered = filtered.filter(product =>
         selectedFilters.materials.includes(product.material)
       );
     }
 
-    // Apply price filters
+    // Apply price filters (stored in cents)
     if (priceFrom) {
       filtered = filtered.filter(product => product.price >= parseInt(priceFrom) * 100);
     }
@@ -65,10 +65,13 @@ const PoloG = () => {
         filtered.sort((a, b) => b.price - a.price);
         break;
       case 'rating':
-        filtered.sort((a, b) => b.rating - a.rating);
+        filtered.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
         break;
       default:
-        filtered.sort((a, b) => new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime());
+        filtered.sort(
+          (a, b) =>
+            new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
+        );
     }
 
     return filtered;
@@ -88,7 +91,7 @@ const PoloG = () => {
   const renderDesktopFilters = () => (
     <div className="w-64 bg-white p-6 border-r">
       <h2 className="text-lg font-semibold mb-6">FILTERS</h2>
-      
+
       <FilterSection
         title="PRODUCT TYPE"
         items={filters.productTypes}
@@ -143,7 +146,7 @@ const PoloG = () => {
           <Filter className="w-4 h-4" />
           <span>FILTER</span>
         </Button>
-        
+
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
@@ -220,16 +223,25 @@ const PoloG = () => {
     <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
-      
-      {/* Hero Section */}
-      <div className="bg-black text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-4xl lg:text-6xl font-bold mb-4">
-            POLO G 🐐 COLLECTION
-          </h1>
-          <p className="text-lg lg:text-xl text-gray-300 max-w-2xl mx-auto">
-            Exclusive jewelry collection inspired by the GOAT himself. Premium pieces for those who demand excellence.
-          </p>
+
+      {/* Hero Section (updated with background image + overlay) */}
+      <div className="relative w-full">
+        <img
+          src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/c54573a7e376ed9a76012f19209e0766.webp"
+          alt="Polo G Collection Hero"
+          className="w-full h-[340px] md:h-[520px] object-cover"
+          loading="eager"
+        />
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 flex items-center">
+          <div className="max-w-7xl mx-auto px-4 w-full">
+            <div className="text-center text-white">
+              <h1 className="text-4xl lg:text-6xl font-bold mb-4">POLO G 🐐 COLLECTION</h1>
+              <p className="text-lg lg:text-xl text-gray-200 max-w-2xl mx-auto">
+                Exclusive jewelry collection inspired by the GOAT himself. Premium pieces for those who demand excellence.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -284,7 +296,8 @@ const PoloG = () => {
                         loading="lazy"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.src = 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=400&q=80';
+                          target.src =
+                            'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=400&q=80';
                         }}
                       />
                       {product.discount_percentage > 0 && (
@@ -306,7 +319,7 @@ const PoloG = () => {
                       <div className="flex items-center space-x-1">
                         <div className="flex text-yellow-400">
                           {[...Array(5)].map((_, i) => (
-                            <span key={i} className={i < Math.floor(product.rating) ? "★" : "☆"}>
+                            <span key={i} className={i < Math.floor(product.rating ?? 0) ? '★' : '☆'}>
                               ★
                             </span>
                           ))}
