@@ -7,29 +7,10 @@ import PromoBar from '@/components/PromoBar';
 import { supabase } from '@/integrations/supabase/client';
 import { useProductFilters, FilterOptions } from '@/hooks/useProductFilters';
 import FilterSection from '@/components/FilterSection';
+import PoloGProductModal from '@/components/PoloGProductModal';
+import { Tables } from '@/integrations/supabase/types';
 
-interface PoloGProduct {
-  id: string;
-  name: string;
-  description?: string;
-  category: string;
-  product_type: string;
-  color: string;
-  material: string;
-  gemstone?: string;
-  image_url: string;
-  price: number;
-  original_price?: number;
-  rating: number;
-  review_count: number;
-  discount_percentage: number;
-  in_stock: boolean;
-  ships_today: boolean;
-  featured: boolean;
-  sizes: string[];
-  lengths_and_prices: Array<{ length: string; price: number }>;
-  stripe_price_id?: string;
-}
+type PoloGProduct = Tables<'polo_g'>;
 
 const PoloG = () => {
   const [selectedFilters, setSelectedFilters] = useState<{[key: string]: string[]}>({
@@ -87,7 +68,7 @@ const PoloG = () => {
         filtered.sort((a, b) => b.rating - a.rating);
         break;
       default:
-        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        filtered.sort((a, b) => new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime());
     }
 
     return filtered;
@@ -350,6 +331,14 @@ const PoloG = () => {
           </div>
         </div>
       </div>
+
+      {/* Product Modal */}
+      {selectedProduct && (
+        <PoloGProductModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
 
       <Footer />
     </div>
