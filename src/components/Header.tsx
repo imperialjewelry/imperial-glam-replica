@@ -114,7 +114,7 @@ const Header = () => {
         <div className="bg-gray-100 px-4 py-2 text-center">
           <div className="flex items-center justify-center space-x-1 text-sm">
             {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}
-            <span className="text-gray-600 ml-2">30,000+ Reviews</span>
+            <span className="text-gray-600 ml-2">2,000+ Reviews</span>
           </div>
         </div>
 
