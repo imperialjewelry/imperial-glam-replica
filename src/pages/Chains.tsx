@@ -13,12 +13,12 @@ import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import ChainProductModal from '../components/ChainProductModal';
+
 type ChainProduct = Tables<'chain_products'>;
+
 const Chains = () => {
   const isMobile = useIsMobile();
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const [products, setProducts] = useState<ChainProduct[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<ChainProduct[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<ChainProduct | null>(null);
@@ -38,44 +38,58 @@ const Chains = () => {
     color: false,
     material: false
   });
+
   useEffect(() => {
     fetchProducts();
   }, []);
+
   useEffect(() => {
     applyFilters();
   }, [products, selectedFilters, priceFrom, priceTo, sortBy]);
+
   const fetchProducts = async () => {
     try {
-      const {
-        data,
-        error
-      } = await supabase.from('chain_products').select('*').order('featured', {
-        ascending: false
-      });
+      const { data, error } = await supabase
+        .from('chain_products')
+        .select('*')
+        .order('featured', { ascending: false });
+
       if (error) throw error;
+      
       setProducts(data || []);
     } catch (error) {
       console.error('Error fetching products:', error);
       toast({
         title: "Error loading products",
         description: "Please try refreshing the page.",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
   };
+
   const applyFilters = () => {
     let filtered = [...products];
+
     if (selectedFilters.productType.length > 0) {
-      filtered = filtered.filter(product => selectedFilters.productType.includes(product.product_type));
+      filtered = filtered.filter(product => 
+        selectedFilters.productType.includes(product.product_type)
+      );
     }
+
     if (selectedFilters.color.length > 0) {
-      filtered = filtered.filter(product => selectedFilters.color.includes(product.color));
+      filtered = filtered.filter(product => 
+        selectedFilters.color.includes(product.color)
+      );
     }
+
     if (selectedFilters.material.length > 0) {
-      filtered = filtered.filter(product => selectedFilters.material.includes(product.material));
+      filtered = filtered.filter(product => 
+        selectedFilters.material.includes(product.material)
+      );
     }
+
     if (priceFrom || priceTo) {
       filtered = filtered.filter(product => {
         const price = product.price / 100;
@@ -84,6 +98,7 @@ const Chains = () => {
         return price >= fromPrice && price <= toPrice;
       });
     }
+
     switch (sortBy) {
       case 'price-low':
         filtered.sort((a, b) => a.price - b.price);
@@ -97,65 +112,79 @@ const Chains = () => {
       default:
         break;
     }
+
     setFilteredProducts(filtered);
   };
+
   const handleFilterChange = (filterType: keyof typeof selectedFilters, value: string) => {
     setSelectedFilters(prev => {
       const currentFilters = prev[filterType];
-      const newFilters = currentFilters.includes(value) ? currentFilters.filter(item => item !== value) : [...currentFilters, value];
+      const newFilters = currentFilters.includes(value)
+        ? currentFilters.filter(item => item !== value)
+        : [...currentFilters, value];
+      
       return {
         ...prev,
         [filterType]: newFilters
       };
     });
   };
+
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({
       ...prev,
       [section]: !prev[section]
     }));
   };
+
   const getFilterOptions = (field: keyof ChainProduct) => {
-    const counts: {
-      [key: string]: number;
-    } = {};
+    const counts: { [key: string]: number } = {};
     products.forEach(product => {
       const value = product[field] as string;
       if (value) {
         counts[value] = (counts[value] || 0) + 1;
       }
     });
-    return Object.entries(counts).map(([name, count]) => ({
-      name,
-      count
-    }));
+    return Object.entries(counts).map(([name, count]) => ({ name, count }));
   };
+
   const productTypes = getFilterOptions('product_type');
   const colors = getFilterOptions('color');
   const materials = getFilterOptions('material');
-  const renderFilterCheckbox = (filterType: keyof typeof selectedFilters, option: {
-    name: string;
-    count: number;
-  }, prefix: string = '') => {
+
+  const renderFilterCheckbox = (
+    filterType: keyof typeof selectedFilters,
+    option: { name: string; count: number },
+    prefix: string = ''
+  ) => {
     const isChecked = selectedFilters[filterType].includes(option.name);
     const checkboxId = `${prefix}${option.name}`;
-    return <div key={option.name} className="flex items-center justify-between">
+    
+    return (
+      <div key={option.name} className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Checkbox id={checkboxId} checked={isChecked} onCheckedChange={() => handleFilterChange(filterType, option.name)} />
+          <Checkbox 
+            id={checkboxId}
+            checked={isChecked}
+            onCheckedChange={() => handleFilterChange(filterType, option.name)}
+          />
           <label htmlFor={checkboxId} className="text-sm text-gray-700">
             {option.name}
           </label>
         </div>
         <span className="text-sm text-gray-500">({option.count})</span>
-      </div>;
+      </div>
+    );
   };
-  const renderDesktopFilters = () => <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
+
+  const renderDesktopFilters = () => (
+    <div className="w-64 bg-white p-6 border-r border-gray-200 min-h-screen">
       <h2 className="text-lg font-semibold mb-6">Filters</h2>
       
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">PRODUCT TYPE</h3>
         <div className="space-y-3">
-          {productTypes.map(type => renderFilterCheckbox('productType', type, 'desktop-'))}
+          {productTypes.map((type) => renderFilterCheckbox('productType', type, 'desktop-'))}
         </div>
       </div>
 
@@ -164,11 +193,23 @@ const Chains = () => {
         <div className="flex space-x-2">
           <div className="flex-1">
             <label className="block text-xs text-gray-500 mb-1">FROM</label>
-            <input type="number" value={priceFrom} onChange={e => setPriceFrom(e.target.value)} placeholder="0" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
+            <input
+              type="number"
+              value={priceFrom}
+              onChange={(e) => setPriceFrom(e.target.value)}
+              placeholder="0"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+            />
           </div>
           <div className="flex-1">
             <label className="block text-xs text-gray-500 mb-1">TO</label>
-            <input type="number" value={priceTo} onChange={e => setPriceTo(e.target.value)} placeholder="0" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
+            <input
+              type="number"
+              value={priceTo}
+              onChange={(e) => setPriceTo(e.target.value)}
+              placeholder="0"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+            />
           </div>
         </div>
       </div>
@@ -176,18 +217,22 @@ const Chains = () => {
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">COLOR</h3>
         <div className="space-y-3">
-          {colors.map(color => renderFilterCheckbox('color', color, 'desktop-'))}
+          {colors.map((color) => renderFilterCheckbox('color', color, 'desktop-'))}
         </div>
       </div>
 
       <div className="mb-8">
         <h3 className="font-medium text-gray-900 mb-4 uppercase">MATERIAL</h3>
         <div className="space-y-3">
-          {materials.map(material => renderFilterCheckbox('material', material, 'desktop-'))}
+          {materials.map((material) => renderFilterCheckbox('material', material, 'desktop-'))}
         </div>
       </div>
-    </div>;
-  const renderMobileFilters = () => showFilters && <div className="bg-white border rounded-lg mb-6 overflow-hidden">
+    </div>
+  );
+
+  const renderMobileFilters = () => (
+    showFilters && (
+      <div className="bg-white border rounded-lg mb-6 overflow-hidden">
         
         <div className="p-4 border-b">
           <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
@@ -211,7 +256,7 @@ const Chains = () => {
           </CollapsibleTrigger>
           <CollapsibleContent className="p-4 border-b">
             <div className="space-y-3">
-              {productTypes.map(type => renderFilterCheckbox('productType', type))}
+              {productTypes.map((type) => renderFilterCheckbox('productType', type))}
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -225,11 +270,23 @@ const Chains = () => {
             <div className="flex space-x-2">
               <div className="flex-1">
                 <label className="block text-xs text-gray-500 mb-1">FROM</label>
-                <input type="number" value={priceFrom} onChange={e => setPriceFrom(e.target.value)} placeholder="0" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
+                <input
+                  type="number"
+                  value={priceFrom}
+                  onChange={(e) => setPriceFrom(e.target.value)}
+                  placeholder="0"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                />
               </div>
               <div className="flex-1">
                 <label className="block text-xs text-gray-500 mb-1">TO</label>
-                <input type="number" value={priceTo} onChange={e => setPriceTo(e.target.value)} placeholder="0" className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" />
+                <input
+                  type="number"
+                  value={priceTo}
+                  onChange={(e) => setPriceTo(e.target.value)}
+                  placeholder="0"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                />
               </div>
             </div>
           </CollapsibleContent>
@@ -242,7 +299,7 @@ const Chains = () => {
           </CollapsibleTrigger>
           <CollapsibleContent className="p-4 border-b">
             <div className="space-y-3">
-              {colors.map(color => renderFilterCheckbox('color', color))}
+              {colors.map((color) => renderFilterCheckbox('color', color))}
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -254,14 +311,23 @@ const Chains = () => {
           </CollapsibleTrigger>
           <CollapsibleContent className="p-4">
             <div className="space-y-3">
-              {materials.map(material => renderFilterCheckbox('material', material))}
+              {materials.map((material) => renderFilterCheckbox('material', material))}
             </div>
           </CollapsibleContent>
         </Collapsible>
-      </div>;
-  const chainTypes = ["TENNIS CHAINS", "CUBAN LINK CHAINS", "BAGUETTE CHAINS"];
+      </div>
+    )
+  );
+
+  const chainTypes = [
+    "TENNIS CHAINS",
+    "CUBAN LINK CHAINS", 
+    "BAGUETTE CHAINS"
+  ];
+
   if (loading) {
-    return <div className="min-h-screen bg-white">
+    return (
+      <div className="min-h-screen bg-white">
         <PromoBar />
         <Header />
         <div className="flex items-center justify-center h-64">
@@ -271,14 +337,18 @@ const Chains = () => {
           </div>
         </div>
         <Footer />
-      </div>;
+      </div>
+    );
   }
-  return <div className="min-h-screen bg-white">
+
+  return (
+    <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
       
       {/* Desktop Hero Section */}
-      {!isMobile && <section className="bg-gray-50 py-12 px-8">
+      {!isMobile && (
+        <section className="bg-gray-50 py-12 px-8">
           <div className="max-w-7xl mx-auto">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -289,19 +359,30 @@ const Chains = () => {
               </p>
               
               <div className="flex justify-center space-x-8 text-sm text-gray-500">
-                {chainTypes.map((type, index) => <span key={index} className="border-r border-gray-300 pr-8 last:border-r-0">
+                {chainTypes.map((type, index) => (
+                  <span key={index} className="border-r border-gray-300 pr-8 last:border-r-0">
                     {type}
-                  </span>)}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
-        </section>}
+        </section>
+      )}
 
       {/* Mobile Hero Section */}
-      {isMobile && <section className="bg-gray-50 py-6 px-3">
+      {isMobile && (
+        <section className="bg-gray-50 py-6 px-3">
           <div className="max-w-sm mx-auto">
             <div className="grid grid-cols-4 gap-1.5 mb-4">
-              {filteredProducts.slice(0, 4).map((product, index) => <img key={index} src={product.image_url} alt={`Chain ${index + 1}`} className="w-full aspect-square rounded-lg object-cover" />)}
+              {filteredProducts.slice(0, 4).map((product, index) => (
+                <img 
+                  key={index}
+                  src={product.image_url} 
+                  alt={`Chain ${index + 1}`} 
+                  className="w-full aspect-square rounded-lg object-cover"
+                />
+              ))}
             </div>
             
             <div className="text-center">
@@ -313,11 +394,16 @@ const Chains = () => {
               </p>
               
               <div className="flex justify-center space-x-3 mb-4 text-xs">
-                {chainTypes.map((type, index) => {})}
+                {chainTypes.map((type, index) => (
+                  <span key={index} className="text-gray-500 border-r border-gray-300 pr-3 last:border-r-0">
+                    {type}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
-        </section>}
+        </section>
+      )}
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
@@ -332,7 +418,8 @@ const Chains = () => {
               {filteredProducts.filter(product => product.stripe_price_id).length} Products
             </span>
             <div className="flex items-center space-x-4">
-              {!isMobile && <Select value={sortBy} onValueChange={setSortBy}>
+              {!isMobile && (
+                <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Sort By" />
                   </SelectTrigger>
@@ -342,11 +429,19 @@ const Chains = () => {
                     <SelectItem value="price-high">Price: High to Low</SelectItem>
                     <SelectItem value="newest">Newest</SelectItem>
                   </SelectContent>
-                </Select>}
-              {isMobile && <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)} className="flex items-center space-x-2 text-xs px-3 py-1.5">
+                </Select>
+              )}
+              {isMobile && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center space-x-2 text-xs px-3 py-1.5"
+                >
                   <Filter className="w-3 h-3" />
                   <span>FILTER</span>
-                </Button>}
+                </Button>
+              )}
             </div>
           </div>
 
@@ -355,11 +450,22 @@ const Chains = () => {
 
           {/* Products Grid - Clean design without badges or overlays */}
           <div className={`grid ${isMobile ? 'grid-cols-2 gap-2' : 'grid-cols-4 gap-4'}`}>
-            {filteredProducts.filter(product => product.stripe_price_id).map(product => <div key={product.id} className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer group" onClick={() => setSelectedProduct(product)}>
+            {filteredProducts
+              .filter(product => product.stripe_price_id)
+              .map((product) => (
+                <div 
+                  key={product.id} 
+                  className="bg-white rounded-lg border hover:shadow-lg transition-shadow cursor-pointer group"
+                  onClick={() => setSelectedProduct(product)}
+                >
                   
                   {/* Product Image - Clean without overlays or badges */}
                   <div className="relative aspect-square overflow-hidden rounded-t-lg">
-                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
                   </div>
 
                   {/* Product Info */}
@@ -374,7 +480,9 @@ const Chains = () => {
                     
                     <div className="flex items-center space-x-1">
                       <div className="flex">
-                        {[...Array(5)].map((_, i) => <Star key={i} className={`fill-yellow-400 text-yellow-400 ${isMobile ? 'w-2.5 h-2.5' : 'w-3 h-3'}`} />)}
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`fill-yellow-400 text-yellow-400 ${isMobile ? 'w-2.5 h-2.5' : 'w-3 h-3'}`} />
+                        ))}
                       </div>
                       <span className={`text-gray-500 ${isMobile ? 'text-xs' : 'text-xs'}`}>({product.review_count})</span>
                     </div>
@@ -384,21 +492,31 @@ const Chains = () => {
                         <span className={`font-bold text-blue-600 ${isMobile ? 'text-sm' : 'text-lg'}`}>
                           ${(product.price / 100).toFixed(2)}
                         </span>
-                        {product.original_price && <span className={`text-gray-500 line-through ${isMobile ? 'text-xs' : 'text-sm'}`}>
+                        {product.original_price && (
+                          <span className={`text-gray-500 line-through ${isMobile ? 'text-xs' : 'text-sm'}`}>
                             ${(product.original_price / 100).toFixed(2)}
-                          </span>}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
-                </div>)}
+                </div>
+              ))}
           </div>
         </div>
       </div>
 
       {/* Product Modal */}
-      {selectedProduct && <ChainProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
+      {selectedProduct && (
+        <ChainProductModal 
+          product={selectedProduct} 
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default Chains;
