@@ -319,12 +319,6 @@ const Chains = () => {
     )
   );
 
-  const chainTypes = [
-    "TENNIS CHAINS",
-    "CUBAN LINK CHAINS", 
-    "BAGUETTE CHAINS"
-  ];
-
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
@@ -354,17 +348,9 @@ const Chains = () => {
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 MOISSANITE DIAMOND CHAINS
               </h1>
-              <p className="text-lg text-gray-600 mb-8">
+              <p className="text-lg text-gray-600 mb-0">
                 All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Chains
               </p>
-              
-              <div className="flex justify-center space-x-8 text-sm text-gray-500">
-                {chainTypes.map((type, index) => (
-                  <span key={index} className="border-r border-gray-300 pr-8 last:border-r-0">
-                    {type}
-                  </span>
-                ))}
-              </div>
             </div>
           </div>
         </section>
@@ -389,17 +375,9 @@ const Chains = () => {
               <h1 className="text-xl font-bold text-gray-900 mb-2">
                 MOISSANITE DIAMOND CHAINS
               </h1>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-600">
                 All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Chains
               </p>
-              
-              <div className="flex justify-center space-x-3 mb-4 text-xs">
-                {chainTypes.map((type, index) => (
-                  <span key={index} className="text-gray-500 border-r border-gray-300 pr-3 last:border-r-0">
-                    {type}
-                  </span>
-                ))}
-              </div>
             </div>
           </div>
         </section>
@@ -520,3 +498,4 @@ const Chains = () => {
 };
 
 export default Chains;
+
