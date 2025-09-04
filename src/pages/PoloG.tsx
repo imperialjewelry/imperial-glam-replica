@@ -228,9 +228,12 @@ const PoloG = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/20 to-black/60" />
         <div className="absolute inset-0 flex items-center">
           <div className="max-w-7xl mx-auto px-4 w-full">
-            <div className="text-center text-white">
-              <h1 className="text-4xl lg:text-6xl font-bold mb-4">POLO G 🐐 COLLECTION</h1>
-              <p className="text-lg lg:text-xl text-gray-200 max-w-2xl mx-auto">
+            {/* Text is pure white with a strong drop shadow for readability */}
+            <div className="text-center text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
+              <h1 className="text-4xl lg:text-6xl font-extrabold mb-4">
+                POLO G 🐐 COLLECTION
+              </h1>
+              <p className="text-lg lg:text-xl text-white/90 max-w-2xl mx-auto">
                 Exclusive jewelry collection inspired by the GOAT himself. Premium pieces for those who demand excellence.
               </p>
             </div>
