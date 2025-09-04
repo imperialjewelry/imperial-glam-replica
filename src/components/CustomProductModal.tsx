@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { X, Star, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { Tables } from '@/integrations/supabase/types';
@@ -15,11 +16,79 @@ interface CustomProductModalProps {
 }
 
 const CustomProductModal = ({ product, onClose }: CustomProductModalProps) => {
+  const [selectedLength, setSelectedLength] = useState('');
   const { addToCart } = useCart();
   const { toast } = useToast();
 
+  const getCurrentPriceInfo = () => {
+    let lengthsAndPrices: Array<{
+      length: string;
+      price: number;
+      stripe_price_id: string;
+    }> = [];
+
+    if (product.lengths_and_prices) {
+      try {
+        const parsed = typeof product.lengths_and_prices === 'string' 
+          ? JSON.parse(product.lengths_and_prices) 
+          : product.lengths_and_prices;
+        
+        if (Array.isArray(parsed)) {
+          lengthsAndPrices = parsed;
+        }
+      } catch (error) {
+        console.error('Error parsing lengths_and_prices:', error);
+      }
+    }
+
+    if (lengthsAndPrices.length > 0 && selectedLength) {
+      const selectedLengthInfo = lengthsAndPrices.find(lp => lp.length === selectedLength);
+      if (selectedLengthInfo) {
+        return {
+          price: selectedLengthInfo.price,
+          stripe_price_id: selectedLengthInfo.stripe_price_id,
+        };
+      }
+    }
+    return {
+      price: product.price,
+      stripe_price_id: product.stripe_price_id,
+    };
+  };
+
   const handleAddToCart = () => {
-    if (!product.stripe_price_id) {
+    let lengthsAndPrices: Array<{
+      length: string;
+      price: number;
+      stripe_price_id: string;
+    }> = [];
+
+    if (product.lengths_and_prices) {
+      try {
+        const parsed = typeof product.lengths_and_prices === 'string' 
+          ? JSON.parse(product.lengths_and_prices) 
+          : product.lengths_and_prices;
+        
+        if (Array.isArray(parsed)) {
+          lengthsAndPrices = parsed;
+        }
+      } catch (error) {
+        console.error('Error parsing lengths_and_prices:', error);
+      }
+    }
+
+    if (lengthsAndPrices.length > 0 && !selectedLength) {
+      toast({
+        title: "Length Required", 
+        description: "Please select a length before adding to cart.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const currentPriceInfo = getCurrentPriceInfo();
+    
+    if (!currentPriceInfo.stripe_price_id) {
       toast({
         title: "Product Error",
         description: "This product is not available for purchase at the moment.",
@@ -31,11 +100,12 @@ const CustomProductModal = ({ product, onClose }: CustomProductModalProps) => {
     addToCart({
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: currentPriceInfo.price,
       image_url: product.image_url,
       selectedSize: '',
       selectedColor: product.color,
-      stripe_price_id: product.stripe_price_id,
+      selectedLength,
+      stripe_price_id: currentPriceInfo.stripe_price_id,
     });
 
     toast({
@@ -45,6 +115,23 @@ const CustomProductModal = ({ product, onClose }: CustomProductModalProps) => {
 
     onClose();
   };
+
+  const getLengthsAndPrices = () => {
+    if (!product.lengths_and_prices) return [];
+    
+    try {
+      const parsed = typeof product.lengths_and_prices === 'string' 
+        ? JSON.parse(product.lengths_and_prices) 
+        : product.lengths_and_prices;
+      
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      console.error('Error parsing lengths_and_prices:', error);
+      return [];
+    }
+  };
+
+  const lengthsAndPrices = getLengthsAndPrices();
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -87,10 +174,10 @@ const CustomProductModal = ({ product, onClose }: CustomProductModalProps) => {
                 </div>
 
                 <div className="flex items-center space-x-4 mb-6">
-                  <span className="text-3xl font-bold text-blue-600">
-                    ${(product.price / 100).toFixed(2)}
+                  <span className="text-3xl font-bold text-black">
+                    ${(getCurrentPriceInfo().price / 100).toFixed(2)}
                   </span>
-                  {product.original_price && (
+                  {product.original_price && product.original_price > getCurrentPriceInfo().price && (
                     <span className="text-xl text-gray-500 line-through">
                       ${(product.original_price / 100).toFixed(2)}
                     </span>
@@ -102,14 +189,35 @@ const CustomProductModal = ({ product, onClose }: CustomProductModalProps) => {
                 )}
               </div>
 
+              {/* Length Selection */}
+              {lengthsAndPrices.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Length *
+                  </label>
+                  <Select value={selectedLength} onValueChange={setSelectedLength}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Length" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {lengthsAndPrices.map((option) => (
+                        <SelectItem key={option.length} value={option.length}>
+                          {option.length} - ${(option.price / 100).toFixed(2)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               {/* Add to Cart Button */}
               <Button
                 onClick={handleAddToCart}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 text-lg"
-                disabled={!product.stripe_price_id}
+                className="w-full bg-black hover:bg-gray-800 text-white py-3 text-lg"
+                disabled={!getCurrentPriceInfo().stripe_price_id}
               >
                 <ShoppingCart className="w-5 h-5 mr-2" />
-                Add to Cart - ${(product.price / 100).toFixed(2)}
+                Add to Cart - ${(getCurrentPriceInfo().price / 100).toFixed(2)}
               </Button>
 
               {/* Product Specifications */}
