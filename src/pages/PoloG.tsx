@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PromoBar from '@/components/PromoBar';
 import { supabase } from '@/integrations/supabase/client';
-import { useProductFilters, FilterOptions } from '@/hooks/useProductFilters';
+import { useProductFilters } from '@/hooks/useProductFilters';
 import FilterSection from '@/components/FilterSection';
 import PoloGProductModal from '@/components/PoloGProductModal';
 import { Tables } from '@/integrations/supabase/types';
@@ -29,7 +29,6 @@ const PoloG = () => {
   const applyFilters = () => {
     let filtered = [...products];
 
-    // Apply category filters
     if (selectedFilters.productTypes.length > 0) {
       filtered = filtered.filter(product =>
         selectedFilters.productTypes.includes(product.product_type)
@@ -48,7 +47,6 @@ const PoloG = () => {
       );
     }
 
-    // Apply price filters (stored in cents)
     if (priceFrom) {
       filtered = filtered.filter(product => product.price >= parseInt(priceFrom) * 100);
     }
@@ -56,7 +54,6 @@ const PoloG = () => {
       filtered = filtered.filter(product => product.price <= parseInt(priceTo) * 100);
     }
 
-    // Apply sorting
     switch (sortBy) {
       case 'price-low':
         filtered.sort((a, b) => a.price - b.price);
@@ -224,15 +221,23 @@ const PoloG = () => {
       <PromoBar />
       <Header />
 
-      {/* Hero Section (updated with background image + overlay) */}
-      <div className="relative w-full">
+      {/* Hero Section (desktop zoomed out) */}
+      <div className="relative w-full bg-black">
         <img
           src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/c54573a7e376ed9a76012f19209e0766.webp"
           alt="Polo G Collection Hero"
-          className="w-full h-[340px] md:h-[520px] object-cover"
+          className="
+            w-full
+            h-[340px]
+            md:h-[520px]
+            object-cover
+            lg:object-contain
+            lg:h-[520px]
+            mx-auto
+          "
           loading="eager"
         />
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-black/45" />
         <div className="absolute inset-0 flex items-center">
           <div className="max-w-7xl mx-auto px-4 w-full">
             <div className="text-center text-white">
@@ -246,17 +251,13 @@ const PoloG = () => {
       </div>
 
       <div className="max-w-7xl mx-auto flex">
-        {/* Desktop Filters */}
         <div className="hidden lg:block">
           {renderDesktopFilters()}
         </div>
 
-        {/* Main Content */}
         <div className="flex-1">
-          {/* Mobile Filters */}
           {renderMobileFilters()}
 
-          {/* Desktop Sort */}
           <div className="hidden lg:flex items-center justify-between p-6 border-b">
             <h2 className="text-lg font-semibold">
               POLO G COLLECTION ({filteredProducts.length} products)
@@ -273,7 +274,6 @@ const PoloG = () => {
             </select>
           </div>
 
-          {/* Products Grid */}
           <div className="p-6">
             {filteredProducts.length === 0 ? (
               <div className="text-center py-16">
@@ -345,7 +345,6 @@ const PoloG = () => {
         </div>
       </div>
 
-      {/* Product Modal */}
       {selectedProduct && (
         <PoloGProductModal
           product={selectedProduct}
