@@ -5,16 +5,15 @@ import { Link } from 'react-router-dom';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import SearchBar from './SearchBar';
 import { useCart } from '@/contexts/CartContext';
-
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { dispatch, getTotalItems } = useCart();
-
+  const {
+    dispatch,
+    getTotalItems
+  } = useCart();
   const navigation = ['ALL JEWELRY', 'CHAINS', 'BRACELETS', 'WATCHES', 'PENDANTS', 'EARRINGS', 'CUSTOM', 'GRILLZ', 'GLASSES', 'RINGS', 'DIAMOND', 'VVS DIAMOND SIMULANTS', 'POLO G 🐐'];
   const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
-
-  return (
-    <>
+  return <>
       {/* Desktop Header */}
       <header className="bg-white shadow-sm hidden lg:block">
         {/* Top bar with social and shipping info */}
@@ -22,10 +21,8 @@ const Header = () => {
           <div className="max-w-7xl mx-auto px-4 py-2 flex justify-between items-center text-sm">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                ))}
-                <span className="text-gray-600 ml-2">30,000+ Reviews</span>
+                {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />)}
+                <span className="text-gray-600 ml-2"> 2,000+ Reviews</span>
               </div>
             </div>
 
@@ -35,12 +32,7 @@ const Header = () => {
                 READY TO SHIP →
               </div>
               <div className="flex items-center space-x-2">
-                <a
-                  href="https://www.instagram.com/shopimperialjewelry"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Instagram"
-                >
+                <a href="https://www.instagram.com/shopimperialjewelry" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                   <Instagram className="w-4 h-4 text-pink-500" />
                 </a>
               </div>
@@ -59,18 +51,13 @@ const Header = () => {
             </div>
             <div className="w-1/4 flex items-center justify-end space-x-4">
               <SearchBar />
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => dispatch({ type: 'TOGGLE_CART' })}
-                className="relative"
-              >
+              <Button variant="ghost" size="sm" onClick={() => dispatch({
+              type: 'TOGGLE_CART'
+            })} className="relative">
                 <ShoppingCart className="w-5 h-5" />
-                {getTotalItems() > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {getTotalItems() > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {getTotalItems()}
-                  </span>
-                )}
+                  </span>}
               </Button>
             </div>
           </div>
@@ -81,9 +68,8 @@ const Header = () => {
           <div className="max-w-7xl mx-auto px-4 py-3">
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-medium">
               {navigation.map(item => {
-                if (item === 'RINGS') {
-                  return (
-                    <DropdownMenu key={item}>
+              if (item === 'RINGS') {
+                return <DropdownMenu key={item}>
                       <DropdownMenuTrigger className="text-gray-700 hover:text-black transition-colors flex items-center space-x-1">
                         <span>{item}</span>
                         <ChevronDown className="w-3 h-3" />
@@ -100,57 +86,23 @@ const Header = () => {
                           </Link>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
-                    </DropdownMenu>
-                  );
-                }
-
-                if (item === 'VVS DIAMOND SIMULANTS') {
-                  return (
-                    <Link
-                      key={item}
-                      to="/vvs-diamond-simulants"
-                      className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors -mr-2"
-                    >
+                    </DropdownMenu>;
+              }
+              if (item === 'VVS DIAMOND SIMULANTS') {
+                return <Link key={item} to="/vvs-diamond-simulants" className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors -mr-2">
                       VVS DIAMOND SIMULANTS
-                    </Link>
-                  );
-                }
-
-                if (item.startsWith('POLO G')) {
-                  return (
-                    <Link
-                      key="polo-g"
-                      to="/polo-g"
-                      className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors -ml-2"
-                    >
+                    </Link>;
+              }
+              if (item.startsWith('POLO G')) {
+                return <Link key="polo-g" to="/polo-g" className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors -ml-2">
                       <span>POLO G</span>
                       <span aria-hidden className="text-base leading-none">🐐</span>
-                    </Link>
-                  );
-                }
-
-                return (
-                  <Link
-                    key={item}
-                    to={
-                      item === 'ALL JEWELRY' ? '/best-deals' :
-                      item === 'CHAINS' ? '/chains' :
-                      item === 'BRACELETS' ? '/bracelets' :
-                      item === 'WATCHES' ? '/watches' :
-                      item === 'PENDANTS' ? '/pendants' :
-                      item === 'EARRINGS' ? '/earrings' :
-                      item === 'CUSTOM' ? '/custom' :
-                      item === 'GRILLZ' ? '/grillz' :
-                      item === 'GLASSES' ? '/glasses' :
-                      item === 'DIAMOND' ? '/diamond' :
-                      '/'
-                    }
-                    className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors"
-                  >
+                    </Link>;
+              }
+              return <Link key={item} to={item === 'ALL JEWELRY' ? '/best-deals' : item === 'CHAINS' ? '/chains' : item === 'BRACELETS' ? '/bracelets' : item === 'WATCHES' ? '/watches' : item === 'PENDANTS' ? '/pendants' : item === 'EARRINGS' ? '/earrings' : item === 'CUSTOM' ? '/custom' : item === 'GRILLZ' ? '/grillz' : item === 'GLASSES' ? '/glasses' : item === 'DIAMOND' ? '/diamond' : '/'} className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors">
                     {item}
-                  </Link>
-                );
-              })}
+                  </Link>;
+            })}
             </div>
           </div>
         </div>
@@ -161,9 +113,7 @@ const Header = () => {
         {/* Top reviews bar */}
         <div className="bg-gray-100 px-4 py-2 text-center">
           <div className="flex items-center justify-center space-x-1 text-sm">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-            ))}
+            {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}
             <span className="text-gray-600 ml-2">30,000+ Reviews</span>
           </div>
         </div>
@@ -179,18 +129,13 @@ const Header = () => {
           </Link>
 
           <div className="flex items-center space-x-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2 relative"
-              onClick={() => dispatch({ type: 'TOGGLE_CART' })}
-            >
+            <Button variant="ghost" size="sm" className="p-2 relative" onClick={() => dispatch({
+            type: 'TOGGLE_CART'
+          })}>
               <ShoppingCart className="w-5 h-5" />
-              {getTotalItems() > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {getTotalItems() > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {getTotalItems()}
-                </span>
-              )}
+                </span>}
             </Button>
           </div>
         </div>
@@ -202,12 +147,7 @@ const Header = () => {
 
         {/* Mobile social icons bar */}
         <div className="flex items-center justify-center space-x-4 py-2 bg-gray-50">
-          <a
-            href="https://www.instagram.com/shopimperialjewelry"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Instagram"
-          >
+          <a href="https://www.instagram.com/shopimperialjewelry" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <Instagram className="w-5 h-5 text-pink-500" />
           </a>
         </div>
@@ -216,22 +156,17 @@ const Header = () => {
       {/* Feature bar - continuous carousel */}
       <div className="bg-black text-white py-3 overflow-hidden">
         <div className="animate-scroll-header whitespace-nowrap">
-          {[...Array(8)].map((_, groupIndex) => (
-            <div key={groupIndex} className="inline-flex">
-              {features.map((feature, index) => (
-                <div key={`${groupIndex}-${index}`} className="inline-flex items-center mx-12">
+          {[...Array(8)].map((_, groupIndex) => <div key={groupIndex} className="inline-flex">
+              {features.map((feature, index) => <div key={`${groupIndex}-${index}`} className="inline-flex items-center mx-12">
                   <Star className="w-4 h-4 text-yellow-400 mr-2 flex-shrink-0" />
                   <span className="text-sm font-medium">{feature}</span>
-                </div>
-              ))}
-            </div>
-          ))}
+                </div>)}
+            </div>)}
         </div>
       </div>
 
       {/* Mobile menu */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+      {isMenuOpen && <div className="fixed inset-0 z-50 lg:hidden">
           <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setIsMenuOpen(false)} />
           <div className="fixed left-0 top-0 h-full w-80 bg-white shadow-xl overflow-y-auto">
             {/* Header with close button */}
@@ -380,11 +315,7 @@ const Header = () => {
                 {/* POLO G 🐐 (updated with image) */}
                 <div className="flex items-center space-x-3 py-2">
                   <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
-                    <img
-                      src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Polo-G-Hitmakers-Rising-Star.webp"
-                      alt="Polo G Collection"
-                      className="w-full h-full object-cover"
-                    />
+                    <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Polo-G-Hitmakers-Rising-Star.webp" alt="Polo G Collection" className="w-full h-full object-cover" />
                   </div>
                   <Link to="/polo-g" className="text-sm font-medium text-gray-700 hover:text-black" onClick={() => setIsMenuOpen(false)}>
                     POLO G 🐐
@@ -405,12 +336,10 @@ const Header = () => {
               </div>
             </div>
           </div>
-        </div>
-      )}
+        </div>}
 
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
+      <style dangerouslySetInnerHTML={{
+      __html: `
           @keyframes scroll-header {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
@@ -419,10 +348,7 @@ const Header = () => {
             animation: scroll-header 27s linear infinite;
           }
         `
-        }}
-      />
-    </>
-  );
+    }} />
+    </>;
 };
-
 export default Header;
