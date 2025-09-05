@@ -61,44 +61,40 @@ const Footer = () => {
     }
   };
 
-  const footerSections = [
-    {
-      title: 'SHOP',
-      links: [
-        { name: 'Best Deals', path: '/best-deals' },
-        { name: 'Custom', path: '/custom' },
-        { name: 'Engagement Rings', path: '/rings/engagement' },
-        { name: 'Hip Hop Rings', path: '/rings/hip-hop' },
-        { name: 'Chains', path: '/chains' },
-        { name: 'Bracelets', path: '/bracelets' },
-        { name: 'Pendants', path: '/pendants' },
-        { name: 'Earrings', path: '/earrings' },
-        { name: 'Watches', path: '/watches' },
-        { name: 'Grillz', path: '/grillz' },
-        { name: 'Diamond', path: '/diamond' },
-        { name: 'Diamond Simulants', path: '/vvs-diamond-simulants' }
-      ]
-    },
-    {
-      title: 'HELP',
-      links: [
-        { name: 'Shipping & Delivery', path: '/policies/shipping' },
-        { name: 'Returns & Refunds', path: '/policies/returns' },
-        { name: 'Size Guides', path: '/size-guides' },
-        { name: 'FAQs', path: '/faqs' }
-      ]
-    },
-    {
-      title: 'COMPANY',
-      links: [
-        { name: 'About Imperial Jewelry', path: '/about' },
-        { name: 'Reviews', path: '/reviews' },
-        { name: 'Financing', path: '/financing' },
-        { name: 'Certificates', path: '/certificates' },
-        { name: 'Contact', path: '/contact' }
-      ]
-    }
-  ];
+  const footerSections = [{
+    title: 'SHOP',
+    links: [
+      { name: 'Best Deals', path: '/best-deals' },
+      { name: 'Custom', path: '/custom' },
+      { name: 'Engagement Rings', path: '/rings/engagement' },
+      { name: 'Hip Hop Rings', path: '/rings/hip-hop' },
+      { name: 'Chains', path: '/chains' },
+      { name: 'Bracelets', path: '/bracelets' },
+      { name: 'Pendants', path: '/pendants' },
+      { name: 'Earrings', path: '/earrings' },
+      { name: 'Watches', path: '/watches' },
+      { name: 'Grillz', path: '/grillz' },
+      { name: 'Diamond', path: '/diamond' },
+      { name: 'Diamond Simulants', path: '/vvs-diamond-simulants' },
+    ]
+  }, {
+    title: 'HELP',
+    links: [
+      { name: 'Shipping & Delivery', path: '/policies/shipping' },
+      { name: 'Returns & Refunds', path: '/policies/returns' },
+      { name: 'Size Guides', path: '/size-guides' },
+      { name: 'FAQs', path: '/faqs' },
+    ]
+  }, {
+    title: 'COMPANY',
+    links: [
+      { name: 'About Imperial Jewelry', path: '/about' },
+      { name: 'Reviews', path: '/reviews' },
+      { name: 'Financing', path: '/financing' },
+      { name: 'Certificates', path: '/certificates' },
+      { name: 'Contact', path: '/contact' },
+    ]
+  }];
 
   return (
     <footer className="bg-black text-white">
@@ -125,18 +121,12 @@ const Footer = () => {
               <h3 className="text-sm font-semibold mb-4">CONTACT US</h3>
               <div className="space-y-2 text-sm text-gray-300">
                 <p>
-                  <a
-                    href="mailto:imperialjewelryshop@gmail.com"
-                    className="hover:text-white"
-                  >
+                  <a href="mailto:imperialjewelryshop@gmail.com" className="hover:text-white">
                     imperialjewelryshop@gmail.com
                   </a>
                 </p>
                 <p>
-                  <a
-                    href="tel:+18324081472"
-                    className="hover:text-white"
-                  >
+                  <a href="tel:+18324081472" className="hover:text-white">
                     Phone: (832) 408-1472
                   </a>
                 </p>
@@ -153,10 +143,7 @@ const Footer = () => {
               <ul className="space-y-2">
                 {section.links.map(link => (
                   <li key={link.name}>
-                    <Link
-                      to={link.path}
-                      className="text-sm text-gray-300 hover:text-white transition-colors"
-                    >
+                    <Link to={link.path} className="text-sm text-gray-300 hover:text-white transition-colors">
                       {link.name}
                     </Link>
                   </li>
@@ -172,21 +159,23 @@ const Footer = () => {
             <h3 className="text-sm font-semibold mb-4">CONTACT US</h3>
             <div className="space-y-2 text-sm text-gray-300">
               <p>
-                <a
-                  href="mailto:support@imperialjewelry.com"
-                  className="hover:text-white"
-                >
-                  support@imperialjewelry.com
+                <a href="mailto:imperialjewelryshop@gmail.com" className="hover:text-white">
+                  imperialjewelryshop@gmail.com
+                </a>
+              </p>
+              <p>
+                <a href="tel:+18324081472" className="hover:text-white">
+                  Phone: (832) 408-1472
                 </a>
               </p>
               <p>
                 <a
-                  href="https://wa.me/12122030584"
+                  href="https://wa.me/18324081472"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white"
                 >
-                  Whatsapp: +1 212 203 0584
+                  WhatsApp: +1 832 408 1472
                 </a>
               </p>
               <p>Monday - Friday</p>
@@ -212,10 +201,7 @@ const Footer = () => {
                 <ul className="mt-4 space-y-2">
                   {section.links.map(link => (
                     <li key={link.name}>
-                      <Link
-                        to={link.path}
-                        className="text-sm text-gray-300 hover:text-white transition-colors"
-                      >
+                      <Link to={link.path} className="text-sm text-gray-300 hover:text-white transition-colors">
                         {link.name}
                       </Link>
                     </li>
@@ -286,27 +272,9 @@ const Footer = () => {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <p className="text-sm font-semibold text-gray-800">PAY OVER TIME WITH</p>
             <div className="flex items-center justify-center sm:justify-between gap-4 sm:gap-6 flex-wrap w-full sm:w-auto">
-              <img
-                src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images//afterpaylogo.webp"
-                alt="Afterpay"
-                className="h-6 sm:h-7 md:h-8 w-auto"
-                loading="lazy"
-                decoding="async"
-              />
-              <img
-                src="https://cdn-assets.affirm.com/images/black_logo-white_bg.svg"
-                alt="Affirm"
-                className="h-6 sm:h-7 md:h-8 w-auto"
-                loading="lazy"
-                decoding="async"
-              />
-              <img
-                src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/klarnalogo.webp"
-                alt="Klarna"
-                className="h-6 sm:h-7 md:h-8 w-auto"
-                loading="lazy"
-                decoding="async"
-              />
+              <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images//afterpaylogo.webp" alt="Afterpay" className="h-6 sm:h-7 md:h-8 w-auto" loading="lazy" decoding="async" />
+              <img src="https://cdn-assets.affirm.com/images/black_logo-white_bg.svg" alt="Affirm" className="h-6 sm:h-7 md:h-8 w-auto" loading="lazy" decoding="async" />
+              <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/klarnalogo.webp" alt="Klarna" className="h-6 sm:h-7 md:h-8 w-auto" loading="lazy" decoding="async" />
             </div>
           </div>
         </div>
@@ -317,13 +285,8 @@ const Footer = () => {
         <div className="mt-8 pt-4 border-t border-gray-800 text-center">
           <div className="text-xs text-gray-400">
             © 2025 Imperial Jewelry ·
-            <Link to="/legal/privacy" className="hover:text-white ml-1">
-              Privacy
-            </Link>{' '}
-            ·
-            <Link to="/legal/terms" className="hover:text-white ml-1">
-              Terms
-            </Link>
+            <Link to="/legal/privacy" className="hover:text-white ml-1">Privacy</Link>{' '}·
+            <Link to="/legal/terms" className="hover:text-white ml-1">Terms</Link>
           </div>
         </div>
       </div>
