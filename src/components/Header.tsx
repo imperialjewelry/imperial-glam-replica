@@ -331,7 +331,7 @@ const Header = () => {
                 </div>
                 <div className="flex items-center space-x-2">
                   <Truck className="w-4 h-4 text-gray-600" />
-                  <span className="text-sm text-gray-600">4-Day Shipping</span>
+                  <span className="text-sm text-gray-600">1-Day Shipping</span>
                 </div>
               </div>
             </div>
