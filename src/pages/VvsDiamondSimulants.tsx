@@ -362,9 +362,7 @@ const VvsDiamondSimulants = () => {
       {/* Desktop Hero Section */}
       {!isMobile && <div className="bg-gray-50 py-12 px-8">
           <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              VVS DIAMOND SIMULANTS
-            </h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">DIAMOND SIMULANTS</h1>
             <p className="text-lg text-gray-600">
               All VVS Diamond Simulant Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Jewelry
             </p>
