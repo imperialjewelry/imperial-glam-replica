@@ -96,8 +96,8 @@ const Footer = () => {
       name: 'Diamond',
       path: '/diamond'
     }, {
-      name: 'VVS Simulants',
-      path: '/vvs-diamond-simulants'
+      name: 'Diamond Simulants',
+      path: '/diamond-simulants'
     }]
   }, {
     title: 'HELP',
