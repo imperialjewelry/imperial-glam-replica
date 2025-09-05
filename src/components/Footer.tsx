@@ -168,16 +168,6 @@ const Footer = () => {
                   Phone: (832) 408-1472
                 </a>
               </p>
-              <p>
-                <a
-                  href="https://wa.me/18324081472"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white"
-                >
-                  WhatsApp: +1 832 408 1472
-                </a>
-              </p>
               <p>Monday - Friday</p>
               <p>11AM - 6:30 PM EST</p>
               <p>Weekends: Closed</p>
