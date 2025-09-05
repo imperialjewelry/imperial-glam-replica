@@ -89,7 +89,7 @@ const Footer = () => {
     title: 'COMPANY',
     links: [
       { name: 'About Imperial Jewelry', path: '/about' },
-      { name: 'Reviews', path: '/reviews' },
+      { name: 'Reviews', path: 'https://www.google.com/search?q=my%20business&mat=CY_svSsdWuxlEksBYJahaRBEYOz9Fajaf8UyVzsZP3Uwb66uFvvknicRl6Zy2C9idf-7fuqd6gTHwnoJbhBcciLjna-urGoiG0Wmv04hinxGLl0B_hA&hl=en-US&authuser=0&ved=0CAEQrMcEahcKEwio_be3qcKPAxUAAAAAHQAAAAAQAg', external: true },
       { name: 'Financing', path: '/financing' },
       { name: 'Certificates', path: '/certificates' },
       { name: 'Contact', path: '/contact' },
@@ -143,9 +143,15 @@ const Footer = () => {
               <ul className="space-y-2">
                 {section.links.map(link => (
                   <li key={link.name}>
-                    <Link to={link.path} className="text-sm text-gray-300 hover:text-white transition-colors">
-                      {link.name}
-                    </Link>
+                    {link.external ? (
+                      <a href={link.path} target="_blank" rel="noopener noreferrer" className="text-sm text-gray-300 hover:text-white transition-colors">
+                        {link.name}
+                      </a>
+                    ) : (
+                      <Link to={link.path} className="text-sm text-gray-300 hover:text-white transition-colors">
+                        {link.name}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -191,9 +197,15 @@ const Footer = () => {
                 <ul className="mt-4 space-y-2">
                   {section.links.map(link => (
                     <li key={link.name}>
-                      <Link to={link.path} className="text-sm text-gray-300 hover:text-white transition-colors">
-                        {link.name}
-                      </Link>
+                      {link.external ? (
+                        <a href={link.path} target="_blank" rel="noopener noreferrer" className="text-sm text-gray-300 hover:text-white transition-colors">
+                          {link.name}
+                        </a>
+                      ) : (
+                        <Link to={link.path} className="text-sm text-gray-300 hover:text-white transition-colors">
+                          {link.name}
+                        </Link>
+                      )}
                     </li>
                   ))}
                 </ul>

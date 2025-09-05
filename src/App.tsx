@@ -23,7 +23,7 @@ import Product from "./pages/Product";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import SearchResults from "./pages/SearchResults";
 import About from "./pages/About";
-import Reviews from "./pages/Reviews";
+
 import Financing from "./pages/Financing";
 import Certificates from "./pages/Certificates";
 import Contact from "./pages/Contact";
@@ -70,7 +70,7 @@ const AppContent = () => {
         
         {/* Company Pages */}
         <Route path="/about" element={<About />} />
-        <Route path="/reviews" element={<Reviews />} />
+        
         <Route path="/financing" element={<Financing />} />
         <Route path="/certificates" element={<Certificates />} />
         <Route path="/contact" element={<Contact />} />
