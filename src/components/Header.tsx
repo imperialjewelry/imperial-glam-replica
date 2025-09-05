@@ -308,7 +308,7 @@ const Header = () => {
                     <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/bracelets/14mm%20VVS%20Moissanite%20Cuban%20Bracelet%20%20.webp" alt="VVS Diamond Simulants" className="w-full h-full object-cover" />
                   </div>
                   <Link to="/vvs-diamond-simulants" className="text-sm font-medium text-gray-700 hover:text-black" onClick={() => setIsMenuOpen(false)}>
-                    VVS DIAMOND SIMULANTS
+                    DIAMOND SIMULANTS
                   </Link>
                 </div>
 
