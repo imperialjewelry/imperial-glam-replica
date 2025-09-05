@@ -150,8 +150,8 @@ const Footer = () => {
             <div>
               <h3 className="text-sm font-semibold mb-4">CONTACT US</h3>
               <div className="space-y-2 text-sm text-gray-300">
-                <p>support@imperialjewelry.com</p>
-                <p>Whatsapp: +1 212 203 0584</p>
+                <p>imperialjewelryshop@gmail.com</p>
+                <p>Phone: (832) 408-1472</p>
                 <p>Monday - Friday</p>
                 <p>11AM - 6:30 PM EST</p>
                 <p>Weekends: Closed</p>
