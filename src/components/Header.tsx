@@ -89,7 +89,9 @@ const Header = () => {
                     </DropdownMenu>;
               }
               if (item === 'VVS DIAMOND SIMULANTS') {
-                return <Link key={item} to="/vvs-diamond-simulants" className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors -mr-2">DIAMOND SIMULANTS</Link>;
+                return <Link key={item} to="/vvs-diamond-simulants" className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors -mr-2">
+                      VVS DIAMOND SIMULANTS
+                    </Link>;
               }
               if (item.startsWith('POLO G')) {
                 return <Link key="polo-g" to="/polo-g" className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors -ml-2">
@@ -306,7 +308,7 @@ const Header = () => {
                     <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/bracelets/14mm%20VVS%20Moissanite%20Cuban%20Bracelet%20%20.webp" alt="VVS Diamond Simulants" className="w-full h-full object-cover" />
                   </div>
                   <Link to="/vvs-diamond-simulants" className="text-sm font-medium text-gray-700 hover:text-black" onClick={() => setIsMenuOpen(false)}>
-                    VVS DIAMOND SIMULANTS
+                    DIAMOND SIMULANTS
                   </Link>
                 </div>
 
