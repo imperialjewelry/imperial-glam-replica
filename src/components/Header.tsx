@@ -11,7 +11,7 @@ const Header = () => {
     dispatch,
     getTotalItems
   } = useCart();
-  const navigation = ['ALL JEWELRY', 'CHAINS', 'BRACELETS', 'WATCHES', 'PENDANTS', 'EARRINGS', 'CUSTOM', 'GRILLZ', 'GLASSES', 'RINGS', 'DIAMOND', 'VVS DIAMOND SIMULANTS', 'POLO G 🐐'];
+  const navigation = ['ALL JEWELRY', 'CHAINS', 'BRACELETS', 'WATCHES', 'PENDANTS', 'EARRINGS', 'CUSTOM', 'GRILLZ', 'GLASSES', 'RINGS', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
   const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
   return <>
       {/* Desktop Header */}
@@ -91,12 +91,6 @@ const Header = () => {
               if (item === 'VVS DIAMOND SIMULANTS') {
                 return <Link key={item} to="/vvs-diamond-simulants" className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors -mr-2">
                       DIAMOND SIMULANTS
-                    </Link>;
-              }
-              if (item.startsWith('POLO G')) {
-                return <Link key="polo-g" to="/polo-g" className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors -ml-2">
-                      <span>POLO G</span>
-                      <span aria-hidden className="text-base leading-none">🐐</span>
                     </Link>;
               }
               return <Link key={item} to={item === 'ALL JEWELRY' ? '/best-deals' : item === 'CHAINS' ? '/chains' : item === 'BRACELETS' ? '/bracelets' : item === 'WATCHES' ? '/watches' : item === 'PENDANTS' ? '/pendants' : item === 'EARRINGS' ? '/earrings' : item === 'CUSTOM' ? '/custom' : item === 'GRILLZ' ? '/grillz' : item === 'GLASSES' ? '/glasses' : item === 'DIAMOND' ? '/diamond' : '/'} className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors">
@@ -312,15 +306,6 @@ const Header = () => {
                   </Link>
                 </div>
 
-                {/* POLO G 🐐 (updated with image) */}
-                <div className="flex items-center space-x-3 py-2">
-                  <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
-                    <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Polo-G-Hitmakers-Rising-Star.webp" alt="Polo G Collection" className="w-full h-full object-cover" />
-                  </div>
-                  <Link to="/polo-g" className="text-sm font-medium text-gray-700 hover:text-black" onClick={() => setIsMenuOpen(false)}>
-                    POLO G 🐐
-                  </Link>
-                </div>
               </div>
 
               {/* Bottom section */}

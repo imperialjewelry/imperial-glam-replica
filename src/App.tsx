@@ -18,7 +18,6 @@ import HipHopRings from "./pages/HipHopRings";
 import EngagementRings from "./pages/EngagementRings";
 import VvsDiamondSimulants from "./pages/VvsDiamondSimulants";
 import Diamond from "./pages/Diamond";
-import PoloG from "./pages/PoloG";
 import Product from "./pages/Product";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import SearchResults from "./pages/SearchResults";
@@ -63,7 +62,6 @@ const AppContent = () => {
         <Route path="/rings/engagement" element={<EngagementRings />} />
         <Route path="/vvs-diamond-simulants" element={<VvsDiamondSimulants />} />
         <Route path="/diamond" element={<Diamond />} />
-        <Route path="/polo-g" element={<PoloG />} />
         <Route path="/product/:id" element={<Product />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/search" element={<SearchResults />} />
