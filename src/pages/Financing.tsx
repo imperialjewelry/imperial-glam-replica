@@ -1,5 +1,4 @@
-
-import { Check, CreditCard, Calendar, Shield } from 'lucide-react';
+import { Check, DollarSign, Calendar, Shield, Star, Clock } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PromoBar from '@/components/PromoBar';
@@ -7,97 +6,154 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
 const Financing = () => {
-  const financingOptions = [
+  const bnplProviders = [
     {
-      name: "Buy Now, Pay Later",
-      description: "Split your purchase into 4 interest-free installments",
-      provider: "Klarna, Afterpay, or Affirm",
-      features: ["Pay in 4 installments", "No interest when paid on time", "Instant approval"]
+      name: "Afterpay",
+      logo: "💸",
+      description: "Pay in 4 interest-free installments every 2 weeks",
+      minPurchase: "$35",
+      maxPurchase: "$1,000",
+      features: [
+        "Split into 4 payments",
+        "Pay every 2 weeks",
+        "No interest or fees when paid on time",
+        "Instant approval decision",
+        "Available in-store and online"
+      ],
+      color: "bg-green-50 border-green-200 hover:border-green-300"
     },
     {
-      name: "Stripe Installments",
-      description: "Spread payments over 6-12 months through Stripe",
-      provider: "Available for eligible purchases",
-      features: ["Monthly payments", "Transparent terms", "Secure processing"]
+      name: "Klarna",
+      logo: "🛍️",
+      description: "Flexible payment options - pay in 4 or pay in 30 days",
+      minPurchase: "$35",
+      maxPurchase: "$10,000",
+      features: [
+        "Pay in 4 interest-free installments",
+        "30-day payment option available",
+        "No fees when paid on time", 
+        "Smoooth shopping experience",
+        "App to manage payments"
+      ],
+      color: "bg-pink-50 border-pink-200 hover:border-pink-300"
     },
     {
-      name: "Credit/Debit Cards",
-      description: "Pay with any major credit or debit card",
-      provider: "Powered by Stripe",
-      features: ["Instant processing", "Secure encryption", "Global acceptance"]
+      name: "Affirm",
+      logo: "💳",
+      description: "Monthly payment plans from 3-36 months with transparent rates",
+      minPurchase: "$50",
+      maxPurchase: "$17,500",
+      features: [
+        "Choose 3, 6, 12 or 24 month plans",
+        "Clear, upfront rates (0-36% APR)",
+        "No hidden fees or compounding interest",
+        "Prequalify without affecting credit",
+        "Build credit with on-time payments"
+      ],
+      color: "bg-blue-50 border-blue-200 hover:border-blue-300"
     }
   ];
 
   const benefits = [
     {
-      icon: <CreditCard className="w-8 h-8 text-blue-600" />,
-      title: "Stripe Powered",
-      description: "Industry-leading payment processing trusted by millions of businesses"
+      icon: <DollarSign className="w-8 h-8 text-primary" />,
+      title: "Make Luxury Affordable",
+      description: "Get that dream piece today and pay over time with 0% interest options"
     },
     {
-      icon: <Calendar className="w-8 h-8 text-blue-600" />,
-      title: "Flexible Options",
-      description: "Multiple payment methods including BNPL and installment plans"
+      icon: <Clock className="w-8 h-8 text-primary" />,
+      title: "Instant Approval",
+      description: "Get approved in seconds with soft credit checks that won't affect your score"
     },
     {
-      icon: <Shield className="w-8 h-8 text-blue-600" />,
-      title: "Bank-Level Security",
-      description: "Your payment information is protected with advanced encryption"
+      icon: <Shield className="w-8 h-8 text-primary" />,
+      title: "Secure & Protected",
+      description: "All BNPL providers offer purchase protection and fraud monitoring"
+    },
+    {
+      icon: <Star className="w-8 h-8 text-primary" />,
+      title: "Build Credit History", 
+      description: "Some providers help you build credit with responsible payment history"
+    }
+  ];
+
+  const howItWorks = [
+    {
+      step: "1",
+      title: "Shop Your Style",
+      description: "Browse our premium jewelry collection and find your perfect piece"
+    },
+    {
+      step: "2", 
+      title: "Choose BNPL at Checkout",
+      description: "Select Afterpay, Klarna, or Affirm as your payment method"
+    },
+    {
+      step: "3",
+      title: "Get Instant Approval",
+      description: "Complete a quick application - most approvals happen instantly"
+    },
+    {
+      step: "4",
+      title: "Wear Now, Pay Later",
+      description: "Get your jewelry shipped immediately and pay in installments"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <PromoBar />
       <Header />
       
       <div className="max-w-6xl mx-auto px-4 py-16">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            FLEXIBLE PAYMENT OPTIONS
+          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
+            BUY NOW, PAY LATER
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Make your dream jewelry affordable with flexible payment options powered by Stripe. 
-            Choose from multiple payment methods including Buy Now, Pay Later solutions.
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+            Don't wait to wear the jewelry of your dreams. With Afterpay, Klarna, and Affirm, 
+            you can get your Imperial Jewelry pieces today and pay over time with flexible, 
+            interest-free options.
           </p>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg">
-            Shop Now
+          <Button size="lg" className="px-8 py-4 text-lg">
+            Shop Now, Pay Later
           </Button>
         </div>
 
-        {/* Financing Options */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
-            Choose Your Payment Plan
+        {/* BNPL Providers */}
+        <div className="mb-20">
+          <h2 className="text-3xl font-bold text-foreground text-center mb-12">
+            Choose Your Payment Partner
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
-            {financingOptions.map((option, index) => (
-              <Card key={index} className="border-2 hover:border-blue-200 transition-colors">
-                <CardContent className="p-6">
+            {bnplProviders.map((provider, index) => (
+              <Card key={index} className={`${provider.color} transition-all duration-300 transform hover:scale-105`}>
+                <CardContent className="p-8">
                   <div className="text-center mb-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
-                      {option.name}
+                    <div className="text-4xl mb-3">{provider.logo}</div>
+                    <h3 className="text-2xl font-bold text-foreground mb-3">
+                      {provider.name}
                     </h3>
-                    <p className="text-gray-600 mb-4">
-                      {option.description}
+                    <p className="text-muted-foreground mb-4 min-h-[48px]">
+                      {provider.description}
                     </p>
-                    <div className="text-lg font-semibold text-blue-600">
-                      {option.provider}
+                    <div className="text-sm text-muted-foreground mb-4">
+                      <span className="font-semibold">Range:</span> {provider.minPurchase} - {provider.maxPurchase}
                     </div>
                   </div>
                   
-                  <ul className="space-y-3">
-                    {option.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-center">
-                        <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
-                        <span className="text-gray-700">{feature}</span>
+                  <ul className="space-y-3 mb-6">
+                    {provider.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-start">
+                        <Check className="w-5 h-5 text-green-600 mr-3 flex-shrink-0 mt-0.5" />
+                        <span className="text-foreground text-sm">{feature}</span>
                       </li>
                     ))}
                   </ul>
                   
-                  <Button className="w-full mt-6 bg-blue-600 hover:bg-blue-700">
-                    Select Plan
+                  <Button variant="outline" className="w-full">
+                    Learn More About {provider.name}
                   </Button>
                 </CardContent>
               </Card>
@@ -106,106 +162,147 @@ const Financing = () => {
         </div>
 
         {/* Benefits */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
-            Why Choose Our Payment Options?
+        <div className="mb-20">
+          <h2 className="text-3xl font-bold text-foreground text-center mb-12">
+            Why Choose Buy Now, Pay Later for Jewelry?
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {benefits.map((benefit, index) => (
               <div key={index} className="text-center">
-                <div className="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   {benefit.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{benefit.title}</h3>
-                <p className="text-gray-600">{benefit.description}</p>
+                <h3 className="text-xl font-semibold mb-3 text-foreground">{benefit.title}</h3>
+                <p className="text-muted-foreground text-sm">{benefit.description}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* How It Works */}
-        <div className="bg-gray-50 rounded-lg p-8 mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
-            How Payment Options Work
+        <div className="bg-muted/50 rounded-lg p-8 mb-20">
+          <h2 className="text-3xl font-bold text-foreground text-center mb-12">
+            How Buy Now, Pay Later Works
           </h2>
           <div className="grid md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold">
-                1
+            {howItWorks.map((step, index) => (
+              <div key={index} className="text-center">
+                <div className="bg-primary text-primary-foreground w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+                  {step.step}
+                </div>
+                <h3 className="font-semibold mb-3 text-foreground">{step.title}</h3>
+                <p className="text-muted-foreground text-sm">{step.description}</p>
               </div>
-              <h3 className="font-semibold mb-2">Shop</h3>
-              <p className="text-gray-600 text-sm">Browse our collection and add items to your cart</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold">
-                2
-              </div>
-              <h3 className="font-semibold mb-2">Choose Payment</h3>
-              <p className="text-gray-600 text-sm">Select your preferred payment method at checkout</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold">
-                3
-              </div>
-              <h3 className="font-semibold mb-2">Secure Processing</h3>
-              <p className="text-gray-600 text-sm">All payments processed securely through Stripe</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-bold">
-                4
-              </div>
-              <h3 className="font-semibold mb-2">Enjoy</h3>
-              <p className="text-gray-600 text-sm">Receive your jewelry and manage payments easily</p>
-            </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Popular Items */}
+        <div className="mb-20">
+          <h2 className="text-3xl font-bold text-foreground text-center mb-8">
+            Popular Items Perfect for BNPL
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+              <CardContent className="p-0">
+                <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 h-32 flex items-center justify-center">
+                  <span className="text-4xl">⛓️</span>
+                </div>
+                <div className="p-6">
+                  <h3 className="font-bold text-lg mb-2">Premium Chains</h3>
+                  <p className="text-muted-foreground text-sm mb-3">Starting at $199</p>
+                  <p className="text-sm">As low as <strong>$49.75/month</strong> with Afterpay</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+              <CardContent className="p-0">
+                <div className="bg-gradient-to-r from-purple-400 to-pink-600 h-32 flex items-center justify-center">
+                  <span className="text-4xl">💍</span>
+                </div>
+                <div className="p-6">
+                  <h3 className="font-bold text-lg mb-2">Statement Rings</h3>
+                  <p className="text-muted-foreground text-sm mb-3">Starting at $299</p>
+                  <p className="text-sm">As low as <strong>$74.75/month</strong> with Afterpay</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+              <CardContent className="p-0">
+                <div className="bg-gradient-to-r from-blue-400 to-cyan-600 h-32 flex items-center justify-center">
+                  <span className="text-4xl">⌚</span>
+                </div>
+                <div className="p-6">
+                  <h3 className="font-bold text-lg mb-2">Luxury Watches</h3>
+                  <p className="text-muted-foreground text-sm mb-3">Starting at $399</p>
+                  <p className="text-sm">As low as <strong>$99.75/month</strong> with Afterpay</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
         {/* FAQ */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
+        <div className="mb-20">
+          <h2 className="text-3xl font-bold text-foreground text-center mb-12">
             Frequently Asked Questions
           </h2>
-          <div className="space-y-6">
+          <div className="max-w-4xl mx-auto space-y-8">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                What payment methods do you accept?
+              <h3 className="text-lg font-semibold text-foreground mb-3">
+                Will using BNPL affect my credit score?
               </h3>
-              <p className="text-gray-600">
-                We accept all major credit and debit cards, as well as Buy Now, Pay Later options 
-                like Klarna, Afterpay, and Affirm, all processed securely through Stripe.
+              <p className="text-muted-foreground">
+                Most BNPL providers only perform a soft credit check for approval, which doesn't affect your credit score. 
+                However, missed payments may be reported to credit bureaus, so always pay on time.
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                How does Buy Now, Pay Later work?
+              <h3 className="text-lg font-semibold text-foreground mb-3">
+                What happens if I miss a payment?
               </h3>
-              <p className="text-gray-600">
-                BNPL options allow you to split your purchase into smaller, interest-free installments. 
-                The approval process is quick and you can complete your purchase immediately.
+              <p className="text-muted-foreground">
+                Each provider has different policies, but generally late fees may apply. Afterpay charges up to $8 per late payment, 
+                Klarna may charge late fees, and Affirm may charge late fees depending on your loan terms.
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Is my payment information secure?
+              <h3 className="text-lg font-semibold text-foreground mb-3">
+                Can I return items purchased with BNPL?
               </h3>
-              <p className="text-gray-600">
-                Absolutely! All payments are processed through Stripe, which meets the highest 
-                security standards and is PCI DSS compliant for your protection.
+              <p className="text-muted-foreground">
+                Yes! Our standard return policy applies to BNPL purchases. Once we process your return, 
+                the BNPL provider will adjust your payment schedule accordingly.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground mb-3">
+                How do I know if I'm approved?
+              </h3>
+              <p className="text-muted-foreground">
+                Approval decisions are typically instant at checkout. You'll know immediately if you're approved 
+                and can complete your purchase right away.
               </p>
             </div>
           </div>
         </div>
 
         {/* CTA */}
-        <div className="text-center bg-blue-50 rounded-lg p-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Ready to Get Started?
+        <div className="text-center bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-12">
+          <h2 className="text-4xl font-bold text-foreground mb-4">
+            Your Dream Jewelry Awaits
           </h2>
-          <p className="text-gray-600 mb-6">
-            Start shopping today and choose your preferred payment method at checkout.
+          <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
+            Don't let budget hold you back from looking and feeling amazing. 
+            Start shopping today and spread the cost with our flexible payment partners.
           </p>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg">
-            Start Shopping
+          <Button size="lg" className="px-12 py-4 text-lg mr-4">
+            Shop Collection
+          </Button>
+          <Button variant="outline" size="lg" className="px-12 py-4 text-lg">
+            Browse Best Sellers
           </Button>
         </div>
       </div>
