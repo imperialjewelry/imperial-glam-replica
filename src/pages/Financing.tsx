@@ -7,28 +7,31 @@ import { Card, CardContent } from '@/components/ui/card';
 const Financing = () => {
   const bnplProviders = [{
     name: "Afterpay",
-    logo: "💸",
+    logo: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images//afterpaylogo.webp",
     description: "Pay in 4 interest-free installments every 2 weeks",
     minPurchase: "$35",
     maxPurchase: "$1,000",
     features: ["Split into 4 payments", "Pay every 2 weeks", "No interest or fees when paid on time", "Instant approval decision", "Available in-store and online"],
-    color: "bg-green-50 border-green-200 hover:border-green-300"
+    color: "bg-green-50 border-green-200 hover:border-green-300",
+    website: "https://www.afterpay.com/"
   }, {
     name: "Klarna",
-    logo: "🛍️",
+    logo: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/klarnalogo.webp",
     description: "Flexible payment options - pay in 4 or pay in 30 days",
     minPurchase: "$35",
     maxPurchase: "$10,000",
     features: ["Pay in 4 interest-free installments", "30-day payment option available", "No fees when paid on time", "Smoooth shopping experience", "App to manage payments"],
-    color: "bg-pink-50 border-pink-200 hover:border-pink-300"
+    color: "bg-pink-50 border-pink-200 hover:border-pink-300",
+    website: "https://www.klarna.com/"
   }, {
     name: "Affirm",
-    logo: "💳",
+    logo: "https://cdn-assets.affirm.com/images/black_logo-white_bg.svg",
     description: "Monthly payment plans from 3-36 months with transparent rates",
     minPurchase: "$50",
     maxPurchase: "$17,500",
     features: ["Choose 3, 6, 12 or 24 month plans", "Clear, upfront rates (0-36% APR)", "No hidden fees or compounding interest", "Prequalify without affecting credit", "Build credit with on-time payments"],
-    color: "bg-blue-50 border-blue-200 hover:border-blue-300"
+    color: "bg-blue-50 border-blue-200 hover:border-blue-300",
+    website: "https://www.affirm.com/"
   }];
   const benefits = [{
     icon: <DollarSign className="w-8 h-8 text-primary" />,
@@ -91,7 +94,9 @@ const Financing = () => {
             {bnplProviders.map((provider, index) => <Card key={index} className={`${provider.color} transition-all duration-300 transform hover:scale-105`}>
                 <CardContent className="p-8">
                   <div className="text-center mb-6">
-                    <div className="text-4xl mb-3">{provider.logo}</div>
+                    <div className="h-12 mb-4 flex items-center justify-center">
+                      <img src={provider.logo} alt={provider.name} className="h-8 w-auto" />
+                    </div>
                     <h3 className="text-2xl font-bold text-foreground mb-3">
                       {provider.name}
                     </h3>
@@ -110,7 +115,11 @@ const Financing = () => {
                       </li>)}
                   </ul>
                   
-                  <Button variant="outline" className="w-full">
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => window.open(provider.website, '_blank')}
+                  >
                     Learn More About {provider.name}
                   </Button>
                 </CardContent>
