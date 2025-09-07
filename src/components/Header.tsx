@@ -10,7 +10,7 @@ const Header = () => {
     dispatch,
     getTotalItems
   } = useCart();
-  const navigation = ['ALL JEWELRY', 'CHAINS', 'BRACELETS', 'WATCHES', 'PENDANTS', 'EARRINGS', 'CUSTOM', 'GRILLZ', 'GLASSES', 'HIP HOP RINGS', 'ENGAGEMENT RINGS', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
+  const navigation = ['ALL JEWELRY', 'CHAINS', 'BRACELETS', 'WATCHES', 'PENDANTS', 'EARRINGS', 'CUSTOM', 'GRILLZ', 'GLASSES', 'RINGS', 'ENGAGEMENT RINGS', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
   const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
   return <>
       {/* Desktop Header */}
@@ -72,9 +72,9 @@ const Header = () => {
                       DIAMOND SIMULANTS
                     </Link>;
               }
-              if (item === 'HIP HOP RINGS') {
+              if (item === 'RINGS') {
                 return <Link key={item} to="/rings/hip-hop" className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors">
-                      HIP HOP RINGS
+                      RINGS
                     </Link>;
               }
               if (item === 'ENGAGEMENT RINGS') {
@@ -257,13 +257,13 @@ const Header = () => {
                   </Link>
                 </div>
 
-                {/* HIP HOP RINGS */}
+                {/* RINGS */}
                 <div className="flex items-center space-x-3 py-2">
                   <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
-                    <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Fat_Fuq.webp" alt="Hip Hop Rings" className="w-full h-full object-cover" />
+                    <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Fat_Fuq.webp" alt="Rings" className="w-full h-full object-cover" />
                   </div>
                   <Link to="/rings/hip-hop" className="text-sm font-medium text-gray-700 hover:text-black" onClick={() => setIsMenuOpen(false)}>
-                    HIP HOP RINGS
+                    RINGS
                   </Link>
                 </div>
 
