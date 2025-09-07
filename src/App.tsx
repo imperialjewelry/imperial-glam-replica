@@ -24,7 +24,6 @@ import SearchResults from "./pages/SearchResults";
 import About from "./pages/About";
 
 import Financing from "./pages/Financing";
-import Certificates from "./pages/Certificates";
 import Contact from "./pages/Contact";
 import Shipping from "./pages/Shipping";
 import Returns from "./pages/Returns";
@@ -70,7 +69,6 @@ const AppContent = () => {
         <Route path="/about" element={<About />} />
         
         <Route path="/financing" element={<Financing />} />
-        <Route path="/certificates" element={<Certificates />} />
         <Route path="/contact" element={<Contact />} />
         
         {/* Help Pages */}

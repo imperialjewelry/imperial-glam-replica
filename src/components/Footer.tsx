@@ -91,7 +91,6 @@ const Footer = () => {
       { name: 'About Imperial Jewelry', path: '/about' },
       { name: 'Reviews', path: 'https://www.google.com/search?q=my%20business&mat=CY_svSsdWuxlEksBYJahaRBEYOz9Fajaf8UyVzsZP3Uwb66uFvvknicRl6Zy2C9idf-7fuqd6gTHwnoJbhBcciLjna-urGoiG0Wmv04hinxGLl0B_hA&hl=en-US&authuser=0&ved=0CAEQrMcEahcKEwio_be3qcKPAxUAAAAAHQAAAAAQAg', external: true },
       { name: 'Financing', path: '/financing' },
-      { name: 'Certificates', path: '/certificates' },
       { name: 'Contact', path: '/contact' },
     ]
   }];
