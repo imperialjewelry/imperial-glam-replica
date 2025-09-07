@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { ShoppingCart, Menu, X, Instagram, MessageCircle, Star, Truck } from 'lucide-react';
+import { ShoppingCart, Menu, X, Instagram, MessageCircle, Star, Truck, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import SearchBar from './SearchBar';
 import { useCart } from '@/contexts/CartContext';
 const Header = () => {
@@ -10,7 +11,7 @@ const Header = () => {
     dispatch,
     getTotalItems
   } = useCart();
-  const navigation = ['ALL JEWELRY', 'CHAINS', 'BRACELETS', 'WATCHES', 'PENDANTS', 'EARRINGS', 'CUSTOM', 'GRILLZ', 'GLASSES', 'RINGS', 'ENGAGEMENT RINGS', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
+  const navigation = ['ALL JEWELRY', 'CHAINS', 'BRACELETS', 'WATCHES', 'PENDANTS', 'EARRINGS', 'CUSTOM', 'GRILLZ', 'GLASSES', 'RINGS', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
   const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
   return <>
       {/* Desktop Header */}
@@ -67,19 +68,29 @@ const Header = () => {
           <div className="max-w-7xl mx-auto px-4 py-3">
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-medium">
               {navigation.map(item => {
+              if (item === 'RINGS') {
+                return <DropdownMenu key={item}>
+                      <DropdownMenuTrigger className="text-gray-700 hover:text-black transition-colors flex items-center space-x-1">
+                        <span>{item}</span>
+                        <ChevronDown className="w-3 h-3" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="bg-white border shadow-lg">
+                        <DropdownMenuItem asChild>
+                          <Link to="/rings/hip-hop" className="w-full px-3 py-2 text-sm hover:bg-gray-100">
+                            Hip Hop Rings
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Link to="/rings/engagement" className="w-full px-3 py-2 text-sm hover:bg-gray-100">
+                            Engagement Rings
+                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>;
+              }
               if (item === 'VVS DIAMOND SIMULANTS') {
                 return <Link key={item} to="/vvs-diamond-simulants" className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors -mr-2">
                       DIAMOND SIMULANTS
-                    </Link>;
-              }
-              if (item === 'RINGS') {
-                return <Link key={item} to="/rings/hip-hop" className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors">
-                      RINGS
-                    </Link>;
-              }
-              if (item === 'ENGAGEMENT RINGS') {
-                return <Link key={item} to="/rings/engagement" className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors">
-                      ENGAGEMENT RINGS
                     </Link>;
               }
               return <Link key={item} to={item === 'ALL JEWELRY' ? '/best-deals' : item === 'CHAINS' ? '/chains' : item === 'BRACELETS' ? '/bracelets' : item === 'WATCHES' ? '/watches' : item === 'PENDANTS' ? '/pendants' : item === 'EARRINGS' ? '/earrings' : item === 'CUSTOM' ? '/custom' : item === 'GRILLZ' ? '/grillz' : item === 'GLASSES' ? '/glasses' : item === 'DIAMOND' ? '/diamond' : '/'} className="inline-flex items-center gap-1 whitespace-nowrap text-gray-700 hover:text-black transition-colors">
@@ -257,24 +268,22 @@ const Header = () => {
                   </Link>
                 </div>
 
-                {/* RINGS */}
-                <div className="flex items-center space-x-3 py-2">
-                  <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
-                    <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Fat_Fuq.webp" alt="Rings" className="w-full h-full object-cover" />
+                {/* RINGS - Updated with new image */}
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-3 py-2">
+                    <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
+                      <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/engagementrings/3%20ctw%20Lab%20Diamond%20Engagement%20Ring.webp" alt="Rings" className="w-full h-full object-cover" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">RINGS</span>
                   </div>
-                  <Link to="/rings/hip-hop" className="text-sm font-medium text-gray-700 hover:text-black" onClick={() => setIsMenuOpen(false)}>
-                    RINGS
-                  </Link>
-                </div>
-
-                {/* ENGAGEMENT RINGS */}
-                <div className="flex items-center space-x-3 py-2">
-                  <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
-                    <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Fat_Fuq.webp" alt="Engagement Rings" className="w-full h-full object-cover" />
+                  <div className="ml-15 space-y-2">
+                    <Link to="/rings/hip-hop" className="block text-sm text-gray-600 hover:text-black pl-4" onClick={() => setIsMenuOpen(false)}>
+                      Hip Hop Rings
+                    </Link>
+                    <Link to="/rings/engagement" className="block text-sm text-gray-600 hover:text-black pl-4" onClick={() => setIsMenuOpen(false)}>
+                      Engagement Rings
+                    </Link>
                   </div>
-                  <Link to="/rings/engagement" className="text-sm font-medium text-gray-700 hover:text-black" onClick={() => setIsMenuOpen(false)}>
-                    ENGAGEMENT RINGS
-                  </Link>
                 </div>
 
                 {/* DIAMOND (with image) */}
