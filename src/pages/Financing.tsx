@@ -135,20 +135,7 @@ const Financing = () => {
         </div>
 
         {/* How It Works */}
-        <div className="bg-muted/50 rounded-lg p-8 mb-20">
-          <h2 className="text-3xl font-bold text-foreground text-center mb-12">
-            How Buy Now, Pay Later Works
-          </h2>
-          <div className="grid md:grid-cols-4 gap-8">
-            {howItWorks.map((step, index) => <div key={index} className="text-center">
-                <div className="bg-primary text-primary-foreground w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                  {step.step}
-                </div>
-                <h3 className="font-semibold mb-3 text-foreground">{step.title}</h3>
-                <p className="text-muted-foreground text-sm">{step.description}</p>
-              </div>)}
-          </div>
-        </div>
+        
 
         {/* Popular Items */}
         
