@@ -7,6 +7,7 @@ import PromoBar from '@/components/PromoBar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -31,21 +32,42 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const { error } = await supabase
+        .from('contact_requests')
+        .insert([{
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+          subject: formData.subject,
+          message: formData.message
+        }]);
 
-    toast({
-      title: "Message Sent!",
-      description: "Thank you for contacting us. We'll get back to you within 24 hours.",
-    });
+      if (error) {
+        throw error;
+      }
 
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: ''
-    });
+      toast({
+        title: "Message Sent!",
+        description: "Thank you for contacting us. We'll get back to you within 24 hours.",
+      });
+
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: ''
+      });
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      toast({
+        title: "Error",
+        description: "There was an error sending your message. Please try again or contact us directly.",
+        variant: "destructive",
+      });
+    }
+
     setIsSubmitting(false);
   };
 
@@ -270,12 +292,18 @@ const Contact = () => {
         {/* Map Section */}
         <div className="mt-16">
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">Visit Our Showroom</h2>
-          <div className="bg-gray-200 h-96 rounded-lg flex items-center justify-center">
-            <div className="text-center">
-              <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 text-lg">Interactive Map Coming Soon</p>
-              <p className="text-gray-500">5085 Westheimer Rd, Houston, TX</p>
-            </div>
+          <p className="text-center text-gray-600 mb-8">5085 Westheimer Rd, Houston, TX 77056</p>
+          <div className="flex justify-center">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3464.338343488329!2d-95.46823848783117!3d29.738919674974873!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8640c16f38c46c87%3A0x9dea2daeead2580d!2s5085%20Westheimer%20Rd%2C%20Houston%2C%20TX%2077056!5e0!3m2!1sen!2sus!4v1756584160678!5m2!1sen!2sus"
+              width="100%" 
+              height="450" 
+              style={{ border: 0, maxWidth: '800px' }}
+              allowFullScreen
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+              className="rounded-lg shadow-lg"
+            />
           </div>
         </div>
       </div>
