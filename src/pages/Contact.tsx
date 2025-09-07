@@ -69,15 +69,15 @@ const Contact = () => {
   const contactInfo = [{
     icon: <MapPin className="w-6 h-6 text-blue-600" />,
     title: "Visit Our Showroom",
-    details: ["5085 Westheimer Rd", "Houston, TX", "Private Showroom by Appointment"]
+    details: ["5085 Westheimer Rd", "Houston, TX", "Private Showroom"]
   }, {
     icon: <Phone className="w-6 h-6 text-blue-600" />,
     title: "Call Us",
-    details: ["+1 212 203 0584", "WhatsApp Available", "Call or Text Anytime"]
+    details: ["(832) 408-1472", "Call or Text Anytime"]
   }, {
     icon: <Mail className="w-6 h-6 text-blue-600" />,
     title: "Email Us",
-    details: ["support@imperialjewelry.com", "Fast Response Guaranteed", "24/7 Email Support"]
+    details: ["imperialjewelryshop@gmail.com", "Fast Response Guaranteed", "24/7 Email Support"]
   }, {
     icon: <Clock className="w-6 h-6 text-blue-600" />,
     title: "Business Hours",
@@ -189,7 +189,7 @@ const Contact = () => {
                 <Phone className="w-8 h-8 text-blue-600" />
                 <div>
                   <h3 className="font-semibold text-gray-900">Call Us Direct</h3>
-                  <p className="text-gray-600">+1 212 203 0584</p>
+                  <p className="text-gray-600">(832) 408-1472</p>
                   <p className="text-sm text-gray-500">Available during business hours</p>
                 </div>
               </div>
