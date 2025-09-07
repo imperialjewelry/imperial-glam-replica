@@ -1,12 +1,9 @@
-
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PromoBar from '@/components/PromoBar';
 import { Helmet } from 'react-helmet-async';
-
 const About = () => {
-  return (
-    <div className="min-h-screen bg-white">
+  return <div className="min-h-screen bg-white">
       <Helmet>
         <title>About Imperial Jewelry - Custom Diamond & Hip Hop Jewelry Experts | Houston Jewelers</title>
         <meta name="description" content="Learn about Imperial Jewelry, Houston's premier custom jewelry experts specializing in diamond jewelry, hip hop chains, engagement rings, and luxury accessories. World-renowned craftsmanship since our founding." />
@@ -62,27 +59,21 @@ const About = () => {
           <h2 className="text-3xl font-bold text-gray-900 mb-8">Our Specialties</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-              <div className="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-blue-600 text-2xl">💍</span>
-              </div>
+              
               <h3 className="text-xl font-semibold mb-3">Custom Jewelry Design</h3>
               <p className="text-gray-600">
                 Bespoke engagement rings, custom pendants, and personalized pieces designed to your exact specifications.
               </p>
             </div>
             <div className="text-center p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-              <div className="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-blue-600 text-2xl">⛓️</span>
-              </div>
+              
               <h3 className="text-xl font-semibold mb-3">Hip Hop Jewelry</h3>
               <p className="text-gray-600">
                 Premium chains, bracelets, pendants, and grillz crafted with the finest materials and attention to detail.
               </p>
             </div>
             <div className="text-center p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-              <div className="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-blue-600 text-2xl">💎</span>
-              </div>
+              
               <h3 className="text-xl font-semibold mb-3">Diamond Jewelry</h3>
               <p className="text-gray-600">
                 Men's diamond jewelry, VVS diamond simulants, and premium pieces featuring only the highest quality stones.
@@ -151,23 +142,11 @@ const About = () => {
               <p className="text-gray-600">Monday - Friday<br />11AM - 6:30 PM EST<br />Weekends: Closed</p>
             </div>
           </div>
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <p className="text-gray-600 mb-4">Ready to create your perfect piece?</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="mailto:imperialjewelryshop@gmail.com" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-medium transition-colors">
-                Email Us: imperialjewelryshop@gmail.com
-              </a>
-              <a href="tel:+18324081472" className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-md font-medium transition-colors">
-                Call: (832) 408-1472
-              </a>
-            </div>
-          </div>
+          
         </div>
       </div>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default About;
