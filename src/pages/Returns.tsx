@@ -1,67 +1,46 @@
-
 import { RotateCcw, Shield, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PromoBar from '@/components/PromoBar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-
 const Returns = () => {
-  const returnSteps = [
-    {
-      step: 1,
-      title: "Contact Us",
-      description: "Email us at support@imperialjewelry.com within 30 days of delivery",
-      icon: <CheckCircle className="w-8 h-8 text-blue-600" />
-    },
-    {
-      step: 2,
-      title: "Return Authorization",
-      description: "We'll provide a return authorization number and prepaid shipping label",
-      icon: <Shield className="w-8 h-8 text-green-600" />
-    },
-    {
-      step: 3,
-      title: "Package & Ship",
-      description: "Carefully package the item in original packaging and ship it back",
-      icon: <RotateCcw className="w-8 h-8 text-purple-600" />
-    },
-    {
-      step: 4,
-      title: "Inspection & Refund",
-      description: "We inspect the item and process your refund within 5-7 business days",
-      icon: <Clock className="w-8 h-8 text-orange-600" />
-    }
-  ];
-
-  const returnConditions = [
-    "Item must be in original condition",
-    "All original packaging and certificates must be included",
-    "Item must be returned within 30 days of delivery",
-    "Custom or personalized items are not eligible for return",
-    "Earrings are not eligible for return due to hygiene reasons"
-  ];
-
-  const refundMethods = [
-    {
-      method: "Original Payment Method",
-      timeframe: "5-7 business days",
-      description: "Refund will be processed to your original form of payment"
-    },
-    {
-      method: "Store Credit",
-      timeframe: "Immediate",
-      description: "Receive store credit for future purchases with no expiration"
-    },
-    {
-      method: "Exchange",
-      timeframe: "3-5 business days",
-      description: "Exchange for a different size, style, or item of equal value"
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-white">
+  const returnSteps = [{
+    step: 1,
+    title: "Contact Us",
+    description: "Email us at support@imperialjewelry.com within 30 days of delivery",
+    icon: <CheckCircle className="w-8 h-8 text-blue-600" />
+  }, {
+    step: 2,
+    title: "Return Authorization",
+    description: "We'll provide a return authorization number and prepaid shipping label",
+    icon: <Shield className="w-8 h-8 text-green-600" />
+  }, {
+    step: 3,
+    title: "Package & Ship",
+    description: "Carefully package the item in original packaging and ship it back",
+    icon: <RotateCcw className="w-8 h-8 text-purple-600" />
+  }, {
+    step: 4,
+    title: "Inspection & Refund",
+    description: "We inspect the item and process your refund within 5-7 business days",
+    icon: <Clock className="w-8 h-8 text-orange-600" />
+  }];
+  const returnConditions = ["Item must be in original condition", "All original packaging and certificates must be included", "Item must be returned within 30 days of delivery", "Custom or personalized items are not eligible for return", "Earrings are not eligible for return due to hygiene reasons"];
+  const refundMethods = [{
+    method: "Original Payment Method",
+    timeframe: "5-7 business days",
+    description: "Refund will be processed to your original form of payment"
+  }, {
+    method: "Store Credit",
+    timeframe: "Immediate",
+    description: "Receive store credit for future purchases with no expiration"
+  }, {
+    method: "Exchange",
+    timeframe: "3-5 business days",
+    description: "Exchange for a different size, style, or item of equal value"
+  }];
+  return <div className="min-h-screen bg-white">
       <PromoBar />
       <Header />
       
@@ -93,8 +72,7 @@ const Returns = () => {
             Simple Return Process
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {returnSteps.map((step, index) => (
-              <Card key={index} className="text-center">
+            {returnSteps.map((step, index) => <Card key={index} className="text-center">
                 <CardContent className="p-8">
                   <div className="mb-6">
                     {step.icon}
@@ -109,8 +87,7 @@ const Returns = () => {
                     {step.description}
                   </p>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
 
@@ -120,12 +97,10 @@ const Returns = () => {
             <CardContent className="p-8">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Return Requirements</h3>
               <ul className="space-y-4">
-                {returnConditions.map((condition, index) => (
-                  <li key={index} className="flex items-start">
+                {returnConditions.map((condition, index) => <li key={index} className="flex items-start">
                     <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
                     <span className="text-gray-700">{condition}</span>
-                  </li>
-                ))}
+                  </li>)}
               </ul>
             </CardContent>
           </Card>
@@ -166,8 +141,7 @@ const Returns = () => {
             Refund Options
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
-            {refundMethods.map((method, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
+            {refundMethods.map((method, index) => <Card key={index} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-8 text-center">
                   <h3 className="text-xl font-bold text-gray-900 mb-3">
                     {method.method}
@@ -179,8 +153,7 @@ const Returns = () => {
                     {method.description}
                   </p>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
 
@@ -194,13 +167,13 @@ const Returns = () => {
           <div className="grid md:grid-cols-3 gap-8">
             <div>
               <h3 className="font-semibold mb-2">Email Support</h3>
-              <p className="text-gray-300">support@imperialjewelry.com</p>
+              <p className="text-gray-300">imperialjewelryshop@gmail.com</p>
               <p className="text-sm text-gray-400">Response within 24 hours</p>
             </div>
             <div>
-              <h3 className="font-semibold mb-2">WhatsApp</h3>
-              <p className="text-gray-300">+1 212 203 0584</p>
-              <p className="text-sm text-gray-400">Monday - Friday, 11AM - 6:30PM EST</p>
+              <h3 className="font-semibold mb-2">Phone Number</h3>
+              <p className="text-gray-300">(832) 408-1472</p>
+              <p className="text-sm text-gray-400"> Monday - Friday, 11AM - 6:30PM EST</p>
             </div>
             <div>
               <h3 className="font-semibold mb-2">Return Address</h3>
@@ -217,8 +190,6 @@ const Returns = () => {
       </div>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Returns;
