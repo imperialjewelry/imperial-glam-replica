@@ -22,8 +22,8 @@ const About = () => {
             ABOUT IMPERIAL JEWELRY
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            World renowned, bespoke custom jewelers crafting extraordinary pieces since our founding. 
-            We specialize in premium diamond jewelry, custom designs, and luxury accessories.
+            Houston's premier destination for custom diamond jewelry, hip hop chains, engagement rings, 
+            and luxury accessories. Serving discerning clients with world-class craftsmanship and personalized service.
           </p>
         </div>
 
@@ -33,70 +33,135 @@ const About = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <p className="text-gray-600 mb-6">
-                Imperial Jewelry began with a simple vision: to create exceptional jewelry that tells a story. 
-                Our journey started in Houston, Texas, where we established our private showroom to serve 
-                discerning clients who demand nothing but the finest craftsmanship.
+                Located in the heart of Houston at 5085 Westheimer Rd, Imperial Jewelry has established itself 
+                as the go-to destination for luxury jewelry and custom design services. Our showroom serves 
+                clients who appreciate exceptional quality and personalized attention.
               </p>
               <p className="text-gray-600 mb-6">
-                Today, we're recognized as world-renowned custom jewelers, specializing in everything from 
-                engagement rings to hip-hop jewelry, chains, bracelets, and luxury watches. Every piece 
-                we create is a testament to our commitment to excellence and attention to detail.
+                We specialize in men's diamond jewelry, custom engagement rings, hip hop jewelry, chains, 
+                bracelets, pendants, earrings, luxury watches, and custom grillz. Every piece reflects our 
+                commitment to superior craftsmanship and attention to detail.
+              </p>
+              <p className="text-gray-600">
+                Our team is available Monday through Friday, 11AM - 6:30 PM EST, to provide expert guidance 
+                and personalized service for all your jewelry needs.
               </p>
             </div>
-            <div className="bg-gray-100 aspect-video rounded-lg flex items-center justify-center">
-              <span className="text-gray-500">Our Workshop Image</span>
+            <div className="bg-gradient-to-br from-gray-100 to-gray-200 aspect-video rounded-lg flex items-center justify-center border">
+              <div className="text-center p-6">
+                <div className="text-4xl mb-2">💎</div>
+                <p className="text-gray-600 font-medium">Houston Showroom</p>
+                <p className="text-sm text-gray-500">5085 Westheimer Rd</p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Our Expertise */}
+        {/* Our Specialties */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">Our Expertise</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">Our Specialties</h2>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
+            <div className="text-center p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-blue-600 text-2xl">💍</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Custom Jewelry Design</h3>
+              <p className="text-gray-600">
+                Bespoke engagement rings, custom pendants, and personalized pieces designed to your exact specifications.
+              </p>
+            </div>
+            <div className="text-center p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-blue-600 text-2xl">⛓️</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Hip Hop Jewelry</h3>
+              <p className="text-gray-600">
+                Premium chains, bracelets, pendants, and grillz crafted with the finest materials and attention to detail.
+              </p>
+            </div>
+            <div className="text-center p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
               <div className="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-blue-600 text-2xl">💎</span>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Custom Design</h3>
+              <h3 className="text-xl font-semibold mb-3">Diamond Jewelry</h3>
               <p className="text-gray-600">
-                From concept to creation, we bring your vision to life with our expert custom design services.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-blue-600 text-2xl">⚒️</span>
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Master Craftsmanship</h3>
-              <p className="text-gray-600">
-                Our skilled artisans use traditional techniques combined with modern technology for perfect results.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-blue-600 text-2xl">✨</span>
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Premium Materials</h3>
-              <p className="text-gray-600">
-                We use only the finest diamonds, precious metals, and gemstones in all our creations.
+                Men's diamond jewelry, VVS diamond simulants, and premium pieces featuring only the highest quality stones.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Our Commitment */}
-        <div className="bg-gray-50 p-8 rounded-lg">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Commitment</h2>
-          <p className="text-gray-600 text-lg mb-4">
-            At Imperial Jewelry, we believe that jewelry is more than just an accessory—it's a reflection 
-            of your personality, your achievements, and your dreams. That's why we're committed to:
-          </p>
-          <ul className="list-disc list-inside text-gray-600 space-y-2">
-            <li>Providing exceptional customer service and personalized attention</li>
-            <li>Using only ethically sourced materials and conflict-free diamonds</li>
-            <li>Offering competitive pricing without compromising on quality</li>
-            <li>Standing behind every piece with our comprehensive warranty</li>
-            <li>Delivering on-time with our fast shipping and "Ships Today" program</li>
-          </ul>
+        {/* Why Choose Imperial Jewelry */}
+        <div className="bg-gray-50 p-8 rounded-lg mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Why Choose Imperial Jewelry</h2>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div>
+              <ul className="space-y-4 text-gray-600">
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-3">✓</span>
+                  <span><strong>Ships Today Program:</strong> Fast delivery on select items</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-3">✓</span>
+                  <span><strong>Flexible Financing:</strong> Afterpay, Affirm, and Klarna available</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-3">✓</span>
+                  <span><strong>Expert Consultation:</strong> Personalized service from jewelry specialists</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-3">✓</span>
+                  <span><strong>Quality Guarantee:</strong> Premium materials and craftsmanship</span>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <ul className="space-y-4 text-gray-600">
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-3">✓</span>
+                  <span><strong>Custom Design Services:</strong> Bring your vision to life</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-3">✓</span>
+                  <span><strong>Competitive Pricing:</strong> Best value without compromising quality</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-3">✓</span>
+                  <span><strong>Houston Showroom:</strong> Experience our pieces in person</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-blue-600 font-bold mr-3">✓</span>
+                  <span><strong>Secure Shopping:</strong> Safe online ordering with reliable delivery</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Contact Information */}
+        <div className="text-center bg-white p-8 rounded-lg border border-gray-200">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Visit Our Houston Showroom</h2>
+          <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">Location</h3>
+              <p className="text-gray-600">5085 Westheimer Rd<br />Houston, TX</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">Hours</h3>
+              <p className="text-gray-600">Monday - Friday<br />11AM - 6:30 PM EST<br />Weekends: Closed</p>
+            </div>
+          </div>
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <p className="text-gray-600 mb-4">Ready to create your perfect piece?</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="mailto:imperialjewelryshop@gmail.com" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-medium transition-colors">
+                Email Us: imperialjewelryshop@gmail.com
+              </a>
+              <a href="tel:+18324081472" className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-md font-medium transition-colors">
+                Call: (832) 408-1472
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 
