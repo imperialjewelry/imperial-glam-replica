@@ -8,7 +8,7 @@ const Returns = () => {
   const returnSteps = [{
     step: 1,
     title: "Contact Us",
-    description: "Email us at support@imperialjewelry.com within 30 days of delivery",
+    description: "Email us at imperialjewelrshop@gmail.com within 30 days of delivery",
     icon: <CheckCircle className="w-8 h-8 text-blue-600" />
   }, {
     step: 2,
