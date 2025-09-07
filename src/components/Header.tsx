@@ -271,7 +271,7 @@ const Header = () => {
                 {/* RINGS */}
                 <div className="flex items-center space-x-3 py-2">
                   <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
-                    <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/engagementrings/3%20ctw%20Lab%20Diamond%20Engagement%20Ring.webp" alt="Rings" className="w-full h-full object-cover" />
+                    <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/hiphoprings/bigbossring.webp" alt="Rings" className="w-full h-full object-cover" />
                   </div>
                   <Link to="/rings/hip-hop" className="text-sm font-medium text-gray-700 hover:text-black" onClick={() => setIsMenuOpen(false)}>
                     RINGS
