@@ -4,104 +4,67 @@ import Footer from '@/components/Footer';
 import PromoBar from '@/components/PromoBar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-
 const Financing = () => {
-  const bnplProviders = [
-    {
-      name: "Afterpay",
-      logo: "💸",
-      description: "Pay in 4 interest-free installments every 2 weeks",
-      minPurchase: "$35",
-      maxPurchase: "$1,000",
-      features: [
-        "Split into 4 payments",
-        "Pay every 2 weeks",
-        "No interest or fees when paid on time",
-        "Instant approval decision",
-        "Available in-store and online"
-      ],
-      color: "bg-green-50 border-green-200 hover:border-green-300"
-    },
-    {
-      name: "Klarna",
-      logo: "🛍️",
-      description: "Flexible payment options - pay in 4 or pay in 30 days",
-      minPurchase: "$35",
-      maxPurchase: "$10,000",
-      features: [
-        "Pay in 4 interest-free installments",
-        "30-day payment option available",
-        "No fees when paid on time", 
-        "Smoooth shopping experience",
-        "App to manage payments"
-      ],
-      color: "bg-pink-50 border-pink-200 hover:border-pink-300"
-    },
-    {
-      name: "Affirm",
-      logo: "💳",
-      description: "Monthly payment plans from 3-36 months with transparent rates",
-      minPurchase: "$50",
-      maxPurchase: "$17,500",
-      features: [
-        "Choose 3, 6, 12 or 24 month plans",
-        "Clear, upfront rates (0-36% APR)",
-        "No hidden fees or compounding interest",
-        "Prequalify without affecting credit",
-        "Build credit with on-time payments"
-      ],
-      color: "bg-blue-50 border-blue-200 hover:border-blue-300"
-    }
-  ];
-
-  const benefits = [
-    {
-      icon: <DollarSign className="w-8 h-8 text-primary" />,
-      title: "Make Luxury Affordable",
-      description: "Get that dream piece today and pay over time with 0% interest options"
-    },
-    {
-      icon: <Clock className="w-8 h-8 text-primary" />,
-      title: "Instant Approval",
-      description: "Get approved in seconds with soft credit checks that won't affect your score"
-    },
-    {
-      icon: <Shield className="w-8 h-8 text-primary" />,
-      title: "Secure & Protected",
-      description: "All BNPL providers offer purchase protection and fraud monitoring"
-    },
-    {
-      icon: <Star className="w-8 h-8 text-primary" />,
-      title: "Build Credit History", 
-      description: "Some providers help you build credit with responsible payment history"
-    }
-  ];
-
-  const howItWorks = [
-    {
-      step: "1",
-      title: "Shop Your Style",
-      description: "Browse our premium jewelry collection and find your perfect piece"
-    },
-    {
-      step: "2", 
-      title: "Choose BNPL at Checkout",
-      description: "Select Afterpay, Klarna, or Affirm as your payment method"
-    },
-    {
-      step: "3",
-      title: "Get Instant Approval",
-      description: "Complete a quick application - most approvals happen instantly"
-    },
-    {
-      step: "4",
-      title: "Wear Now, Pay Later",
-      description: "Get your jewelry shipped immediately and pay in installments"
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-background">
+  const bnplProviders = [{
+    name: "Afterpay",
+    logo: "💸",
+    description: "Pay in 4 interest-free installments every 2 weeks",
+    minPurchase: "$35",
+    maxPurchase: "$1,000",
+    features: ["Split into 4 payments", "Pay every 2 weeks", "No interest or fees when paid on time", "Instant approval decision", "Available in-store and online"],
+    color: "bg-green-50 border-green-200 hover:border-green-300"
+  }, {
+    name: "Klarna",
+    logo: "🛍️",
+    description: "Flexible payment options - pay in 4 or pay in 30 days",
+    minPurchase: "$35",
+    maxPurchase: "$10,000",
+    features: ["Pay in 4 interest-free installments", "30-day payment option available", "No fees when paid on time", "Smoooth shopping experience", "App to manage payments"],
+    color: "bg-pink-50 border-pink-200 hover:border-pink-300"
+  }, {
+    name: "Affirm",
+    logo: "💳",
+    description: "Monthly payment plans from 3-36 months with transparent rates",
+    minPurchase: "$50",
+    maxPurchase: "$17,500",
+    features: ["Choose 3, 6, 12 or 24 month plans", "Clear, upfront rates (0-36% APR)", "No hidden fees or compounding interest", "Prequalify without affecting credit", "Build credit with on-time payments"],
+    color: "bg-blue-50 border-blue-200 hover:border-blue-300"
+  }];
+  const benefits = [{
+    icon: <DollarSign className="w-8 h-8 text-primary" />,
+    title: "Make Luxury Affordable",
+    description: "Get that dream piece today and pay over time with 0% interest options"
+  }, {
+    icon: <Clock className="w-8 h-8 text-primary" />,
+    title: "Instant Approval",
+    description: "Get approved in seconds with soft credit checks that won't affect your score"
+  }, {
+    icon: <Shield className="w-8 h-8 text-primary" />,
+    title: "Secure & Protected",
+    description: "All BNPL providers offer purchase protection and fraud monitoring"
+  }, {
+    icon: <Star className="w-8 h-8 text-primary" />,
+    title: "Build Credit History",
+    description: "Some providers help you build credit with responsible payment history"
+  }];
+  const howItWorks = [{
+    step: "1",
+    title: "Shop Your Style",
+    description: "Browse our premium jewelry collection and find your perfect piece"
+  }, {
+    step: "2",
+    title: "Choose BNPL at Checkout",
+    description: "Select Afterpay, Klarna, or Affirm as your payment method"
+  }, {
+    step: "3",
+    title: "Get Instant Approval",
+    description: "Complete a quick application - most approvals happen instantly"
+  }, {
+    step: "4",
+    title: "Wear Now, Pay Later",
+    description: "Get your jewelry shipped immediately and pay in installments"
+  }];
+  return <div className="min-h-screen bg-background">
       <PromoBar />
       <Header />
       
@@ -116,9 +79,7 @@ const Financing = () => {
             you can get your Imperial Jewelry pieces today and pay over time with flexible, 
             interest-free options.
           </p>
-          <Button size="lg" className="px-8 py-4 text-lg">
-            Shop Now, Pay Later
-          </Button>
+          
         </div>
 
         {/* BNPL Providers */}
@@ -127,8 +88,7 @@ const Financing = () => {
             Choose Your Payment Partner
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
-            {bnplProviders.map((provider, index) => (
-              <Card key={index} className={`${provider.color} transition-all duration-300 transform hover:scale-105`}>
+            {bnplProviders.map((provider, index) => <Card key={index} className={`${provider.color} transition-all duration-300 transform hover:scale-105`}>
                 <CardContent className="p-8">
                   <div className="text-center mb-6">
                     <div className="text-4xl mb-3">{provider.logo}</div>
@@ -144,20 +104,17 @@ const Financing = () => {
                   </div>
                   
                   <ul className="space-y-3 mb-6">
-                    {provider.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start">
+                    {provider.features.map((feature, idx) => <li key={idx} className="flex items-start">
                         <Check className="w-5 h-5 text-green-600 mr-3 flex-shrink-0 mt-0.5" />
                         <span className="text-foreground text-sm">{feature}</span>
-                      </li>
-                    ))}
+                      </li>)}
                   </ul>
                   
                   <Button variant="outline" className="w-full">
                     Learn More About {provider.name}
                   </Button>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
 
@@ -167,15 +124,13 @@ const Financing = () => {
             Why Choose Buy Now, Pay Later for Jewelry?
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {benefits.map((benefit, index) => (
-              <div key={index} className="text-center">
+            {benefits.map((benefit, index) => <div key={index} className="text-center">
                 <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   {benefit.icon}
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-foreground">{benefit.title}</h3>
                 <p className="text-muted-foreground text-sm">{benefit.description}</p>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
 
@@ -185,64 +140,18 @@ const Financing = () => {
             How Buy Now, Pay Later Works
           </h2>
           <div className="grid md:grid-cols-4 gap-8">
-            {howItWorks.map((step, index) => (
-              <div key={index} className="text-center">
+            {howItWorks.map((step, index) => <div key={index} className="text-center">
                 <div className="bg-primary text-primary-foreground w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
                   {step.step}
                 </div>
                 <h3 className="font-semibold mb-3 text-foreground">{step.title}</h3>
                 <p className="text-muted-foreground text-sm">{step.description}</p>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
 
         {/* Popular Items */}
-        <div className="mb-20">
-          <h2 className="text-3xl font-bold text-foreground text-center mb-8">
-            Popular Items Perfect for BNPL
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-              <CardContent className="p-0">
-                <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 h-32 flex items-center justify-center">
-                  <span className="text-4xl">⛓️</span>
-                </div>
-                <div className="p-6">
-                  <h3 className="font-bold text-lg mb-2">Premium Chains</h3>
-                  <p className="text-muted-foreground text-sm mb-3">Starting at $199</p>
-                  <p className="text-sm">As low as <strong>$49.75/month</strong> with Afterpay</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-              <CardContent className="p-0">
-                <div className="bg-gradient-to-r from-purple-400 to-pink-600 h-32 flex items-center justify-center">
-                  <span className="text-4xl">💍</span>
-                </div>
-                <div className="p-6">
-                  <h3 className="font-bold text-lg mb-2">Statement Rings</h3>
-                  <p className="text-muted-foreground text-sm mb-3">Starting at $299</p>
-                  <p className="text-sm">As low as <strong>$74.75/month</strong> with Afterpay</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-              <CardContent className="p-0">
-                <div className="bg-gradient-to-r from-blue-400 to-cyan-600 h-32 flex items-center justify-center">
-                  <span className="text-4xl">⌚</span>
-                </div>
-                <div className="p-6">
-                  <h3 className="font-bold text-lg mb-2">Luxury Watches</h3>
-                  <p className="text-muted-foreground text-sm mb-3">Starting at $399</p>
-                  <p className="text-sm">As low as <strong>$99.75/month</strong> with Afterpay</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        
 
         {/* FAQ */}
         <div className="mb-20">
@@ -290,26 +199,10 @@ const Financing = () => {
         </div>
 
         {/* CTA */}
-        <div className="text-center bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-12">
-          <h2 className="text-4xl font-bold text-foreground mb-4">
-            Your Dream Jewelry Awaits
-          </h2>
-          <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-            Don't let budget hold you back from looking and feeling amazing. 
-            Start shopping today and spread the cost with our flexible payment partners.
-          </p>
-          <Button size="lg" className="px-12 py-4 text-lg mr-4">
-            Shop Collection
-          </Button>
-          <Button variant="outline" size="lg" className="px-12 py-4 text-lg">
-            Browse Best Sellers
-          </Button>
-        </div>
+        
       </div>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Financing;
