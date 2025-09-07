@@ -44,12 +44,12 @@ const About = () => {
                 and personalized service for all your jewelry needs.
               </p>
             </div>
-            <div className="bg-gradient-to-br from-gray-100 to-gray-200 aspect-video rounded-lg flex items-center justify-center border">
-              <div className="text-center p-6">
-                <div className="text-4xl mb-2">💎</div>
-                <p className="text-gray-600 font-medium">Houston Showroom</p>
-                <p className="text-sm text-gray-500">5085 Westheimer Rd</p>
-              </div>
+            <div className="aspect-video rounded-lg overflow-hidden border">
+              <img 
+                src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/imperial_jewelry.webp"
+                alt="Imperial Jewelry Houston Showroom"
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
         </div>
