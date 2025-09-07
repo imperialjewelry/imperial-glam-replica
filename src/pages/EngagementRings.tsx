@@ -12,6 +12,7 @@ import MobileProductShowcase from '@/components/MobileProductShowcase';
 import FilterSection from '@/components/FilterSection';
 import EngagementRingProductModal from '@/components/EngagementRingProductModal';
 import { Tables } from '@/integrations/supabase/types';
+import { Helmet } from 'react-helmet-async';
 type EngagementRingProduct = Tables<'engagement_ring_products'>;
 const EngagementRings = () => {
   const isMobile = useIsMobile();
@@ -80,6 +81,11 @@ const EngagementRings = () => {
     }
   }, [products, selectedProductTypes, selectedColors, selectedMaterials, priceFrom, priceTo, sortBy]);
   return <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Custom Engagement Rings & Diamond Wedding Rings | Luxury Bridal Jewelry - Imperial Jewelry</title>
+        <meta name="description" content="Shop custom engagement rings, diamond wedding rings, and luxury bridal jewelry. Expert custom ring design in 14k gold, white gold, and platinum. Premium diamonds and moissanite options." />
+        <meta name="keywords" content="custom engagement rings, diamond engagement rings, wedding rings, bridal jewelry, custom ring design, diamond rings, luxury engagement rings, 14k gold rings, platinum rings, moissanite engagement rings" />
+      </Helmet>
       <PromoBar />
       <Header />
       

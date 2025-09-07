@@ -12,6 +12,7 @@ import MobileProductShowcase from '@/components/MobileProductShowcase';
 import FilterSection from '@/components/FilterSection';
 import HipHopRingProductModal from '@/components/HipHopRingProductModal';
 import { Tables } from '@/integrations/supabase/types';
+import { Helmet } from 'react-helmet-async';
 type HipHopRingProduct = Tables<'hip_hop_ring_products'>;
 const HipHopRings = () => {
   const isMobile = useIsMobile();
@@ -83,6 +84,11 @@ const HipHopRings = () => {
     }
   }, [products, selectedProductTypes, selectedColors, selectedMaterials, selectedRingStyles, priceFrom, priceTo, sortBy]);
   return <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Hip Hop Rings & Diamond Rings | Custom Gold Rings - Imperial Jewelry</title>
+        <meta name="description" content="Shop premium hip hop rings, diamond rings, and custom gold rings. Moissanite iced out rings in 14k gold, white gold, and silver. Expert craftsmanship and luxury ring designs." />
+        <meta name="keywords" content="hip hop rings, diamond rings, custom gold rings, moissanite rings, iced out rings, luxury rings, 14k gold rings, custom jewelry rings, hip hop jewelry, diamond jewelry rings" />
+      </Helmet>
       <PromoBar />
       <Header />
       

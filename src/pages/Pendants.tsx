@@ -11,6 +11,7 @@ import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import PendantProductModal from '../components/PendantProductModal';
+import { Helmet } from 'react-helmet-async';
 
 interface LengthPrice {
   length: string;
@@ -405,6 +406,11 @@ const Pendants = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Diamond Pendants & Hip Hop Pendants | Moissanite Pendant Necklaces - Imperial Jewelry</title>
+        <meta name="description" content="Shop luxury diamond pendants, hip hop pendants, and moissanite iced out pendant necklaces in 14k gold, white gold, and silver. Custom pendant jewelry with premium design." />
+        <meta name="keywords" content="diamond pendants, hip hop pendants, moissanite pendants, gold pendants, iced out pendants, custom pendants, 14k gold pendants, silver pendants, luxury pendant jewelry, pendant necklaces" />
+      </Helmet>
       <PromoBar />
       <Header />
 

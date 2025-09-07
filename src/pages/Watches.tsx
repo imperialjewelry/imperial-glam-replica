@@ -13,6 +13,7 @@ import Footer from '../components/Footer';
 import WatchProductModal from '../components/WatchProductModal';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
 import FilterSection from '@/components/FilterSection';
+import { Helmet } from 'react-helmet-async';
 type WatchProduct = Tables<'watch_products'>;
 const Watches = () => {
   const isMobile = useIsMobile();
@@ -111,6 +112,11 @@ const Watches = () => {
       </div>;
   }
   return <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Diamond Watches & Hip Hop Watches | Moissanite Iced Out Watches - Imperial Jewelry</title>
+        <meta name="description" content="Shop luxury diamond watches, hip hop watches, and moissanite iced out watches in 14k gold, white gold, and silver. Premium watch jewelry with expert craftsmanship and custom designs." />
+        <meta name="keywords" content="diamond watches, hip hop watches, moissanite watches, gold watches, iced out watches, luxury watches, 14k gold watches, silver watches, custom watch jewelry, premium timepieces" />
+      </Helmet>
       <PromoBar />
       <Header />
       

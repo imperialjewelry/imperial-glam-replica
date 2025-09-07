@@ -13,6 +13,7 @@ import Header from '../components/Header';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import ChainProductModal from '../components/ChainProductModal';
+import { Helmet } from 'react-helmet-async';
 
 type ChainProduct = Tables<'chain_products'>;
 
@@ -337,6 +338,11 @@ const Chains = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Diamond Chains & Hip Hop Chains | Moissanite Gold Chains - Imperial Jewelry</title>
+        <meta name="description" content="Shop premium diamond chains, hip hop chains, and moissanite iced out chains in 14k gold, white gold, and silver. Custom chain jewelry with expert craftsmanship and fast shipping." />
+        <meta name="keywords" content="diamond chains, hip hop chains, moissanite chains, gold chains, iced out chains, custom chains, 14k gold chains, silver chains, luxury chain jewelry, diamond chain necklaces" />
+      </Helmet>
       <PromoBar />
       <Header />
       

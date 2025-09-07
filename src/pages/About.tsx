@@ -2,10 +2,16 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PromoBar from '@/components/PromoBar';
+import { Helmet } from 'react-helmet-async';
 
 const About = () => {
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>About Imperial Jewelry - Custom Diamond & Hip Hop Jewelry Experts | Houston Jewelers</title>
+        <meta name="description" content="Learn about Imperial Jewelry, Houston's premier custom jewelry experts specializing in diamond jewelry, hip hop chains, engagement rings, and luxury accessories. World-renowned craftsmanship since our founding." />
+        <meta name="keywords" content="custom jewelry experts, diamond jewelry specialists, hip hop jewelry Houston, custom engagement rings, luxury jewelry craftsmanship, Houston jewelers, custom diamond jewelry, jewelry design experts" />
+      </Helmet>
       <PromoBar />
       <Header />
       

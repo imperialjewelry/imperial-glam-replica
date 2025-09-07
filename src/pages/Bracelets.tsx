@@ -12,6 +12,7 @@ import BraceletProductModal from '../components/BraceletProductModal';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
 import FilterSection from '@/components/FilterSection';
 import { supabase } from '@/integrations/supabase/client';
+import { Helmet } from 'react-helmet-async';
 
 interface LengthPrice {
   length: string;
@@ -259,6 +260,11 @@ const Bracelets = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Diamond Bracelets & Hip Hop Bracelets | Moissanite Gold Bracelets - Imperial Jewelry</title>
+        <meta name="description" content="Shop luxury diamond bracelets, hip hop bracelets, and moissanite iced out bracelets in 14k gold, white gold, and silver. Custom bracelet jewelry with premium craftsmanship." />
+        <meta name="keywords" content="diamond bracelets, hip hop bracelets, moissanite bracelets, gold bracelets, iced out bracelets, custom bracelets, 14k gold bracelets, silver bracelets, luxury bracelet jewelry, tennis bracelets" />
+      </Helmet>
       <PromoBar />
       <Header />
       

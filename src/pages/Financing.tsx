@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import PromoBar from '@/components/PromoBar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Helmet } from 'react-helmet-async';
 const Financing = () => {
   const bnplProviders = [{
     name: "Afterpay",
@@ -68,6 +69,11 @@ const Financing = () => {
     description: "Get your jewelry shipped immediately and pay in installments"
   }];
   return <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Jewelry Financing | Buy Now Pay Later for Diamond & Hip Hop Jewelry - Imperial Jewelry</title>
+        <meta name="description" content="Finance your dream jewelry with Afterpay, Klarna, and Affirm. Buy now, pay later options for diamond jewelry, hip hop chains, engagement rings, and custom pieces at Imperial Jewelry." />
+        <meta name="keywords" content="jewelry financing, buy now pay later jewelry, diamond jewelry financing, hip hop jewelry financing, engagement ring financing, Afterpay jewelry, Klarna jewelry, Affirm jewelry" />
+      </Helmet>
       <PromoBar />
       <Header />
       

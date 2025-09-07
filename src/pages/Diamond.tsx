@@ -15,6 +15,7 @@ import Footer from '../components/Footer';
 import MobileProductShowcase from '@/components/MobileProductShowcase';
 import FilterSection from '@/components/FilterSection';
 import DiamondProductModal from '@/components/DiamondProductModal';
+import { Helmet } from 'react-helmet-async';
 
 type DiamondProduct = Tables<'diamond_products'>;
 
@@ -120,6 +121,11 @@ const Diamond = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Diamond Jewelry & Moissanite Chains | Premium Diamond Accessories - Imperial Jewelry</title>
+        <meta name="description" content="Shop luxury diamond jewelry, moissanite diamond chains, and premium diamond accessories. 14k gold, white gold, and silver diamond jewelry with expert craftsmanship." />
+        <meta name="keywords" content="diamond jewelry, moissanite diamond chains, diamond accessories, luxury diamond jewelry, 14k gold diamond jewelry, diamond chains, diamond rings, premium jewelry, custom diamond jewelry" />
+      </Helmet>
       <PromoBar />
       <Header />
       
