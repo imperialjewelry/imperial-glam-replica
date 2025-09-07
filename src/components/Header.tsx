@@ -268,22 +268,24 @@ const Header = () => {
                   </Link>
                 </div>
 
-                {/* RINGS - Updated with new image */}
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-3 py-2">
-                    <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
-                      <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/engagementrings/3%20ctw%20Lab%20Diamond%20Engagement%20Ring.webp" alt="Rings" className="w-full h-full object-cover" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-700">RINGS</span>
+                {/* RINGS */}
+                <div className="flex items-center space-x-3 py-2">
+                  <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
+                    <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/engagementrings/3%20ctw%20Lab%20Diamond%20Engagement%20Ring.webp" alt="Rings" className="w-full h-full object-cover" />
                   </div>
-                  <div className="ml-15 space-y-2">
-                    <Link to="/rings/hip-hop" className="block text-sm text-gray-600 hover:text-black pl-4" onClick={() => setIsMenuOpen(false)}>
-                      Hip Hop Rings
-                    </Link>
-                    <Link to="/rings/engagement" className="block text-sm text-gray-600 hover:text-black pl-4" onClick={() => setIsMenuOpen(false)}>
-                      Engagement Rings
-                    </Link>
+                  <Link to="/rings/hip-hop" className="text-sm font-medium text-gray-700 hover:text-black" onClick={() => setIsMenuOpen(false)}>
+                    RINGS
+                  </Link>
+                </div>
+
+                {/* ENGAGEMENT RINGS */}
+                <div className="flex items-center space-x-3 py-2">
+                  <div className="w-12 h-12 rounded-lg flex-shrink-0 overflow-hidden">
+                    <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/engagementrings/3%20ctw%20Lab%20Diamond%20Engagement%20Ring.webp" alt="Engagement Rings" className="w-full h-full object-cover" />
                   </div>
+                  <Link to="/rings/engagement" className="text-sm font-medium text-gray-700 hover:text-black" onClick={() => setIsMenuOpen(false)}>
+                    ENGAGEMENT RINGS
+                  </Link>
                 </div>
 
                 {/* DIAMOND (with image) */}
