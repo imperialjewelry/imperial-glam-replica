@@ -89,7 +89,7 @@ const Footer = () => {
     title: 'COMPANY',
     links: [
       { name: 'About Imperial Jewelry', path: '/about' },
-      { name: 'Reviews', path: 'https://www.google.com/search?q=my%20business&mat=CY_svSsdWuxlEksBYJahaRBEYOz9Fajaf8UyVzsZP3Uwb66uFvvknicRl6Zy2C9idf-7fuqd6gTHwnoJbhBcciLjna-urGoiG0Wmv04hinxGLl0B_hA&hl=en-US&authuser=0&ved=0CAEQrMcEahcKEwio_be3qcKPAxUAAAAAHQAAAAAQAg', external: true },
+      { name: 'Reviews', path: 'https://www.google.com/search?sca_esv=2865fea3d3342d0d&rlz=1C1RXQR_enUS1052US1052&sxsrf=AE3TifOUZL5OV6WN8EqmKmhMB0RljvVKWQ%3A1757353950550&q=Imperial%20Jewelry&stick=H4sIAAAAAAAAAONgU1I1qLAwMzFINrSwTExNSkxMNEmzMqiwNEhNtEhJtbQEChiYJ5suYhXwzC1ILcpMzFHwSi1PzSmqBADfbvuoPAAAAA&mat=CY_svSsdWuxl&ved=2ahUKEwiWkt7P3cmPAxXGnWoFHZU9NaUQrMcEegQIThAC#lrd=', external: true },
       { name: 'Financing', path: '/financing' },
       { name: 'Contact', path: '/contact' },
     ]
