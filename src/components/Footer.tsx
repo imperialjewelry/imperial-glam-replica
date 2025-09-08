@@ -67,7 +67,7 @@ const Footer = () => {
       { name: 'All Jewelry', path: '/best-deals' },
       { name: 'Custom', path: '/custom' },
       { name: 'Engagement Rings', path: '/rings/engagement' },
-      { name: 'Hip Hop Rings', path: '/rings/hip-hop' },
+      { name: 'Rings', path: '/rings/hip-hop' },
       { name: 'Chains', path: '/chains' },
       { name: 'Bracelets', path: '/bracelets' },
       { name: 'Pendants', path: '/pendants' },
