@@ -26,6 +26,34 @@ const PaymentSuccess = () => {
     }
   }, [sessionId]);
 
+  const sendOrderConfirmationEmail = async (orders: any[]) => {
+    try {
+      const firstOrder = orders[0];
+      const totalAmount = orders.reduce((sum, order) => sum + (order.amount || 0), 0);
+      
+      await supabase.functions.invoke('send-order-confirmation', {
+        body: {
+          email: firstOrder.guest_email,
+          orderNumber: firstOrder.order_number || firstOrder.id,
+          orders: orders.map(order => ({
+            id: order.id,
+            product_details: order.product_details,
+            selected_size: order.selected_size,
+            selected_length: order.selected_length,
+            amount: order.amount
+          })),
+          totalAmount,
+          promoCode: firstOrder.promo_code,
+          discountPercentage: firstOrder.discount_percentage
+        }
+      });
+      
+      console.log('Order confirmation email sent successfully');
+    } catch (error) {
+      console.error('Failed to send order confirmation email:', error);
+    }
+  };
+
   const fetchOrderDetails = async () => {
     try {
       console.log('Fetching order details for session:', sessionId);
@@ -64,6 +92,8 @@ const PaymentSuccess = () => {
           } else {
             console.log('Orders found on retry:', retryData);
             setOrderDetails(retryData);
+            // Send confirmation email
+            sendOrderConfirmationEmail(retryData);
           }
           setLoading(false);
         }, 3000);
@@ -72,6 +102,8 @@ const PaymentSuccess = () => {
 
       console.log('Orders found:', data);
       setOrderDetails(data);
+      // Send confirmation email
+      sendOrderConfirmationEmail(data);
     } catch (error) {
       console.error('Error fetching order details:', error);
       setError('Failed to fetch order details: ' + error.message);
