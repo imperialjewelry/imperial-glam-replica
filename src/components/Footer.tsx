@@ -129,9 +129,9 @@ const Footer = () => {
                     Phone: (832) 408-1472
                   </a>
                 </p>
-                <p>Monday - Friday</p>
-                <p>11AM - 6:30 PM EST</p>
-                <p>Weekends: Closed</p>
+                <p>Monday-Thursday: 10 AM–8 PM</p>
+                <p>Friday-Saturday: 10 AM–9 PM</p>
+                <p>Sunday: 12–7 PM</p>
               </div>
             </div>
           </div>
@@ -173,9 +173,9 @@ const Footer = () => {
                   Phone: (832) 408-1472
                 </a>
               </p>
-              <p>Monday - Friday</p>
-              <p>11AM - 6:30 PM EST</p>
-              <p>Weekends: Closed</p>
+              <p>Monday-Thursday: 10 AM–8 PM</p>
+              <p>Friday-Saturday: 10 AM–9 PM</p>
+              <p>Sunday: 12–7 PM</p>
             </div>
           </div>
 

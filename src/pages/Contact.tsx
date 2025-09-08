@@ -81,7 +81,7 @@ const Contact = () => {
   }, {
     icon: <Clock className="w-6 h-6 text-blue-600" />,
     title: "Business Hours",
-    details: ["Monday - Friday", "11AM - 6:30 PM EST", "Weekends: Closed"]
+    details: ["Monday-Thursday: 10 AM–8 PM", "Friday-Saturday: 10 AM–9 PM", "Sunday: 12–7 PM"]
   }];
   return <div className="min-h-screen bg-white">
       <PromoBar />
