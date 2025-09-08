@@ -6,7 +6,7 @@ const Hero = () => {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110 md:scale-100"
         style={{
           backgroundImage:
-            'url(https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/homelogoimperial.jpg)',
+            'url(https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Untitled%20-%202025-09-08T112746.013.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center center',
         }}
