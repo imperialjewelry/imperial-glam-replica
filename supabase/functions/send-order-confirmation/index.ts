@@ -145,7 +145,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const emailResponse = await resend.emails.send({
-      from: "Imperial Jewelry <orders@imperialjewelry.com>",
+      from: "Imperial Jewelry <onboarding@resend.dev>",
       to: [email],
       subject: `Order Confirmation - ${orderNumber}`,
       html: emailHtml,
