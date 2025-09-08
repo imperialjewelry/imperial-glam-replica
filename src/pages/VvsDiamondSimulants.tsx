@@ -370,7 +370,7 @@ const VvsDiamondSimulants = () => {
         </div>}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="VVS SIMULANTS" tableName="vvs_simulant_products" />
+      <MobileProductShowcase category="VVS SIMULANTS" tableName="vvs_simulant_products" title="DIAMOND SIMULANTS" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

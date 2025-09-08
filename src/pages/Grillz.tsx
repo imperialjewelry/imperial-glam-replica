@@ -388,7 +388,7 @@ const Grillz = () => {
       )}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="GRILLZ" tableName="grillz_products" />
+      <MobileProductShowcase category="GRILLZ" tableName="grillz_products" title="MOISSANITE DIAMOND GRILLZ" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

@@ -331,7 +331,7 @@ const Custom = () => {
       )}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="CUSTOM" tableName="custom_products" />
+      <MobileProductShowcase category="CUSTOM" tableName="custom_products" title="CUSTOM MOISSANITE JEWELRY" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

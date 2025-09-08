@@ -149,7 +149,7 @@ const Earrings = () => {
       )}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="EARRINGS" tableName="earring_products" />
+      <MobileProductShowcase category="EARRINGS" tableName="earring_products" title="MOISSANITE DIAMOND EARRINGS" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 interface MobileProductShowcaseProps {
   category: string;
   tableName: string;
+  title: string;
 }
 interface ProductImage {
   id: string;
@@ -12,7 +13,8 @@ interface ProductImage {
 }
 const MobileProductShowcase = ({
   category,
-  tableName
+  tableName,
+  title
 }: MobileProductShowcaseProps) => {
   const {
     data: products = []
@@ -54,7 +56,7 @@ const MobileProductShowcase = ({
       </div>
 
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">All JEWELRY</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">{title}</h2>
         <p className="text-sm text-gray-600">All Iced Out 925 Silver, 14K White, Yellow and Rose Gold Jewelry</p>
       </div>
     </div>;

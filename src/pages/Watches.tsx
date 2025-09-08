@@ -131,7 +131,7 @@ const Watches = () => {
         </div>}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="WATCHES" tableName="watch_products" />
+      <MobileProductShowcase category="WATCHES" tableName="watch_products" title="WATCHES" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

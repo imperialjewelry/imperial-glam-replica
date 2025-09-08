@@ -98,7 +98,7 @@ const EngagementRings = () => {
         </div>}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="ENGAGEMENT RINGS" tableName="engagement_ring_products" />
+      <MobileProductShowcase category="ENGAGEMENT RINGS" tableName="engagement_ring_products" title="ENGAGEMENT RINGS" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

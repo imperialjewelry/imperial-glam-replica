@@ -283,7 +283,7 @@ const Bracelets = () => {
       )}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="BRACELETS" tableName="bracelet_products" />
+      <MobileProductShowcase category="BRACELETS" tableName="bracelet_products" title="MOISSANITE DIAMOND BRACELETS" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
