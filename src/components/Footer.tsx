@@ -64,7 +64,7 @@ const Footer = () => {
   const footerSections = [{
     title: 'SHOP',
     links: [
-      { name: 'Best Deals', path: '/best-deals' },
+      { name: 'All Jewelry', path: '/best-deals' },
       { name: 'Custom', path: '/custom' },
       { name: 'Engagement Rings', path: '/rings/engagement' },
       { name: 'Hip Hop Rings', path: '/rings/hip-hop' },

@@ -251,10 +251,14 @@ const BestDeals = () => {
       <Header />
       <div className="min-h-screen bg-gray-50">
         {/* Hero Section */}
-        
+        <div className="bg-white py-8">
+          <div className="max-w-7xl mx-auto px-4">
+            <h1 className="text-4xl font-bold text-center text-gray-900">ALL JEWELRY</h1>
+          </div>
+        </div>
 
         {/* Mobile Product Showcase */}
-        <MobileProductShowcase category="DEALS" tableName="chain_products" title="BEST DEALS" />
+        <MobileProductShowcase category="DEALS" tableName="chain_products" title="ALL JEWELRY" />
 
         <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Filters */}
