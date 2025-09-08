@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -20,7 +19,6 @@ import EngagementRingProductModal from '@/components/EngagementRingProductModal'
 import GlassesProductModal from '@/components/GlassesProductModal';
 import CustomProductModal from '@/components/CustomProductModal';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
 interface ProductData {
   id: string;
   name: string;
@@ -60,13 +58,11 @@ interface ProductData {
   customizable?: boolean;
   [key: string]: any;
 }
-
 const BestDeals = () => {
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
   const [fullProductData, setFullProductData] = useState<ProductData | null>(null);
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [sortBy, setSortBy] = useState('discount');
-
   const {
     data: products = [],
     isLoading
@@ -74,93 +70,74 @@ const BestDeals = () => {
     queryKey: ['all-products-combined'],
     queryFn: async () => {
       console.log('Fetching products from all tables...');
-      
+
       // Fetch from all individual product tables
-      const tableQueries = [
-        'chain_products',
-        'bracelet_products', 
-        'earring_products',
-        'grillz_products',
-        'watch_products',
-        'pendant_products',
-        'hip_hop_ring_products',
-        'engagement_ring_products',
-        'glasses_products',
-        'diamond_products',
-        'vvs_simulant_products',
-        'custom_products'
-      ];
-
+      const tableQueries = ['chain_products', 'bracelet_products', 'earring_products', 'grillz_products', 'watch_products', 'pendant_products', 'hip_hop_ring_products', 'engagement_ring_products', 'glasses_products', 'diamond_products', 'vvs_simulant_products', 'custom_products'];
       const allProducts: ProductData[] = [];
-
       for (const tableName of tableQueries) {
         try {
           console.log(`Fetching from ${tableName}...`);
-          const { data, error } = await supabase
-            .from(tableName as any)
-            .select('*');
-          
+          const {
+            data,
+            error
+          } = await supabase.from(tableName as any).select('*');
           if (error) {
             console.error(`Error fetching from ${tableName}:`, error);
             continue;
           }
-
           if (data && Array.isArray(data)) {
             console.log(`Found ${data.length} items in ${tableName}`);
-            
-            // Process each product
-            const productsWithSource = data
-              .filter((item: any) => {
-                // Only exclude truly invalid items
-                if (!item || typeof item !== 'object') {
-                  return false;
-                }
-                if (!item.id || typeof item.id !== 'string' || item.id.trim() === '') {
-                  return false;
-                }
-                return true;
-              })
-              .map((product: any): ProductData => {
-                return {
-                  id: product.id || '',
-                  name: product.name || '',
-                  price: product.price || 0,
-                  source_table: tableName,
-                  source_id: product.id || '',
-                  category: product.category || '',
-                  material: product.material || '',
-                  color: product.color || '',
-                  product_type: product.product_type || '',
-                  image_url: product.image_url || '',
-                  created_at: product.created_at || new Date().toISOString(),
-                  updated_at: product.updated_at || new Date().toISOString(),
-                  stripe_product_id: product.stripe_product_id || '',
-                  description: product.description || '',
-                  gemstone: product.gemstone || '',
-                  diamond_cut: product.diamond_cut || '',
-                  chain_type: product.chain_type || '',
-                  frame_style: product.frame_style || '',
-                  lens_color: product.lens_color || '',
-                  style: product.style || '',
-                  teeth_count: product.teeth_count || '',
-                  shape: product.shape || '',
-                  carat_weight: product.carat_weight || '',
-                  cut_quality: product.cut_quality || '',
-                  clarity_grade: product.clarity_grade || '',
-                  customizable: product.customizable || false,
-                  sizes: product.sizes || [],
-                  lengths_and_prices: product.lengths_and_prices || [],
-                  rating: product.rating || 5.0,
-                  review_count: product.review_count || 0,
-                  discount_percentage: product.discount_percentage || 0,
-                  in_stock: product.in_stock !== undefined ? product.in_stock : true,
-                  ships_today: product.ships_today || false,
-                  featured: product.featured || false,
-                  original_price: product.original_price,
-                  stripe_price_id: product.stripe_price_id
-                };
-              });
 
+            // Process each product
+            const productsWithSource = data.filter((item: any) => {
+              // Only exclude truly invalid items
+              if (!item || typeof item !== 'object') {
+                return false;
+              }
+              if (!item.id || typeof item.id !== 'string' || item.id.trim() === '') {
+                return false;
+              }
+              return true;
+            }).map((product: any): ProductData => {
+              return {
+                id: product.id || '',
+                name: product.name || '',
+                price: product.price || 0,
+                source_table: tableName,
+                source_id: product.id || '',
+                category: product.category || '',
+                material: product.material || '',
+                color: product.color || '',
+                product_type: product.product_type || '',
+                image_url: product.image_url || '',
+                created_at: product.created_at || new Date().toISOString(),
+                updated_at: product.updated_at || new Date().toISOString(),
+                stripe_product_id: product.stripe_product_id || '',
+                description: product.description || '',
+                gemstone: product.gemstone || '',
+                diamond_cut: product.diamond_cut || '',
+                chain_type: product.chain_type || '',
+                frame_style: product.frame_style || '',
+                lens_color: product.lens_color || '',
+                style: product.style || '',
+                teeth_count: product.teeth_count || '',
+                shape: product.shape || '',
+                carat_weight: product.carat_weight || '',
+                cut_quality: product.cut_quality || '',
+                clarity_grade: product.clarity_grade || '',
+                customizable: product.customizable || false,
+                sizes: product.sizes || [],
+                lengths_and_prices: product.lengths_and_prices || [],
+                rating: product.rating || 5.0,
+                review_count: product.review_count || 0,
+                discount_percentage: product.discount_percentage || 0,
+                in_stock: product.in_stock !== undefined ? product.in_stock : true,
+                ships_today: product.ships_today || false,
+                featured: product.featured || false,
+                original_price: product.original_price,
+                stripe_price_id: product.stripe_price_id
+              };
+            });
             allProducts.push(...productsWithSource);
             console.log(`Processed ${productsWithSource.length} products from ${tableName}`);
           }
@@ -168,7 +145,6 @@ const BestDeals = () => {
           console.error(`Exception when fetching from ${tableName}:`, error);
         }
       }
-
       console.log(`Total products fetched: ${allProducts.length}`);
       return allProducts;
     }
@@ -195,19 +171,15 @@ const BestDeals = () => {
 
   // Get unique categories
   const categories = ['all', ...new Set(products.map(p => p.category).filter(category => category && category.trim() !== '').map(category => category.toLowerCase()))];
-  
   const formatPrice = (price: number) => {
     return `$${(price / 100).toLocaleString()}`;
   };
-
   const handleProductClick = async (product: ProductData) => {
     setSelectedProduct(product);
     setFullProductData(product);
   };
-
   const renderProductModal = () => {
     if (!selectedProduct || !fullProductData) return null;
-    
     switch (selectedProduct.source_table) {
       case 'chain_products':
         return <ChainProductModal product={fullProductData as any} onClose={() => {
@@ -263,10 +235,8 @@ const BestDeals = () => {
         return null;
     }
   };
-
   if (isLoading) {
-    return (
-      <>
+    return <>
         <Header />
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
@@ -275,21 +245,13 @@ const BestDeals = () => {
           </div>
         </div>
         <Footer />
-      </>
-    );
+      </>;
   }
-
-  return (
-    <>
+  return <>
       <Header />
       <div className="min-h-screen bg-gray-50">
         {/* Hero Section */}
-        <div className="bg-gradient-to-r from-black to-black text-white py-16">
-          <div className="max-w-7xl mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">ALL JEWELRY</h1>
-            <p className="text-xl opacity-90 mb-8">Incredible savings on premium jewelry</p>
-          </div>
-        </div>
+        
 
         {/* Mobile Product Showcase */}
         <MobileProductShowcase category="DEALS" tableName="chain_products" />
@@ -308,11 +270,9 @@ const BestDeals = () => {
                   <SelectValue placeholder="Select Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map(category => (
-                    <SelectItem key={category} value={category}>
+                  {categories.map(category => <SelectItem key={category} value={category}>
                       {category === 'all' ? 'All Categories' : category.toUpperCase()}
-                    </SelectItem>
-                  ))}
+                    </SelectItem>)}
                 </SelectContent>
               </Select>
 
@@ -339,38 +299,22 @@ const BestDeals = () => {
           </div>
 
           {/* Products Grid */}
-          {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {filteredProducts.map(product => (
-                <Card 
-                  key={`${product.source_table}-${product.id}`} 
-                  className="group cursor-pointer hover:shadow-lg transition-all duration-300 bg-white border-gray-200" 
-                  onClick={() => handleProductClick(product)}
-                >
+          {filteredProducts.length > 0 ? <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {filteredProducts.map(product => <Card key={`${product.source_table}-${product.id}`} className="group cursor-pointer hover:shadow-lg transition-all duration-300 bg-white border-gray-200" onClick={() => handleProductClick(product)}>
                   <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100">
-                    <img 
-                      src={product.image_url || 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80'} 
-                      alt={product.name} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                    />
+                    <img src={product.image_url || 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80'} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
 
                     {/* Badges */}
                     <div className="absolute top-3 left-3 flex flex-col gap-2">
-                      {(product.discount_percentage || 0) > 0 && (
-                        <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                      {(product.discount_percentage || 0) > 0 && <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
                           {product.discount_percentage}% OFF
-                        </Badge>
-                      )}
-                      {product.featured && (
-                        <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">
+                        </Badge>}
+                      {product.featured && <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">
                           FEATURED
-                        </Badge>
-                      )}
-                      {product.ships_today && (
-                        <Badge className="bg-green-500 text-white text-xs font-semibold px-2 py-1">
+                        </Badge>}
+                      {product.ships_today && <Badge className="bg-green-500 text-white text-xs font-semibold px-2 py-1">
                           SHIPS TODAY
-                        </Badge>
-                      )}
+                        </Badge>}
                     </div>
                   </div>
 
@@ -385,12 +329,7 @@ const BestDeals = () => {
 
                     <div className="flex items-center space-x-1 mb-2">
                       <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star 
-                            key={i} 
-                            className={`w-3 h-3 ${i < Math.floor(product.rating || 5) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
-                          />
-                        ))}
+                        {[...Array(5)].map((_, i) => <Star key={i} className={`w-3 h-3 ${i < Math.floor(product.rating || 5) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />)}
                       </div>
                       <span className="text-xs text-gray-500">({product.review_count || 0})</span>
                     </div>
@@ -400,35 +339,26 @@ const BestDeals = () => {
                         <span className="text-lg font-bold text-blue-600">
                           {formatPrice(product.price)}
                         </span>
-                        {product.original_price && product.original_price > product.price && (
-                          <span className="text-sm text-gray-400 line-through">
+                        {product.original_price && product.original_price > product.price && <span className="text-sm text-gray-400 line-through">
                             {formatPrice(product.original_price)}
-                          </span>
-                        )}
+                          </span>}
                       </div>
                     </div>
                   </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
+                </Card>)}
+            </div> : <div className="text-center py-12">
               <div className="text-gray-400 mb-4">
                 <Filter className="w-16 h-16 mx-auto" />
               </div>
               <h3 className="text-xl font-semibold text-gray-700 mb-2">No products found</h3>
               <p className="text-gray-500 mb-6">Try adjusting your filters to see more results</p>
-              <Button 
-                onClick={() => {
-                  setCategoryFilter('all');
-                  setSortBy('discount');
-                }} 
-                className="bg-blue-600 hover:bg-blue-700"
-              >
+              <Button onClick={() => {
+            setCategoryFilter('all');
+            setSortBy('discount');
+          }} className="bg-blue-600 hover:bg-blue-700">
                 Clear Filters
               </Button>
-            </div>
-          )}
+            </div>}
         </div>
       </div>
 
@@ -436,8 +366,6 @@ const BestDeals = () => {
       {renderProductModal()}
 
       <Footer />
-    </>
-  );
+    </>;
 };
-
 export default BestDeals;
