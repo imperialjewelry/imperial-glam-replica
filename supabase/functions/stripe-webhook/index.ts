@@ -46,17 +46,71 @@ serve(async (req) => {
         const session = event.data.object as Stripe.Checkout.Session;
         
         console.log("Processing successful checkout session:", session.id);
-        console.log("Session metadata:", session.metadata);
+        console.log("Session metadata:", JSON.stringify(session.metadata, null, 2));
 
-        // Parse cart items from session metadata
-        const cartItems = JSON.parse(session.metadata?.cart_items || '[]');
-        const promoCode = session.metadata?.promo_code || null;
-        const discountPercentage = parseInt(session.metadata?.discount_percentage || '0');
+        // Handle case where metadata might not exist or cart_items might be missing
+        let cartItems = [];
+        try {
+          if (session.metadata?.cart_items) {
+            cartItems = JSON.parse(session.metadata.cart_items);
+            console.log("Parsed cart items:", cartItems);
+          } else {
+            console.log("No cart_items found in metadata, checking for existing orders...");
+            
+            // Fallback: Check if orders were already created during checkout (legacy behavior)
+            const { data: existingOrders, error: fetchError } = await supabaseClient
+              .from("orders")
+              .select("*")
+              .eq("stripe_session_id", session.id);
+
+            if (!fetchError && existingOrders && existingOrders.length > 0) {
+              console.log(`Found ${existingOrders.length} existing orders, updating to paid status`);
+              
+              // Update existing orders to paid status
+              const { error: updateError } = await supabaseClient
+                .from("orders")
+                .update({
+                  status: "paid",
+                  stripe_payment_intent_id: session.payment_intent,
+                  customer_details: session.customer_details,
+                  shipping_details: session.shipping_details,
+                  updated_at: new Date().toISOString()
+                })
+                .eq("stripe_session_id", session.id);
+
+              if (updateError) {
+                console.error("Error updating existing orders:", updateError);
+                return new Response("Error updating orders", { status: 500 });
+              }
+
+              console.log(`Successfully updated ${existingOrders.length} orders to paid status`);
+              return new Response(JSON.stringify({ received: true, updated: existingOrders.length }), {
+                headers: { ...corsHeaders, "Content-Type": "application/json" },
+                status: 200,
+              });
+            } else {
+              console.error("No cart items in metadata and no existing orders found");
+              return new Response(JSON.stringify({ received: true, message: "No cart items or orders found" }), {
+                headers: { ...corsHeaders, "Content-Type": "application/json" },
+                status: 200,
+              });
+            }
+          }
+        } catch (parseError) {
+          console.error("Error parsing cart items from metadata:", parseError);
+          return new Response("Invalid cart items data", { status: 400 });
+        }
 
         if (!cartItems || cartItems.length === 0) {
-          console.error("No cart items found in session metadata");
-          return new Response("No cart items found", { status: 400 });
+          console.log("Cart items array is empty, skipping order creation");
+          return new Response(JSON.stringify({ received: true, message: "Empty cart" }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 200,
+          });
         }
+
+        const promoCode = session.metadata?.promo_code || null;
+        const discountPercentage = parseInt(session.metadata?.discount_percentage || '0');
 
         console.log(`Creating orders for ${cartItems.length} cart items`);
 
@@ -97,7 +151,7 @@ serve(async (req) => {
                 .from(table)
                 .select("*")
                 .eq("id", cartItem.id)
-                .single();
+                .maybeSingle();
 
               if (!error && product) {
                 productDetails = product;
