@@ -120,118 +120,20 @@ serve(async (req) => {
       }
     }
 
-    // Create checkout session
-    const session = await stripe.checkout.sessions.create(sessionConfig);
+    // Create checkout session with cart metadata for webhook processing
+    const sessionConfigWithMetadata = {
+      ...sessionConfig,
+      metadata: {
+        cart_items: JSON.stringify(cartItems),
+        promo_code: promoCode || '',
+        discount_percentage: discountPercentage?.toString() || '0'
+      }
+    };
+
+    const session = await stripe.checkout.sessions.create(sessionConfigWithMetadata);
     console.log('Created checkout session:', session.id);
-
-    // Calculate total amount after discount
-    const subtotalAmount = cartItems.reduce((total: number, item: any) => {
-      return total + (item.price * (item.quantity || 1));
-    }, 0);
-
-    const discountAmount = discountPercentage > 0 ? Math.round((subtotalAmount * discountPercentage) / 100) : 0;
-
-    // Define the possible product tables to search
-    const productTables = [
-      'grillz_products',
-      'chain_products', 
-      'watch_products',
-      'earring_products',
-      'pendant_products',
-      'bracelet_products',
-      'glasses_products',
-      'diamond_products',
-      'engagement_ring_products',
-      'hip_hop_ring_products',
-      'vvs_simulant_products',
-      'custom_products'
-    ];
-
-    // Store detailed order information for each cart item
-    for (const cartItem of cartItems) {
-      console.log('Processing cart item:', cartItem);
-      
-      let productDetails = null;
-      let sourceTable = null;
-
-      // Try to find the product in each table
-      for (const table of productTables) {
-        try {
-          const { data: product, error } = await supabaseClient
-            .from(table)
-            .select("*")
-            .eq("id", cartItem.id)
-            .single();
-
-          if (!error && product) {
-            productDetails = product;
-            sourceTable = table;
-            console.log(`Found product in ${table}:`, product.name);
-            break;
-          }
-        } catch (err) {
-          // Continue searching in other tables
-          continue;
-        }
-      }
-
-      if (!productDetails) {
-        console.error('Product not found in any table for cart item:', cartItem.id);
-        // Don't throw error, just log and continue - we'll create order without detailed product info
-        console.log('Creating order without detailed product info for item:', cartItem.id);
-        productDetails = {
-          name: cartItem.name,
-          price: cartItem.price,
-          image_url: cartItem.image_url
-        };
-        sourceTable = 'unknown';
-      }
-
-      // Create a unique identifier for this specific product configuration
-      const productDetailsWithConfig = {
-        cart_item_id: cartItem.id,
-        ...productDetails,
-        source_table: sourceTable,
-        selected_size: cartItem.selectedSize || null,
-        selected_length: cartItem.selectedLength || null,
-        quantity: cartItem.quantity || 1
-      };
-
-      // Create order record with selected variations (removed selected_color)
-      const orderData = {
-        stripe_session_id: session.id,
-        stripe_customer_id: customerId,
-        amount: Math.round((cartItem.price * (cartItem.quantity || 1)) - (discountAmount / cartItems.length)),
-        guest_email: customerEmail,
-        promo_code: promoCode || null,
-        discount_percentage: discountPercentage || 0,
-        status: "pending",
-        selected_size: cartItem.selectedSize || null,
-        selected_length: cartItem.selectedLength || null,
-        product_details: productDetailsWithConfig,
-        created_at: new Date().toISOString()
-      };
-
-      console.log('Inserting order with selected variations:', {
-        size: cartItem.selectedSize,
-        length: cartItem.selectedLength,
-        customerId: customerId
-      });
-
-      // Use upsert to handle potential duplicates gracefully
-      const { error: insertError } = await supabaseClient
-        .from("orders")
-        .upsert(orderData, {
-          onConflict: 'stripe_session_id,product_details'
-        });
-
-      if (insertError) {
-        console.error('Error inserting order:', insertError);
-        throw new Error(`Failed to create order: ${insertError.message}`);
-      }
-    }
-
-    console.log('Order records created in database with Stripe customer ID:', customerId);
+    
+    // Orders will be created by the webhook after successful payment
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
