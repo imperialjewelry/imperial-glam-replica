@@ -58,7 +58,6 @@ const MoissanitePendantsSection = () => {
             }}
           />
           <div className="relative z-10 text-center text-white p-4 md:p-8">
-            <h2 className="text-lg md:text-xl font-bold mb-1 md:mb-2">MOISSANITE</h2>
             <h2 className="text-xl md:text-2xl font-bold mb-2 md:mb-4">PENDANTS</h2>
             <ArrowRight className="w-6 h-6 md:w-8 md:h-8 mx-auto text-white" />
           </div>
