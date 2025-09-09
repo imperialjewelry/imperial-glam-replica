@@ -92,7 +92,7 @@ const DiamondProductModal = ({ product, onClose }: DiamondProductModalProps) => 
   };
 
   const qualityFeatures = [
-    { text: "Premium", subtext: "Qaulity" },
+    { text: "Premium", subtext: "Quality" },
     { text: "Lab Certified", subtext: "authenticity" },
     { text: "Brilliant Cut", subtext: "maximum sparkle" },
     { text: "Conflict Free", subtext: "ethically sourced" },
