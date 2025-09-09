@@ -26,7 +26,7 @@ serve(async (req) => {
       throw new Error("cartItems is required for order tracking");
     }
 
-    const stripe = new Stripe(Deno.env.get("stripetestsecret") || "", {
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
     });
 
