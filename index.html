@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- ✅ Title & Description -->
-    <title>Imperial Jewelry - Premium Diamond & Hip Hop Jewelry Store | Custom Engagement Rings & Moissanite Chains</title>
+    <title>Imperial Jewelry - Premium Diamond & Hip Hop Jewelry</title>
     <meta
       name="description"
-      content="Shop luxury diamond jewelry, hip hop chains, custom engagement rings, and moissanite jewelry at Imperial Jewelry. Premium 14k gold, silver jewelry with expert craftsmanship. Houston's premier jewelry store."
+      content="Shop premium diamond jewelry, hip hop chains, custom engagement rings & moissanite pieces at Imperial Jewelry. Expert craftsmanship in Houston."
     />
     <meta name="keywords" content="diamond jewelry, hip hop jewelry, custom engagement rings, moissanite jewelry, gold chains, diamond rings, luxury jewelry store, custom jewelry, Houston jewelry, premium jewelry, 14k gold jewelry, moissanite chains" />
     <meta name="author" content="Imperial Jewelry" />
@@ -79,49 +79,62 @@
       }
     </script>
 
-    <!-- ✅ Fonts & Performance -->
+    <!-- ✅ Performance Optimization -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://xdidixccpcgzbqqawywf.supabase.co" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://embed.tawk.to" />
+    
+    <!-- ✅ Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
 
-    <!-- ✅ Stylesheet Preload -->
-    <link
-      rel="preload"
-      href="/assets/index.css"
-      as="style"
-      onload="this.onload=null;this.rel='stylesheet'"
-    />
-    <noscript><link rel="stylesheet" href="/assets/index.css" /></noscript>
+    <!-- ✅ Critical CSS -->
+    <link rel="stylesheet" href="/src/index.css" />
 
-    <!-- ✅ Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R3JHHWF6D6"></script>
+    <!-- ✅ Google Analytics - Deferred -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-R3JHHWF6D6');
+      
+      // Load GA asynchronously after page load
+      window.addEventListener('load', function() {
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-R3JHHWF6D6';
+        document.head.appendChild(script);
+      });
     </script>
 
-    <!-- ✅ Tawk.to Chat -->
-    <!--Start of Tawk.to Script-->
-    <script type="text/javascript">
-      var Tawk_API = Tawk_API || {},
-        Tawk_LoadStart = new Date();
-      (function () {
-        var s1 = document.createElement("script"),
-          s0 = document.getElementsByTagName("script")[0];
-        s1.async = true;
-        s1.src = "https://embed.tawk.to/6864014051753a190e1e65bd/1iv3a9pji";
-        s1.charset = "UTF-8";
-        s1.setAttribute("crossorigin", "*");
-        s0.parentNode.insertBefore(s1, s0);
-      })();
+    <!-- ✅ Tawk.to Chat - Deferred -->
+    <script>
+      window.addEventListener('load', function() {
+        var Tawk_API = Tawk_API || {},
+          Tawk_LoadStart = new Date();
+        (function () {
+          var s1 = document.createElement("script"),
+            s0 = document.getElementsByTagName("script")[0];
+          s1.async = true;
+          s1.src = "https://embed.tawk.to/6864014051753a190e1e65bd/1iv3a9pji";
+          s1.charset = "UTF-8";
+          s1.setAttribute("crossorigin", "*");
+          s0.parentNode.insertBefore(s1, s0);
+        })();
+      });
     </script>
-    <!--End of Tawk.to Script-->
   </head>
 
   <body>
