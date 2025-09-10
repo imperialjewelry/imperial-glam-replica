@@ -121,12 +121,12 @@ const Footer = () => {
               <div className="space-y-2 text-sm text-gray-300">
                 <div className="mb-3">
                   <p className="font-semibold text-white">Imperial Jewelry</p>
-                  <p>1234 Example Street</p>
+                  <p>5085 Westheimer Rd</p>
                   <p>Houston, TX</p>
                 </div>
                 <p>
-                  <a href="tel:+18325551234" className="hover:text-white">
-                    Phone: (832) 555-1234
+                  <a href="tel:+18324081472" className="hover:text-white">
+                    Phone: (832) 408-1472
                   </a>
                 </p>
                 <p>
@@ -136,7 +136,9 @@ const Footer = () => {
                 </p>
                 <div className="mt-3">
                   <p className="font-medium">Hours:</p>
-                  <p>Monday–Saturday: 10AM–7PM</p>
+                  <p>Monday-Thursday: 10 AM–8 PM</p>
+                  <p>Friday-Saturday: 10 AM–9 PM</p>
+                  <p>Sunday: 12–7 PM</p>
                 </div>
               </div>
             </div>
@@ -171,12 +173,12 @@ const Footer = () => {
             <div className="space-y-2 text-sm text-gray-300">
               <div className="mb-3">
                 <p className="font-semibold text-white">Imperial Jewelry</p>
-                <p>1234 Example Street</p>
+                <p>5085 Westheimer Rd</p>
                 <p>Houston, TX</p>
               </div>
               <p>
-                <a href="tel:+18325551234" className="hover:text-white">
-                  Phone: (832) 555-1234
+                <a href="tel:+18324081472" className="hover:text-white">
+                  Phone: (832) 408-1472
                 </a>
               </p>
               <p>
@@ -186,7 +188,9 @@ const Footer = () => {
               </p>
               <div className="mt-3">
                 <p className="font-medium">Hours:</p>
-                <p>Monday–Saturday: 10AM–7PM</p>
+                <p>Monday-Thursday: 10 AM–8 PM</p>
+                <p>Friday-Saturday: 10 AM–9 PM</p>
+                <p>Sunday: 12–7 PM</p>
               </div>
             </div>
           </div>
@@ -266,12 +270,12 @@ const Footer = () => {
               <div className="text-sm">
                 <p className="text-gray-400 font-semibold">LOCATIONS</p>
                 <a
-                  href="https://maps.google.com/?q=1234+Example+Street,+Houston,+TX"
+                  href="https://maps.google.com/?q=5085+Westheimer+Rd,+Houston,+TX"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-300 hover:text-white transition-colors"
                 >
-                  1234 Example Street, Houston, TX
+                  5085 Westheimer Rd, Houston, TX
                 </a>
               </div>
             </div>
