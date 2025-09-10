@@ -98,7 +98,7 @@ const Header = () => {
 
         {/* Main mobile header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-          <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(true)} className="p-2">
+          <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(true)} className="p-2" aria-label="Open navigation menu">
             <Menu className="w-6 h-6" />
           </Button>
 
@@ -109,7 +109,7 @@ const Header = () => {
           <div className="flex items-center space-x-1">
             <Button variant="ghost" size="sm" className="p-2 relative" onClick={() => dispatch({
             type: 'TOGGLE_CART'
-          })}>
+          })} aria-label={`Shopping cart with ${getTotalItems()} items`}>
               <ShoppingCart className="w-5 h-5" />
               {getTotalItems() > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {getTotalItems()}
