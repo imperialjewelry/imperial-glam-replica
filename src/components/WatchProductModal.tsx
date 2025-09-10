@@ -57,11 +57,11 @@ const WatchProductModal = ({ product, onClose }: WatchProductModalProps) => {
   };
 
   const qualityFeatures = [
-    { text: "Doesn't fade", subtext: "or tarnish" },
-    { text: "Passes the", subtext: "diamond tester" },
-    { text: "Shines better", subtext: "than diamonds" },
-    { text: "GRA Certificate", subtext: "included" },
-    { text: "10x cheaper", subtext: "than real diamond jewelry" },
+    { text: "Authentic", subtext: "Design" },
+    { text: "Premium", subtext: "Materials" },
+    { text: "Scratch-Resistant", subtext: "Sapphire Crystal" },
+    { text: "Precision", subtext: "Movement" },
+    { text: "Water-Resistant", subtext: "Build" },
     { text: "Imperial", subtext: "Warranty" }
   ];
 
