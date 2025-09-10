@@ -3,44 +3,36 @@
   <head>
     <!-- ✅ Meta Charset & Viewport -->
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- ✅ Title & Description -->
-    <title>Imperial Jewelry - Premium Diamond & Hip Hop Jewelry</title>
+    <!-- ✅ Canonical -->
+    <link rel="canonical" href="https://shopimperialjewelry.com/" />
+
+    <!-- ✅ Title & Description (clean, jewelry-forward, local) -->
+    <title>Imperial Jewelry | Fine Diamond Jewelry & Custom Engagement Rings in Houston</title>
     <meta
       name="description"
-      content="Shop premium diamond jewelry, hip hop chains, custom engagement rings & moissanite pieces at Imperial Jewelry. Expert craftsmanship in Houston."
+      content="Explore fine diamond jewelry, moissanite pieces, and custom engagement rings at Imperial Jewelry in Houston’s Galleria area. Expert craftsmanship in 14k gold and sterling silver."
     />
-    <meta name="keywords" content="diamond jewelry, hip hop jewelry, custom engagement rings, moissanite jewelry, gold chains, diamond rings, luxury jewelry store, custom jewelry, Houston jewelry, premium jewelry, 14k gold jewelry, moissanite chains" />
     <meta name="author" content="Imperial Jewelry" />
 
     <!-- ✅ Open Graph -->
-    <meta
-      property="og:title"
-      content="Imperial Jewelry - Premium Diamond & Hip Hop Jewelry Store | Custom Engagement Rings"
-    />
-    <meta
-      property="og:description"
-      content="Shop luxury diamond jewelry, hip hop chains, custom engagement rings, and moissanite jewelry. Premium 14k gold and silver jewelry with expert craftsmanship."
-    />
+    <meta property="og:title" content="Imperial Jewelry | Fine Diamond Jewelry & Custom Engagement Rings in Houston" />
+    <meta property="og:description" content="Explore fine diamond jewelry, moissanite pieces, and custom engagement rings at Imperial Jewelry in Houston’s Galleria area. Expert craftsmanship in 14k gold and sterling silver." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://shopimperialjewelry.com" />
+    <meta property="og:url" content="https://shopimperialjewelry.com/" />
     <meta
       property="og:image"
       content="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/imperialjewelrylogo.webp"
     />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
     <!-- ✅ Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@imperial_jewelry" />
-    <meta
-      name="twitter:title"
-      content="Imperial Jewelry - Premium Diamond & Hip Hop Jewelry Store | Custom Engagement Rings"
-    />
-    <meta
-      name="twitter:description"
-      content="Shop luxury diamond jewelry, hip hop chains, custom engagement rings, and moissanite jewelry. Premium 14k gold and silver jewelry crafted in Houston."
-    />
+    <meta name="twitter:title" content="Imperial Jewelry | Fine Diamond Jewelry & Custom Engagement Rings in Houston" />
+    <meta name="twitter:description" content="Explore fine diamond jewelry, moissanite pieces, and custom engagement rings at Imperial Jewelry in Houston’s Galleria area. Expert craftsmanship in 14k gold and sterling silver." />
     <meta
       name="twitter:image"
       content="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/imperialjewelrylogo.webp"
@@ -56,43 +48,13 @@
       href="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/imperialjewelrylogo.webp"
     />
 
-    <!-- ✅ Structured Data -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "JewelryStore",
-        "name": "Imperial Jewelry",
-        "url": "https://shopimperialjewelry.com",
-        "logo": "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/imperialjewelrylogo.webp",
-        "image": "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/imperialjewelrylogo.webp",
-        "description": "Premium diamond jewelry, hip hop chains, custom engagement rings, and moissanite jewelry store. Specializing in 14k gold jewelry, custom designs, and luxury accessories in Houston, Texas.",
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "5085 Westheimer Rd",
-          "addressLocality": "Houston",
-          "addressRegion": "TX",
-          "postalCode": "77056",
-          "addressCountry": "US"
-        },
-        "telephone": "(832) 408-1472",
-        "openingHours": ["Mo-Th 10:00-20:00", "Fr-Sa 10:00-21:00", "Su 12:00-19:00"],
-        "priceRange": "$$",
-        "areaServed": "United States",
-        "sameAs": [
-          "https://www.instagram.com/imperial_jewelry",
-          "https://x.com/imperial_jewelry",
-          "https://www.tiktok.com/@imperial_jewelry"
-        ]
-      }
-    </script>
-
-    <!-- ✅ Performance Optimization -->
+    <!-- ✅ Performance Hints -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://xdidixccpcgzbqqawywf.supabase.co" />
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     <link rel="dns-prefetch" href="https://embed.tawk.to" />
-    
+
     <!-- ✅ Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
@@ -107,33 +69,88 @@
       />
     </noscript>
 
-    <!-- ✅ Critical CSS -->
-    <link rel="stylesheet" href="/src/index.css" />
+    <!-- ✅ Critical CSS (use built asset path in production) -->
+    <link rel="stylesheet" href="/assets/index.css" />
 
-    <!-- ✅ Google Analytics - Deferred -->
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-R3JHHWF6D6');
-      
-      // Load GA asynchronously after page load
-      window.addEventListener('load', function() {
-        var script = document.createElement('script');
-        script.async = true;
-        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-R3JHHWF6D6';
-        document.head.appendChild(script);
-      });
+    <!-- ✅ Structured Data (uses your actual contact info) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "JewelryStore",
+        "name": "Imperial Jewelry",
+        "url": "https://shopimperialjewelry.com/",
+        "logo": "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/imperialjewelrylogo.webp",
+        "image": "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/imperialjewelrylogo.webp",
+        "description": "Fine diamond jewelry, moissanite designs, and custom engagement rings in Houston’s Galleria area.",
+        "priceRange": "$$",
+        "telephone": "+1-832-408-1472",
+        "email": "imperialjewelryshop@gmail.com",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "5085 Westheimer Rd",
+          "addressLocality": "Houston",
+          "addressRegion": "TX",
+          "addressCountry": "US"
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday"],
+            "opens": "10:00",
+            "closes": "20:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Friday","Saturday"],
+            "opens": "10:00",
+            "closes": "21:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Sunday",
+            "opens": "12:00",
+            "closes": "19:00"
+          }
+        ],
+        "sameAs": [
+          "https://www.instagram.com/imperial_jewelry",
+          "https://x.com/imperial_jewelry",
+          "https://www.facebook.com/imperialjewelry",
+          "https://www.youtube.com/@imperialjewelry"
+        ],
+        "contactPoint": [
+          {
+            "@type": "ContactPoint",
+            "telephone": "+1-832-408-1472",
+            "email": "imperialjewelryshop@gmail.com",
+            "contactType": "customer service",
+            "areaServed": "US"
+          }
+        ]
+      }
     </script>
 
-    <!-- ✅ Tawk.to Chat - Deferred -->
+    <!-- ✅ Google Analytics (async library, then config) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R3JHHWF6D6"></script>
     <script>
-      window.addEventListener('load', function() {
-        var Tawk_API = Tawk_API || {},
-          Tawk_LoadStart = new Date();
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-R3JHHWF6D6', { anonymize_ip: true });
+    </script>
+
+    <!-- ✅ Tawk.to Chat (deferred; minimized on load) -->
+    <script>
+      window.addEventListener('load', function () {
+        window.Tawk_API = window.Tawk_API || {};
+        if (window.Tawk_API) {
+          window.Tawk_API.onLoad = function () {
+            if (window.Tawk_API.minimize) window.Tawk_API.minimize();
+          };
+        }
         (function () {
           var s1 = document.createElement("script"),
-            s0 = document.getElementsByTagName("script")[0];
+              s0 = document.getElementsByTagName("script")[0];
           s1.async = true;
           s1.src = "https://embed.tawk.to/6864014051753a190e1e65bd/1iv3a9pji";
           s1.charset = "UTF-8";
@@ -146,8 +163,23 @@
 
   <body>
     <div id="root"></div>
+    <!-- Your app bundle (ensure this is the built asset path in production) -->
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- (Optional) Accessible footer fallback with contact info for non-JS users -->
+    <noscript>
+      <footer>
+        <h2>Contact Us</h2>
+        <p><strong>Imperial Jewelry</strong><br/>
+        5085 Westheimer Rd<br/>
+        Houston, TX<br/>
+        Phone: (832) 408-1472<br/>
+        Email: imperialjewelryshop@gmail.com</p>
+        <p><strong>Hours</strong><br/>
+        Mon–Thu: 10 AM–8 PM<br/>
+        Fri–Sat: 10 AM–9 PM<br/>
+        Sun: 12–7 PM</p>
+      </footer>
+    </noscript>
   </body>
 </html>
-
-
