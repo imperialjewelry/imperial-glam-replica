@@ -120,11 +120,20 @@ serve(async (req) => {
       }
     }
 
-    // Create checkout session with cart metadata for webhook processing
+    // Store cart data in Supabase with session ID for webhook processing
+    // Only store essential metadata due to Stripe's 500-character limit
+    const compactCartItems = cartItems.map(item => ({
+      id: item.id,
+      quantity: item.quantity,
+      price: item.price,
+      stripe_price_id: item.stripe_price_id
+    }));
+
     const sessionConfigWithMetadata = {
       ...sessionConfig,
       metadata: {
-        cart_items: JSON.stringify(cartItems),
+        cart_items_count: cartItems.length.toString(),
+        customer_email: customerEmail,
         promo_code: promoCode || '',
         discount_percentage: discountPercentage?.toString() || '0'
       }
@@ -132,6 +141,21 @@ serve(async (req) => {
 
     const session = await stripe.checkout.sessions.create(sessionConfigWithMetadata);
     console.log('Created checkout session:', session.id);
+
+    // Store full cart data in Supabase for webhook processing
+    const { error: cartError } = await supabaseClient
+      .from("checkout_sessions")
+      .upsert({
+        session_id: session.id,
+        cart_items: cartItems,
+        customer_email: customerEmail,
+        created_at: new Date().toISOString()
+      });
+
+    if (cartError) {
+      console.error('Error storing cart data:', cartError);
+      // Continue anyway as the essential data is in metadata
+    }
     
     // Orders will be created by the webhook after successful payment
 
