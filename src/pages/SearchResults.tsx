@@ -39,7 +39,7 @@ const SearchResults = () => {
     queryFn: async () => {
       if (!searchTerm.trim()) return [];
       
-      console.log('SearchResults - Searching for:', searchTerm);
+      
       const searchPattern = `%${searchTerm.toLowerCase()}%`;
 
       try {
@@ -49,7 +49,7 @@ const SearchResults = () => {
           .select('name, category, product_type, material, in_stock')
           .limit(10);
           
-        console.log('SearchResults - Sample products:', sampleProducts);
+        
         
         // Enhanced search with specific fields
         const { data, error } = await supabase
@@ -65,19 +65,17 @@ const SearchResults = () => {
           return [];
         }
 
-        console.log('SearchResults - Results found:', data?.length || 0);
-        console.log('SearchResults - Sample results:', data?.slice(0, 3));
         
         if (!data || data.length === 0) {
           // Try without in_stock filter
-          console.log('SearchResults - No results with in_stock filter, trying without...');
+          
           const { data: allData, error: allError } = await supabase
             .from('products')
             .select('*')
             .or(`name.ilike.${searchPattern},category.ilike.${searchPattern},product_type.ilike.${searchPattern},material.ilike.${searchPattern}`)
             .order('featured', { ascending: false });
             
-          console.log('SearchResults - Results without in_stock filter:', allData?.length || 0);
+          
           
           if (allError) {
             console.error('SearchResults - All search error:', allError);

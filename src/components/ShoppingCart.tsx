@@ -121,8 +121,6 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
         quantity: item.quantity || 1,
       }));
 
-      console.log('Creating checkout session with items:', line_items);
-      console.log('Cart items for order tracking:', state.items);
 
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: {
@@ -140,7 +138,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
       }
 
       if (data?.url) {
-        console.log('Redirecting to:', data.url);
+        
         window.location.href = data.url;
       } else {
         throw new Error('No checkout URL received');

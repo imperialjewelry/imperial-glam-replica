@@ -10,7 +10,7 @@ const MoissaniteWatchesSection = () => {
   const { data: watchProducts = [], isLoading, error } = useQuery({
     queryKey: ['watch-products-homepage'],
     queryFn: async () => {
-      console.log('Fetching watch products...');
+      
       const { data, error } = await supabase
         .from('watch_products')
         .select('*')
@@ -20,7 +20,7 @@ const MoissaniteWatchesSection = () => {
         console.error('Error fetching watch products:', error);
         throw error;
       }
-      console.log('Watch products fetched:', data);
+      
       return data || [];
     }
   });
@@ -80,7 +80,7 @@ const MoissaniteWatchesSection = () => {
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
-                          console.log('Image failed to load:', product.image_url);
+                          
                           e.currentTarget.src = '/placeholder.svg';
                         }}
                       />

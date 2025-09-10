@@ -39,7 +39,7 @@ const SearchBar = () => {
     queryFn: async () => {
       if (!searchTerm.trim() || searchTerm.length < 2) return [];
       
-      console.log('SearchBar - Searching for term:', searchTerm);
+      
       const searchPattern = `%${searchTerm.toLowerCase()}%`;
       
       try {
@@ -49,7 +49,7 @@ const SearchBar = () => {
           .select('name, category, product_type, material')
           .limit(10);
           
-        console.log('SearchBar - Sample products in database:', sampleProducts);
+        
         
         // Direct search on specific fields
         const { data, error } = await supabase
@@ -66,12 +66,10 @@ const SearchBar = () => {
           return [];
         }
 
-        console.log('SearchBar - Search results found:', data?.length || 0);
-        console.log('SearchBar - First few results:', data?.slice(0, 3));
         
         if (!data || data.length === 0) {
           // Try searching without the in_stock filter
-          console.log('SearchBar - No results with in_stock filter, trying without...');
+          
           const { data: allData, error: allError } = await supabase
             .from('products')
             .select('*')
@@ -79,7 +77,7 @@ const SearchBar = () => {
             .order('featured', { ascending: false })
             .limit(6);
             
-          console.log('SearchBar - Results without in_stock filter:', allData?.length || 0);
+          
           
           if (allError) {
             console.error('SearchBar - All search error:', allError);

@@ -10,7 +10,7 @@ const MoissanitePendantsSection = () => {
   const { data: pendantProducts = [], isLoading, error } = useQuery({
     queryKey: ['pendant-products-homepage'],
     queryFn: async () => {
-      console.log('Fetching pendant products...');
+      
       const { data, error } = await supabase
         .from('pendant_products')
         .select('*')
@@ -20,7 +20,7 @@ const MoissanitePendantsSection = () => {
         console.error('Error fetching pendant products:', error);
         throw error;
       }
-      console.log('Pendant products fetched:', data);
+      
       return data || [];
     }
   });
@@ -80,7 +80,7 @@ const MoissanitePendantsSection = () => {
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
-                          console.log('Image failed to load:', product.image_url);
+                          
                           e.currentTarget.src = '/placeholder.svg';
                         }}
                       />

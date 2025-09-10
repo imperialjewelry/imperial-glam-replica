@@ -69,14 +69,14 @@ const BestDeals = () => {
   } = useQuery({
     queryKey: ['all-products-combined'],
     queryFn: async () => {
-      console.log('Fetching products from all tables...');
+      
 
       // Fetch from all individual product tables
       const tableQueries = ['chain_products', 'bracelet_products', 'earring_products', 'grillz_products', 'watch_products', 'pendant_products', 'hip_hop_ring_products', 'engagement_ring_products', 'glasses_products', 'diamond_products', 'vvs_simulant_products', 'custom_products'];
       const allProducts: ProductData[] = [];
       for (const tableName of tableQueries) {
         try {
-          console.log(`Fetching from ${tableName}...`);
+          
           const {
             data,
             error
@@ -86,7 +86,7 @@ const BestDeals = () => {
             continue;
           }
           if (data && Array.isArray(data)) {
-            console.log(`Found ${data.length} items in ${tableName}`);
+            
 
             // Process each product
             const productsWithSource = data.filter((item: any) => {
@@ -139,13 +139,13 @@ const BestDeals = () => {
               };
             });
             allProducts.push(...productsWithSource);
-            console.log(`Processed ${productsWithSource.length} products from ${tableName}`);
+            
           }
         } catch (error) {
           console.error(`Exception when fetching from ${tableName}:`, error);
         }
       }
-      console.log(`Total products fetched: ${allProducts.length}`);
+      
       return allProducts;
     }
   });

@@ -17,7 +17,7 @@ const PaymentSuccess = () => {
   const sessionId = searchParams.get('session_id');
 
   useEffect(() => {
-    console.log('PaymentSuccess component mounted, session_id:', sessionId);
+    
     if (sessionId) {
       fetchOrderDetails();
     } else {
@@ -48,7 +48,7 @@ const PaymentSuccess = () => {
         }
       });
       
-      console.log('Order confirmation email sent successfully');
+      
     } catch (error) {
       console.error('Failed to send order confirmation email:', error);
     }
@@ -56,7 +56,7 @@ const PaymentSuccess = () => {
 
   const fetchOrderDetails = async () => {
     try {
-      console.log('Fetching order details for session:', sessionId);
+      
       
       // Wait a bit for webhook to process
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -67,7 +67,7 @@ const PaymentSuccess = () => {
         .select('*')
         .eq('stripe_session_id', sessionId);
 
-      console.log('Supabase query result:', { data, error });
+      
 
       if (error) {
         console.error('Supabase error:', error);
@@ -75,7 +75,7 @@ const PaymentSuccess = () => {
       }
       
       if (!data || data.length === 0) {
-        console.log('No orders found, retrying in 3 seconds...');
+        
         // Retry once more after 3 seconds in case webhook is slow
         setTimeout(async () => {
           const { data: retryData, error: retryError } = await supabase
@@ -87,10 +87,10 @@ const PaymentSuccess = () => {
             console.error('Retry error:', retryError);
             setError('Failed to fetch order details');
           } else if (!retryData || retryData.length === 0) {
-            console.log('Still no orders found after retry');
+            
             setError('Order not found. Please contact support with your session ID: ' + sessionId);
           } else {
-            console.log('Orders found on retry:', retryData);
+            
             setOrderDetails(retryData);
             // Send confirmation email
             sendOrderConfirmationEmail(retryData);
@@ -100,7 +100,7 @@ const PaymentSuccess = () => {
         return;
       }
 
-      console.log('Orders found:', data);
+      
       setOrderDetails(data);
       // Send confirmation email
       sendOrderConfirmationEmail(data);

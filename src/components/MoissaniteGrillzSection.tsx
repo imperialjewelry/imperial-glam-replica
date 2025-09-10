@@ -10,7 +10,7 @@ const MoissaniteGrillzSection = () => {
   const { data: grillzProducts = [], isLoading, error } = useQuery({
     queryKey: ['grillz-products-homepage'],
     queryFn: async () => {
-      console.log('Fetching grillz products...');
+      
       const { data, error } = await supabase
         .from('grillz_products')
         .select('*')
@@ -20,7 +20,7 @@ const MoissaniteGrillzSection = () => {
         console.error('Error fetching grillz products:', error);
         throw error;
       }
-      console.log('Grillz products fetched:', data);
+      
       return data || [];
     }
   });
@@ -80,7 +80,7 @@ const MoissaniteGrillzSection = () => {
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
-                          console.log('Image failed to load:', product.image_url);
+                          
                           e.currentTarget.src = '/placeholder.svg';
                         }}
                       />

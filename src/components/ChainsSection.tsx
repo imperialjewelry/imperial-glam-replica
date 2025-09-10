@@ -10,7 +10,7 @@ const ChainsSection = () => {
   const { data: chainProducts = [], isLoading, error } = useQuery({
     queryKey: ['chain-products-homepage'],
     queryFn: async () => {
-      console.log('Fetching chain products...');
+      
       const { data, error } = await supabase
         .from('chain_products')
         .select('*')
@@ -20,7 +20,7 @@ const ChainsSection = () => {
         console.error('Error fetching chain products:', error);
         throw error;
       }
-      console.log('Chain products fetched:', data);
+      
       return data || [];
     }
   });
@@ -81,7 +81,7 @@ const ChainsSection = () => {
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
-                          console.log('Image failed to load:', product.image_url);
+                          
                           e.currentTarget.src = '/placeholder.svg';
                         }}
                       />

@@ -19,7 +19,7 @@ const ProductShowcase = () => {
   const { data: products = [], isLoading, error } = useQuery({
     queryKey: ['diamond-products-showcase'],
     queryFn: async () => {
-      console.log('Fetching diamond products...');
+      
       const { data, error } = await supabase
         .from('diamond_products')
         .select('*')
@@ -30,7 +30,7 @@ const ProductShowcase = () => {
         throw error;
       }
 
-      console.log('Fetched diamond products:', data);
+      
       return data || [];
     }
   });
@@ -153,7 +153,7 @@ const ProductShowcase = () => {
     );
   }
 
-  console.log('Products to display:', products);
+  
 
   return (
     <section className="py-16 bg-white">

@@ -10,7 +10,7 @@ const BestDeals = () => {
   const { data: dealProducts = [], isLoading, error } = useQuery({
     queryKey: ['best-deals-homepage'],
     queryFn: async () => {
-      console.log('Fetching diverse products from products table...');
+      
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -27,7 +27,7 @@ const BestDeals = () => {
       const shuffled = data?.sort(() => 0.5 - Math.random()) || [];
       const selectedProducts = shuffled.slice(0, 5);
       
-      console.log('Diverse products fetched from products table:', selectedProducts);
+      
       return selectedProducts;
     }
   });
@@ -88,7 +88,7 @@ const BestDeals = () => {
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
-                          console.log('Image failed to load for product:', product.name, product.image_url);
+                          
                           e.currentTarget.src = 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80';
                         }}
                       />
