@@ -59,9 +59,9 @@ const WatchProductModal = ({ product, onClose }: WatchProductModalProps) => {
   const qualityFeatures = [
     { text: "Authentic", subtext: "Design" },
     { text: "Premium", subtext: "Materials" },
-    { text: "Scratch-Resistant", subtext: "Sapphire Crystal" },
+    { text: "Scratch", subtext: "Resistant" },
     { text: "Precision", subtext: "Movement" },
-    { text: "Water-Resistant", subtext: "Build" },
+    { text: "Water", subtext: "Resistant" },
     { text: "Imperial", subtext: "Warranty" }
   ];
 
