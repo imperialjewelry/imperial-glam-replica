@@ -71,7 +71,7 @@ const Index = () => {
     <>
       <Helmet>
         <title>Imperial Jewelry - Premium Diamond & Hip Hop Jewelry Store | Custom Engagement Rings & Moissanite Chains</title>
-        <meta name="description" content="Shop luxury diamond jewelry, hip hop chains, custom engagement rings, and moissanite jewelry at Imperial Jewelry. Premium 14k gold, silver jewelry with expert craftsmanship. Houston's premier jewelry store." />
+        <meta name="description" content="Imperial Jewelry - Houston's premier diamond jewelry store. Shop custom engagement rings, hip hop chains, moissanite jewelry, and luxury accessories. Expert craftsmanship with financing available." />
         <meta name="keywords" content="diamond jewelry, hip hop jewelry, custom engagement rings, moissanite jewelry, gold chains, diamond rings, luxury jewelry store, custom jewelry, Houston jewelry, premium jewelry, 14k gold jewelry, moissanite chains" />
         <link rel="canonical" href="https://shopimperialjewelry.com/" />
         <script type="application/ld+json">
@@ -123,7 +123,7 @@ const Index = () => {
             <section className="py-16 bg-gray-50">
               <div className="max-w-7xl mx-auto px-4">
                 <div className="text-center mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Visit Our Store</h2>
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Visit Our Diamond Jewelry Store</h2>
                   <p className="text-gray-600">5085 Westheimer Rd, Houston, TX 77056</p>
                 </div>
                 <div className="flex justify-center">

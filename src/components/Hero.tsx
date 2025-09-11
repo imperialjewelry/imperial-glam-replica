@@ -16,10 +16,10 @@ const Hero = () => {
       <div className="sr-only">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            Premium Diamond & Hip Hop Jewelry
+            Diamond Jewelry & Custom Engagement Rings
           </h1>
           <p className="text-xl md:text-2xl mb-8">
-            Custom Engagement Rings, Moissanite Chains & Luxury Jewelry in Houston
+            Hip Hop Chains, Moissanite Jewelry & Premium Diamond Collections in Houston
           </p>
         </div>
       </div>

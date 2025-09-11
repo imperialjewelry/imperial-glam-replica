@@ -100,7 +100,7 @@ const CustomerReviews = () => {
                   Payment plans for 12–36 months
                 </span>
                 <span className="text-xl font-bold text-black whitespace-nowrap">
-                  BUY NOW PAY LATER
+                  FLEXIBLE PAYMENTS
                 </span>
               </div>)}
           </div>
