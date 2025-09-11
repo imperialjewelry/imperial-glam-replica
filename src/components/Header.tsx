@@ -11,7 +11,7 @@ const Header = () => {
     getTotalItems
   } = useCart();
   const navigation = ['ALL JEWELRY', 'CHAINS', 'BRACELETS', 'WATCHES', 'PENDANTS', 'EARRINGS', 'CUSTOM', 'GRILLZ', 'GLASSES', 'RINGS', 'ENGAGEMENT RINGS', 'DIAMOND', 'VVS DIAMOND SIMULANTS'];
-  const features = ["FINANCING AVAILABLE", "FAST SHIPPING", "SECURE PAYMENTS", "EXPERT JEWELRY CRAFTSMANSHIP"];
+  const features = ["BUY NOW PAY LATER", "4-DAY SHIPPING", "BUY NOW PAY LATER", "4-DAY SHIPPING"];
   return <>
       {/* Desktop Header */}
       <header className="bg-white shadow-sm hidden lg:block">
