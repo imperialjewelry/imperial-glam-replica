@@ -170,6 +170,33 @@ export type Database = {
         }
         Relationships: []
       }
+      checkout_sessions: {
+        Row: {
+          cart_items: Json
+          created_at: string
+          customer_email: string
+          id: string
+          processed: boolean | null
+          session_id: string
+        }
+        Insert: {
+          cart_items: Json
+          created_at?: string
+          customer_email: string
+          id?: string
+          processed?: boolean | null
+          session_id: string
+        }
+        Update: {
+          cart_items?: Json
+          created_at?: string
+          customer_email?: string
+          id?: string
+          processed?: boolean | null
+          session_id?: string
+        }
+        Relationships: []
+      }
       contact_requests: {
         Row: {
           created_at: string

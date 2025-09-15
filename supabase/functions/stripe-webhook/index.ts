@@ -50,55 +50,76 @@ serve(async (req) => {
 
         // Handle case where metadata might not exist or cart_items might be missing
         let cartItems = [];
-        try {
-          if (session.metadata?.cart_items) {
-            cartItems = JSON.parse(session.metadata.cart_items);
-            console.log("Parsed cart items:", cartItems);
-          } else {
-            console.log("No cart_items found in metadata, checking for existing orders...");
-            
-            // Fallback: Check if orders were already created during checkout (legacy behavior)
-            const { data: existingOrders, error: fetchError } = await supabaseClient
-              .from("orders")
-              .select("*")
-              .eq("stripe_session_id", session.id);
-
-            if (!fetchError && existingOrders && existingOrders.length > 0) {
-              console.log(`Found ${existingOrders.length} existing orders, updating to paid status`);
+        
+        // First try to get cart items from checkout_sessions table
+        const { data: checkoutSession, error: checkoutError } = await supabaseClient
+          .from("checkout_sessions")
+          .select("cart_items")
+          .eq("session_id", session.id)
+          .maybeSingle();
+        
+        if (!checkoutError && checkoutSession && checkoutSession.cart_items) {
+          cartItems = checkoutSession.cart_items;
+          console.log("Found cart items in checkout_sessions table:", cartItems);
+          
+          // Mark session as processed
+          await supabaseClient
+            .from("checkout_sessions")
+            .update({ processed: true })
+            .eq("session_id", session.id);
+        } else {
+          console.log("No cart items found in checkout_sessions table, trying metadata...");
+          
+          try {
+            if (session.metadata?.cart_items) {
+              cartItems = JSON.parse(session.metadata.cart_items);
+              console.log("Parsed cart items from metadata:", cartItems);
+            } else {
+              console.log("No cart_items found in metadata, checking for existing orders...");
               
-              // Update existing orders to paid status
-              const { error: updateError } = await supabaseClient
+              // Fallback: Check if orders were already created during checkout (legacy behavior)
+              const { data: existingOrders, error: fetchError } = await supabaseClient
                 .from("orders")
-                .update({
-                  status: "paid",
-                  stripe_payment_intent_id: session.payment_intent,
-                  customer_details: session.customer_details,
-                  shipping_details: session.shipping_details,
-                  updated_at: new Date().toISOString()
-                })
+                .select("*")
                 .eq("stripe_session_id", session.id);
 
-              if (updateError) {
-                console.error("Error updating existing orders:", updateError);
-                return new Response("Error updating orders", { status: 500 });
-              }
+              if (!fetchError && existingOrders && existingOrders.length > 0) {
+                console.log(`Found ${existingOrders.length} existing orders, updating to paid status`);
+                
+                // Update existing orders to paid status
+                const { error: updateError } = await supabaseClient
+                  .from("orders")
+                  .update({
+                    status: "paid",
+                    stripe_payment_intent_id: session.payment_intent,
+                    customer_details: session.customer_details,
+                    shipping_details: session.shipping_details,
+                    updated_at: new Date().toISOString()
+                  })
+                  .eq("stripe_session_id", session.id);
 
-              console.log(`Successfully updated ${existingOrders.length} orders to paid status`);
-              return new Response(JSON.stringify({ received: true, updated: existingOrders.length }), {
-                headers: { ...corsHeaders, "Content-Type": "application/json" },
-                status: 200,
-              });
-            } else {
-              console.error("No cart items in metadata and no existing orders found");
-              return new Response(JSON.stringify({ received: true, message: "No cart items or orders found" }), {
-                headers: { ...corsHeaders, "Content-Type": "application/json" },
-                status: 200,
-              });
+                if (updateError) {
+                  console.error("Error updating existing orders:", updateError);
+                  return new Response("Error updating orders", { status: 500 });
+                }
+
+                console.log(`Successfully updated ${existingOrders.length} orders to paid status`);
+                return new Response(JSON.stringify({ received: true, updated: existingOrders.length }), {
+                  headers: { ...corsHeaders, "Content-Type": "application/json" },
+                  status: 200,
+                });
+              } else {
+                console.error("No cart items in metadata and no existing orders found");
+                return new Response(JSON.stringify({ received: true, message: "No cart items or orders found" }), {
+                  headers: { ...corsHeaders, "Content-Type": "application/json" },
+                  status: 200,
+                });
+              }
             }
+          } catch (parseError) {
+            console.error("Error parsing cart items from metadata:", parseError);
+            return new Response("Invalid cart items data", { status: 400 });
           }
-        } catch (parseError) {
-          console.error("Error parsing cart items from metadata:", parseError);
-          return new Response("Invalid cart items data", { status: 400 });
         }
 
         if (!cartItems || cartItems.length === 0) {
