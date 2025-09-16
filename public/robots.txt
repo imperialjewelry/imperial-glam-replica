@@ -12,3 +12,6 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# Sitemap helps search engines index your site correctly
+Sitemap: https://shopimperialjewelry.com/sitemap.xml
