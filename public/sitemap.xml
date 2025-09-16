@@ -2,110 +2,110 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Homepage -->
   <url>
-    <loc>https://imperialjewelry.lovable.app/</loc>
+    <loc>https://shopimperialjewelry.com/</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  
+
   <!-- Best Deals -->
   <url>
-    <loc>https://imperialjewelry.lovable.app/best-deals</loc>
+    <loc>https://shopimperialjewelry.com/best-deals</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
-  
+
   <!-- Product Categories -->
   <url>
-    <loc>https://imperialjewelry.lovable.app/chains</loc>
+    <loc>https://shopimperialjewelry.com/chains</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
-    <loc>https://imperialjewelry.lovable.app/bracelets</loc>
+    <loc>https://shopimperialjewelry.com/bracelets</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
-    <loc>https://imperialjewelry.lovable.app/watches</loc>
+    <loc>https://shopimperialjewelry.com/watches</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
-    <loc>https://imperialjewelry.lovable.app/pendants</loc>
+    <loc>https://shopimperialjewelry.com/pendants</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
-    <loc>https://imperialjewelry.lovable.app/earrings</loc>
+    <loc>https://shopimperialjewelry.com/earrings</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
-    <loc>https://imperialjewelry.lovable.app/custom</loc>
+    <loc>https://shopimperialjewelry.com/custom</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
-    <loc>https://imperialjewelry.lovable.app/grillz</loc>
+    <loc>https://shopimperialjewelry.com/grillz</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
-    <loc>https://imperialjewelry.lovable.app/glasses</loc>
+    <loc>https://shopimperialjewelry.com/glasses</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <!-- Ring Categories -->
   <url>
-    <loc>https://imperialjewelry.lovable.app/rings/hip-hop</loc>
+    <loc>https://shopimperialjewelry.com/rings/hip-hop</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <url>
-    <loc>https://imperialjewelry.lovable.app/rings/engagement</loc>
+    <loc>https://shopimperialjewelry.com/rings/engagement</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  
+
   <!-- Special Collections -->
   <url>
-    <loc>https://imperialjewelry.lovable.app/vvs-diamond-simulants</loc>
+    <loc>https://shopimperialjewelry.com/vvs-diamond-simulants</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
-  
+
   <url>
-    <loc>https://imperialjewelry.lovable.app/diamond</loc>
+    <loc>https://shopimperialjewelry.com/diamond</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
-  
+
   <!-- Payment Success Page -->
   <url>
-    <loc>https://imperialjewelry.lovable.app/payment-success</loc>
+    <loc>https://shopimperialjewelry.com/payment-success</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
