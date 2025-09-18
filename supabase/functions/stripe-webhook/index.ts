@@ -54,13 +54,16 @@ serve(async (req) => {
         // First try to get cart items from checkout_sessions table
         const { data: checkoutSession, error: checkoutError } = await supabaseClient
           .from("checkout_sessions")
-          .select("cart_items")
+          .select("cart_items, shipping_address")
           .eq("session_id", session.id)
           .maybeSingle();
         
+        let shippingAddress = null;
         if (!checkoutError && checkoutSession && checkoutSession.cart_items) {
           cartItems = checkoutSession.cart_items;
+          shippingAddress = checkoutSession.shipping_address;
           console.log("Found cart items in checkout_sessions table:", cartItems);
+          console.log("Found shipping address in checkout_sessions table:", shippingAddress);
           
           // Mark session as processed
           await supabaseClient
@@ -93,7 +96,7 @@ serve(async (req) => {
                     status: "paid",
                     stripe_payment_intent_id: session.payment_intent,
                     customer_details: session.customer_details,
-                    shipping_details: session.shipping_details,
+                    shipping_details: shippingAddress || session.shipping_details,
                     updated_at: new Date().toISOString()
                   })
                   .eq("stripe_session_id", session.id);
@@ -221,7 +224,7 @@ serve(async (req) => {
             selected_length: cartItem.selectedLength || null,
             product_details: productDetailsWithConfig,
             customer_details: session.customer_details,
-            shipping_details: session.shipping_details,
+            shipping_details: shippingAddress || session.shipping_details,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           };

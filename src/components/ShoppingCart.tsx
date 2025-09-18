@@ -17,6 +17,15 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
   const { toast } = useToast();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [customerEmail, setCustomerEmail] = useState('');
+  const [shippingAddress, setShippingAddress] = useState({
+    fullName: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    country: ''
+  });
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState<{code: string, discount: number} | null>(null);
   const [isValidatingPromo, setIsValidatingPromo] = useState(false);
@@ -113,6 +122,17 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
       return;
     }
 
+    if (!shippingAddress.fullName.trim() || !shippingAddress.addressLine1.trim() || 
+        !shippingAddress.city.trim() || !shippingAddress.state.trim() || 
+        !shippingAddress.zipCode.trim() || !shippingAddress.country.trim()) {
+      toast({
+        title: "Shipping address required",
+        description: "Please fill in all required shipping address fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsCheckingOut(true);
 
     try {
@@ -126,6 +146,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
         body: {
           line_items,
           customerEmail: customerEmail.trim(),
+          shippingAddress,
           promoCode: appliedPromo?.code || null,
           discountPercentage: appliedPromo?.discount || 0,
           cartItems: state.items, // Pass cart items for detailed order tracking
@@ -321,6 +342,62 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
                   onChange={(e) => setCustomerEmail(e.target.value)}
                   className="w-full"
                 />
+              </div>
+
+              {/* Shipping Address */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Shipping Address</Label>
+                
+                <div className="space-y-2">
+                  <Input
+                    placeholder="Full Name *"
+                    value={shippingAddress.fullName}
+                    onChange={(e) => setShippingAddress(prev => ({ ...prev, fullName: e.target.value }))}
+                    className="w-full"
+                  />
+                  
+                  <Input
+                    placeholder="Address Line 1 *"
+                    value={shippingAddress.addressLine1}
+                    onChange={(e) => setShippingAddress(prev => ({ ...prev, addressLine1: e.target.value }))}
+                    className="w-full"
+                  />
+                  
+                  <Input
+                    placeholder="Address Line 2 (Optional)"
+                    value={shippingAddress.addressLine2}
+                    onChange={(e) => setShippingAddress(prev => ({ ...prev, addressLine2: e.target.value }))}
+                    className="w-full"
+                  />
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      placeholder="City *"
+                      value={shippingAddress.city}
+                      onChange={(e) => setShippingAddress(prev => ({ ...prev, city: e.target.value }))}
+                    />
+                    
+                    <Input
+                      placeholder="State *"
+                      value={shippingAddress.state}
+                      onChange={(e) => setShippingAddress(prev => ({ ...prev, state: e.target.value }))}
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      placeholder="ZIP Code *"
+                      value={shippingAddress.zipCode}
+                      onChange={(e) => setShippingAddress(prev => ({ ...prev, zipCode: e.target.value }))}
+                    />
+                    
+                    <Input
+                      placeholder="Country *"
+                      value={shippingAddress.country}
+                      onChange={(e) => setShippingAddress(prev => ({ ...prev, country: e.target.value }))}
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-2">

@@ -14,9 +14,9 @@ serve(async (req) => {
   }
 
   try {
-    const { line_items, customerEmail, promoCode, discountPercentage, cartItems } = await req.json();
+    const { line_items, customerEmail, shippingAddress, promoCode, discountPercentage, cartItems } = await req.json();
 
-    console.log('Received checkout request:', { line_items, customerEmail, promoCode, discountPercentage, cartItems });
+    console.log('Received checkout request:', { line_items, customerEmail, shippingAddress, promoCode, discountPercentage, cartItems });
 
     if (!line_items || !Array.isArray(line_items) || line_items.length === 0) {
       throw new Error("line_items is required and must be a non-empty array");
@@ -149,6 +149,7 @@ serve(async (req) => {
         session_id: session.id,
         cart_items: cartItems,
         customer_email: customerEmail,
+        shipping_address: shippingAddress,
         created_at: new Date().toISOString()
       });
 
