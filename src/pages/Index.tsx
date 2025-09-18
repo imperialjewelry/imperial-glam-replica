@@ -77,6 +77,13 @@ const Index = () => {
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>
+        <script>
+          {`
+            gtag('event', 'conversion_event_page_view', {
+              // event_parameters
+            });
+          `}
+        </script>
       </Helmet>
       
       <div className="min-h-screen bg-white">
