@@ -178,24 +178,11 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
 
   return (
     <div className="fixed inset-0 z-[100]">
-      {/* Backdrop stays fixed so it doesn’t scroll behind */}
-      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-
-      {/* Drawer uses the visual viewport height on iPhone, with scrolling inside */}
-      <aside
-        className="
-          fixed right-0 top-0
-          w-full sm:max-w-md
-          bg-white shadow-xl
-          flex flex-col min-h-0
-          h-[100svh] max-h-[100svh]      /* iOS/modern browsers */
-          pt-[env(safe-area-inset-top)]
-          pb-[env(safe-area-inset-bottom)]
-          overscroll-contain
-        "
-      >
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      
+      <div className="absolute right-0 top-0 bottom-0 w-full sm:max-w-md bg-white shadow-xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b px-4 py-3">
+        <div className="flex items-center justify-between border-b px-4 py-3 flex-shrink-0">
           <div className="flex items-center space-x-2">
             <ShoppingBag className="h-5 w-5" />
             <h2 className="text-lg font-semibold">Shopping Cart ({getTotalItems()})</h2>
@@ -209,7 +196,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
         </div>
 
         {/* Cart Items (scrollable) */}
-        <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 [-webkit-overflow-scrolling:touch]">
+        <div className="flex-1 overflow-y-auto px-4 py-4">
           {state.items.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
               <ShoppingBag className="h-12 w-12 text-gray-400 mb-4" />
@@ -219,51 +206,47 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
           ) : (
             <div className="space-y-4">
               {state.items.map((item) => (
-                <div key={`${item.id}-${item.selectedSize || ''}-${item.selectedColor || ''}-${item.selectedLength || ''}`} className="flex space-x-3 border-b pb-4">
+                <div key={`${item.id}-${item.selectedSize || ''}-${item.selectedColor || ''}-${item.selectedLength || ''}`} className="flex gap-3 border-b pb-4">
                   <img
                     src={item.image_url}
                     alt={item.name}
-                    className="h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 rounded-md object-cover"
+                    className="h-16 w-16 flex-shrink-0 rounded-md object-cover"
                   />
-                  <div className="flex-1 min-w-0 space-y-1">
-                    <h3 className="text-sm font-medium text-gray-900 leading-tight">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-medium text-gray-900 mb-1 line-clamp-2">
                       {item.name}
                     </h3>
                     
                     {/* Selected options */}
-                    <div className="text-xs text-gray-500 space-y-0.5">
-                      {item.selectedLength && (
-                        <p>Length: {item.selectedLength}</p>
-                      )}
-                      {item.selectedSize && (
-                        <p>Size: {item.selectedSize}</p>
-                      )}
-                      {item.selectedColor && (
-                        <p>Color: {item.selectedColor}</p>
-                      )}
+                    <div className="text-xs text-gray-500 mb-2">
+                      {item.selectedLength && <div>Length: {item.selectedLength}</div>}
+                      {item.selectedSize && <div>Size: {item.selectedSize}</div>}
+                      {item.selectedColor && <div>Color: {item.selectedColor}</div>}
                     </div>
 
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div className="flex flex-col gap-2">
                       <span className="text-sm font-medium text-blue-600">
                         ${(item.price / 100).toFixed(2)}
                       </span>
                       
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => handleQuantityChange(item.id, (item.quantity || 1) - 1)}
-                          className="rounded-full p-1 hover:bg-gray-100"
-                        >
-                          <Minus className="h-3 w-3" />
-                        </button>
-                        <span className="text-sm font-medium w-8 text-center">
-                          {item.quantity || 1}
-                        </span>
-                        <button
-                          onClick={() => handleQuantityChange(item.id, (item.quantity || 1) + 1)}
-                          className="rounded-full p-1 hover:bg-gray-100"
-                        >
-                          <Plus className="h-3 w-3" />
-                        </button>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => handleQuantityChange(item.id, (item.quantity || 1) - 1)}
+                            className="rounded-full p-1 hover:bg-gray-100"
+                          >
+                            <Minus className="h-3 w-3" />
+                          </button>
+                          <span className="text-sm font-medium w-8 text-center">
+                            {item.quantity || 1}
+                          </span>
+                          <button
+                            onClick={() => handleQuantityChange(item.id, (item.quantity || 1) + 1)}
+                            className="rounded-full p-1 hover:bg-gray-100"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </button>
+                        </div>
                         <button
                           onClick={() => removeFromCart(item.id)}
                           className="rounded-full p-1 hover:bg-gray-100 text-red-500"
@@ -281,7 +264,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
 
         {/* Footer */}
         {state.items.length > 0 && (
-          <div className="border-t px-4 py-4 space-y-4">
+          <div className="border-t px-4 py-4 space-y-4 flex-shrink-0">
             {/* Promo Code */}
             <div className="space-y-1">
               <Label className="text-xs font-medium">Promo Code</Label>
@@ -359,7 +342,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
             <div className="space-y-2">
               <Label className="text-xs font-medium">Shipping Address</Label>
               
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <Input
                   placeholder="Full Name *"
                   value={shippingAddress.fullName}
@@ -381,7 +364,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
                   className="w-full h-8 text-xs"
                 />
                 
-                <div className="grid grid-cols-2 gap-1">
+                <div className="grid grid-cols-2 gap-2">
                   <Input
                     placeholder="City *"
                     value={shippingAddress.city}
@@ -397,7 +380,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
                   />
                 </div>
                 
-                <div className="grid grid-cols-2 gap-1">
+                <div className="grid grid-cols-2 gap-2">
                   <Input
                     placeholder="ZIP Code *"
                     value={shippingAddress.zipCode}
@@ -434,7 +417,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
             </div>
           </div>
         )}
-      </aside>
+      </div>
     </div>
   );
 };
