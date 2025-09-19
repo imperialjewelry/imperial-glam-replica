@@ -213,7 +213,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
                     <img
                       src={item.image_url}
                       alt={item.name}
-                      className="h-16 w-16 flex-shrink-0 rounded-md object-cover"
+                      className="h-24 w-24 flex-shrink-0 rounded-md object-cover"
                     />
                     <div className="flex-1 space-y-1">
                       <h3 className="text-sm font-medium text-gray-900 line-clamp-2">
@@ -273,10 +273,10 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
           {state.items.length > 0 && (
             <div className="border-t px-4 py-4 space-y-4">
               {/* Promo Code Section */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Promo Code</Label>
+              <div className="space-y-1">
+                <Label className="text-xs font-medium">Promo Code</Label>
                 {appliedPromo ? (
-                  <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-md p-3">
+                  <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-md p-2">
                     <div className="flex items-center space-x-2">
                       <Tag className="h-4 w-4 text-green-600" />
                       <span className="text-sm font-medium text-green-800">{appliedPromo.code}</span>
@@ -290,18 +290,19 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
                     </button>
                   </div>
                 ) : (
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-1">
                     <Input
                       placeholder="Enter promo code"
                       value={promoCode}
                       onChange={(e) => setPromoCode(e.target.value)}
-                      className="flex-1"
+                      className="flex-1 h-8 text-xs"
                     />
                     <Button
                       onClick={validatePromoCode}
                       disabled={isValidatingPromo}
                       variant="outline"
                       size="sm"
+                      className="h-8 px-2 text-xs"
                     >
                       {isValidatingPromo ? 'Validating...' : 'Apply'}
                     </Button>
