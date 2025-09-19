@@ -178,35 +178,52 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
 
   return (
     <div className="fixed inset-0 z-[100]">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      
-      <div className="absolute right-0 top-0 bottom-0 w-full sm:max-w-md bg-white shadow-xl flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b px-4 py-3 flex-shrink-0">
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+
+      {/* Drawer: full visual viewport height on iPhone */}
+      <div
+        className="
+          fixed right-0 top-0
+          w-full sm:max-w-md
+          bg-white shadow-xl
+          flex flex-col min-h-0
+          h-[100svh] max-h-[100svh]
+          pt-[env(safe-area-inset-top)]
+          pb-[env(safe-area-inset-bottom)]
+          overflow-hidden
+        "
+      >
+        {/* Header (tighter) */}
+        <div className="flex items-center justify-between border-b px-3 py-2 flex-shrink-0">
           <div className="flex items-center space-x-2">
             <ShoppingBag className="h-5 w-5" />
-            <h2 className="text-lg font-semibold">Shopping Cart ({getTotalItems()})</h2>
+            <h2 className="text-base font-semibold">Shopping Cart ({getTotalItems()})</h2>
           </div>
           <button
             onClick={onClose}
             className="rounded-full p-1 hover:bg-gray-100"
+            aria-label="Close cart"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Cart Items (scrollable) */}
-        <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3">
           {state.items.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
-              <ShoppingBag className="h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
-              <p className="text-gray-500">Add some items to get started!</p>
+              <ShoppingBag className="h-12 w-12 text-gray-400 mb-3" />
+              <h3 className="text-base font-medium text-gray-900 mb-1">Your cart is empty</h3>
+              <p className="text-gray-500 text-sm">Add some items to get started!</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {state.items.map((item) => (
-                <div key={`${item.id}-${item.selectedSize || ''}-${item.selectedColor || ''}-${item.selectedLength || ''}`} className="flex gap-3 border-b pb-4">
+                <div
+                  key={`${item.id}-${item.selectedSize || ''}-${item.selectedColor || ''}-${item.selectedLength || ''}`}
+                  className="flex gap-3 border-b pb-3"
+                >
                   <img
                     src={item.image_url}
                     alt={item.name}
@@ -216,40 +233,40 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
                     <h3 className="text-sm font-medium text-gray-900 mb-1 line-clamp-2">
                       {item.name}
                     </h3>
-                    
-                    {/* Selected options */}
-                    <div className="text-xs text-gray-500 mb-2">
-                      {item.selectedLength && <div>Length: {item.selectedLength}</div>}
-                      {item.selectedSize && <div>Size: {item.selectedSize}</div>}
-                      {item.selectedColor && <div>Color: {item.selectedColor}</div>}
+
+                    {/* Selected options (compact) */}
+                    <div className="text-[11px] text-gray-500 mb-2 space-x-2">
+                      {item.selectedLength && <span>Length: {item.selectedLength}</span>}
+                      {item.selectedSize && <span>Size: {item.selectedSize}</span>}
+                      {item.selectedColor && <span>Color: {item.selectedColor}</span>}
                     </div>
 
-                    <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-blue-600">
                         ${(item.price / 100).toFixed(2)}
                       </span>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => handleQuantityChange(item.id, (item.quantity || 1) - 1)}
-                            className="rounded-full p-1 hover:bg-gray-100"
-                          >
-                            <Minus className="h-3 w-3" />
-                          </button>
-                          <span className="text-sm font-medium w-8 text-center">
-                            {item.quantity || 1}
-                          </span>
-                          <button
-                            onClick={() => handleQuantityChange(item.id, (item.quantity || 1) + 1)}
-                            className="rounded-full p-1 hover:bg-gray-100"
-                          >
-                            <Plus className="h-3 w-3" />
-                          </button>
-                        </div>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => handleQuantityChange(item.id, (item.quantity || 1) - 1)}
+                          className="rounded-full p-1 hover:bg-gray-100"
+                          aria-label="Decrease quantity"
+                        >
+                          <Minus className="h-3 w-3" />
+                        </button>
+                        <span className="text-sm font-medium w-7 text-center">
+                          {item.quantity || 1}
+                        </span>
+                        <button
+                          onClick={() => handleQuantityChange(item.id, (item.quantity || 1) + 1)}
+                          className="rounded-full p-1 hover:bg-gray-100"
+                          aria-label="Increase quantity"
+                        >
+                          <Plus className="h-3 w-3" />
+                        </button>
                         <button
                           onClick={() => removeFromCart(item.id)}
                           className="rounded-full p-1 hover:bg-gray-100 text-red-500"
+                          aria-label="Remove item"
                         >
                           <Trash2 className="h-3 w-3" />
                         </button>
@@ -262,72 +279,67 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
           )}
         </div>
 
-        {/* Footer */}
+        {/* Footer (compact) */}
         {state.items.length > 0 && (
-          <div className="border-t px-4 py-4 space-y-4 flex-shrink-0">
-            {/* Promo Code */}
-            <div className="space-y-1">
-              <Label className="text-xs font-medium">Promo Code</Label>
+          <div className="border-t px-3 py-3 space-y-3 flex-shrink-0">
+            {/* Promo Code — compact, no grey label line */}
+            <div className="space-y-2">
               {appliedPromo ? (
-                <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-md p-2">
+                <div className="flex items-center justify-between bg-green-50 rounded-md px-2 py-1 text-sm">
                   <div className="flex items-center space-x-2">
                     <Tag className="h-4 w-4 text-green-600" />
-                    <span className="text-sm font-medium text-green-800">{appliedPromo.code}</span>
-                    <span className="text-sm text-green-600">({appliedPromo.discount}% off)</span>
+                    <span className="font-medium text-green-800">{appliedPromo.code}</span>
+                    <span className="text-green-600">({appliedPromo.discount}% off)</span>
                   </div>
                   <button
                     onClick={removePromoCode}
                     className="text-green-600 hover:text-green-800"
+                    aria-label="Remove promo code"
                   >
                     <X className="h-4 w-4" />
                   </button>
                 </div>
               ) : (
-                <div className="flex space-x-1">
+                <div className="flex items-center gap-2">
                   <Input
-                    placeholder="Enter promo code"
+                    placeholder="Promo code"
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
-                    className="flex-1 h-8 text-xs"
+                    className="h-8 text-xs flex-1"
                   />
                   <Button
                     onClick={validatePromoCode}
                     disabled={isValidatingPromo}
-                    variant="outline"
                     size="sm"
-                    className="h-8 px-2 text-xs"
+                    className="h-8 px-3 text-xs"
                   >
-                    {isValidatingPromo ? 'Validating...' : 'Apply'}
+                    {isValidatingPromo ? '...' : 'Apply'}
                   </Button>
                 </div>
               )}
             </div>
 
-            {/* Order Summary */}
-            <div className="space-y-2">
+            {/* Order Summary — tight */}
+            <div className="space-y-1">
               <div className="flex items-center justify-between text-sm">
-                <span>Subtotal:</span>
+                <span>Subtotal</span>
                 <span>${(getTotalPrice() / 100).toFixed(2)}</span>
               </div>
-              
               {appliedPromo && (
-                <div className="flex items-center justify-between text-sm text-green-600">
-                  <span>Discount ({appliedPromo.discount}%):</span>
+                <div className="flex items-center justify-between text-xs text-green-600">
+                  <span>Discount ({appliedPromo.discount}%)</span>
                   <span>-${(getDiscountAmount() / 100).toFixed(2)}</span>
                 </div>
               )}
-              
-              <div className="flex items-center justify-between text-lg font-semibold border-t pt-2">
-                <span>Total:</span>
+              <div className="flex items-center justify-between text-base font-semibold border-t pt-2">
+                <span>Total</span>
                 <span>${(getFinalTotal() / 100).toFixed(2)}</span>
               </div>
             </div>
 
             {/* Email */}
             <div className="space-y-1">
-              <Label htmlFor="customer-email" className="text-xs font-medium">
-                Email Address
-              </Label>
+              <Label htmlFor="customer-email" className="text-xs font-medium">Email Address</Label>
               <Input
                 id="customer-email"
                 type="email"
@@ -338,10 +350,9 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
               />
             </div>
 
-            {/* Shipping Address */}
+            {/* Shipping Address (slightly tighter gaps) */}
             <div className="space-y-2">
               <Label className="text-xs font-medium">Shipping Address</Label>
-              
               <div className="space-y-2">
                 <Input
                   placeholder="Full Name *"
@@ -349,21 +360,18 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
                   onChange={(e) => setShippingAddress(prev => ({ ...prev, fullName: e.target.value }))}
                   className="w-full h-8 text-xs"
                 />
-                
                 <Input
                   placeholder="Address Line 1 *"
                   value={shippingAddress.addressLine1}
                   onChange={(e) => setShippingAddress(prev => ({ ...prev, addressLine1: e.target.value }))}
                   className="w-full h-8 text-xs"
                 />
-                
                 <Input
                   placeholder="Address Line 2 (Optional)"
                   value={shippingAddress.addressLine2}
                   onChange={(e) => setShippingAddress(prev => ({ ...prev, addressLine2: e.target.value }))}
                   className="w-full h-8 text-xs"
                 />
-                
                 <div className="grid grid-cols-2 gap-2">
                   <Input
                     placeholder="City *"
@@ -371,7 +379,6 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
                     onChange={(e) => setShippingAddress(prev => ({ ...prev, city: e.target.value }))}
                     className="h-8 text-xs"
                   />
-                  
                   <Input
                     placeholder="State *"
                     value={shippingAddress.state}
@@ -379,7 +386,6 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
                     className="h-8 text-xs"
                   />
                 </div>
-                
                 <div className="grid grid-cols-2 gap-2">
                   <Input
                     placeholder="ZIP Code *"
@@ -387,7 +393,6 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
                     onChange={(e) => setShippingAddress(prev => ({ ...prev, zipCode: e.target.value }))}
                     className="h-8 text-xs"
                   />
-                  
                   <Input
                     placeholder="Country *"
                     value={shippingAddress.country}
@@ -406,12 +411,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
               >
                 {isCheckingOut ? 'Processing...' : 'Checkout'}
               </Button>
-              
-              <Button
-                onClick={clearCart}
-                variant="outline"
-                className="w-full"
-              >
+              <Button onClick={clearCart} variant="outline" className="w-full">
                 Clear Cart
               </Button>
             </div>
