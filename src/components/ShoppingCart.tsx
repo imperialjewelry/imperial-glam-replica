@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { X, Minus, Plus, ShoppingBag, Trash2, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
@@ -148,7 +148,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
           shippingAddress,
           promoCode: appliedPromo?.code || null,
           discountPercentage: appliedPromo?.discount || 0,
-          cartItems: state.items, // Pass cart items for detailed order tracking
+          cartItems: state.items,
         },
       });
 
@@ -174,6 +174,29 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
     }
   };
 
+  // ----- NEW: lock body scroll & prevent layout shift when open -----
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevOverflow = body.style.overflow;
+    const prevPaddingRight = html.style.paddingRight;
+
+    if (isOpen) {
+      const scrollbar = window.innerWidth - html.clientWidth;
+      body.style.overflow = 'hidden';
+      if (scrollbar > 0) html.style.paddingRight = `${scrollbar}px`;
+    } else {
+      body.style.overflow = prevOverflow || '';
+      html.style.paddingRight = prevPaddingRight || '';
+    }
+
+    return () => {
+      body.style.overflow = prevOverflow || '';
+      html.style.paddingRight = prevPaddingRight || '';
+    };
+  }, [isOpen]);
+  // ------------------------------------------------------------------
+
   if (!isOpen) return null;
 
   return (
@@ -181,12 +204,12 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
       {/* Backdrop */}
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
 
-      {/* Drawer: full visual viewport height on iPhone */}
+      {/* Drawer: identical mobile/desktop behavior */}
       <div
         className="
           fixed right-0 top-0
-          w-full sm:max-w-md
-          bg-white shadow-xl
+          w-full sm:w-[460px] lg:w-[500px]
+          bg-white shadow-xl z-[10000]
           flex flex-col min-h-0
           h-[100svh] max-h-[100svh]
           pt-[env(safe-area-inset-top)]
@@ -210,7 +233,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
         </div>
 
         {/* Cart Items (scrollable) */}
-        <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-3 pb-36">
           {state.items.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
               <ShoppingBag className="h-12 w-12 text-gray-400 mb-3" />
@@ -279,10 +302,10 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
           )}
         </div>
 
-        {/* Footer (compact) */}
+        {/* Footer (sticky, compact) */}
         {state.items.length > 0 && (
-          <div className="border-t px-3 py-3 space-y-3 flex-shrink-0">
-            {/* Promo Code — compact, no grey label line */}
+          <div className="border-t px-3 py-3 space-y-3 flex-shrink-0 sticky bottom-0 bg-white">
+            {/* Promo Code — compact */}
             <div className="space-y-2">
               {appliedPromo ? (
                 <div className="flex items-center justify-between bg-green-50 rounded-md px-2 py-1 text-sm">
@@ -350,7 +373,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
               />
             </div>
 
-            {/* Shipping Address (slightly tighter gaps) */}
+            {/* Shipping Address */}
             <div className="space-y-2">
               <Label className="text-xs font-medium">Shipping Address</Label>
               <div className="space-y-2">
