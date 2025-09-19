@@ -213,10 +213,10 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
                     <img
                       src={item.image_url}
                       alt={item.name}
-                      className="h-24 w-24 flex-shrink-0 rounded-md object-cover"
+                      className="h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 rounded-md object-cover"
                     />
-                    <div className="flex-1 space-y-1">
-                      <h3 className="text-sm font-medium text-gray-900 line-clamp-2">
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <h3 className="text-sm font-medium text-gray-900 leading-tight">
                         {item.name}
                       </h3>
                       
@@ -233,7 +233,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
                         )}
                       </div>
 
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <span className="text-sm font-medium text-blue-600">
                           ${(item.price / 100).toFixed(2)}
                         </span>
