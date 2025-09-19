@@ -331,8 +331,8 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
               </div>
 
               {/* Customer Email Input */}
-              <div className="space-y-2">
-                <Label htmlFor="customer-email" className="text-sm font-medium">
+              <div className="space-y-1">
+                <Label htmlFor="customer-email" className="text-xs font-medium">
                   Email Address
                 </Label>
                 <Input
@@ -341,61 +341,65 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
                   placeholder="Enter your email"
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
-                  className="w-full"
+                  className="w-full h-8 text-xs"
                 />
               </div>
 
               {/* Shipping Address */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium">Shipping Address</Label>
+              <div className="space-y-2">
+                <Label className="text-xs font-medium">Shipping Address</Label>
                 
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <Input
                     placeholder="Full Name *"
                     value={shippingAddress.fullName}
                     onChange={(e) => setShippingAddress(prev => ({ ...prev, fullName: e.target.value }))}
-                    className="w-full"
+                    className="w-full h-8 text-xs"
                   />
                   
                   <Input
                     placeholder="Address Line 1 *"
                     value={shippingAddress.addressLine1}
                     onChange={(e) => setShippingAddress(prev => ({ ...prev, addressLine1: e.target.value }))}
-                    className="w-full"
+                    className="w-full h-8 text-xs"
                   />
                   
                   <Input
                     placeholder="Address Line 2 (Optional)"
                     value={shippingAddress.addressLine2}
                     onChange={(e) => setShippingAddress(prev => ({ ...prev, addressLine2: e.target.value }))}
-                    className="w-full"
+                    className="w-full h-8 text-xs"
                   />
                   
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-1">
                     <Input
                       placeholder="City *"
                       value={shippingAddress.city}
                       onChange={(e) => setShippingAddress(prev => ({ ...prev, city: e.target.value }))}
+                      className="h-8 text-xs"
                     />
                     
                     <Input
                       placeholder="State *"
                       value={shippingAddress.state}
                       onChange={(e) => setShippingAddress(prev => ({ ...prev, state: e.target.value }))}
+                      className="h-8 text-xs"
                     />
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-1">
                     <Input
                       placeholder="ZIP Code *"
                       value={shippingAddress.zipCode}
                       onChange={(e) => setShippingAddress(prev => ({ ...prev, zipCode: e.target.value }))}
+                      className="h-8 text-xs"
                     />
                     
                     <Input
                       placeholder="Country *"
                       value={shippingAddress.country}
                       onChange={(e) => setShippingAddress(prev => ({ ...prev, country: e.target.value }))}
+                      className="h-8 text-xs"
                     />
                   </div>
                 </div>
