@@ -206,56 +206,52 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
           ) : (
             <div className="space-y-4">
               {state.items.map((item) => (
-                <div key={`${item.id}-${item.selectedSize || ''}-${item.selectedColor || ''}-${item.selectedLength || ''}`} className="border-b pb-4 last:border-b-0">
-                  <div className="flex gap-3">
-                    <div className="flex-shrink-0">
-                      <img
-                        src={item.image_url}
-                        alt={item.name}
-                        className="h-20 w-20 rounded-lg object-cover border border-gray-200"
-                      />
+                <div key={`${item.id}-${item.selectedSize || ''}-${item.selectedColor || ''}-${item.selectedLength || ''}`} className="flex gap-3 border-b pb-4">
+                  <img
+                    src={item.image_url}
+                    alt={item.name}
+                    className="h-16 w-16 flex-shrink-0 rounded-md object-cover"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-medium text-gray-900 mb-1 line-clamp-2">
+                      {item.name}
+                    </h3>
+                    
+                    {/* Selected options */}
+                    <div className="text-xs text-gray-500 mb-2">
+                      {item.selectedLength && <div>Length: {item.selectedLength}</div>}
+                      {item.selectedSize && <div>Size: {item.selectedSize}</div>}
+                      {item.selectedColor && <div>Color: {item.selectedColor}</div>}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-semibold text-gray-900 mb-2 leading-tight">
-                        {item.name}
-                      </h3>
-                      
-                      {/* Selected options */}
-                      {(item.selectedLength || item.selectedSize || item.selectedColor) && (
-                        <div className="text-xs text-gray-600 mb-2 space-y-1">
-                          {item.selectedLength && <div>Length: {item.selectedLength}</div>}
-                          {item.selectedSize && <div>Size: {item.selectedSize}</div>}
-                          {item.selectedColor && <div>Color: {item.selectedColor}</div>}
-                        </div>
-                      )}
 
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-lg font-bold text-blue-600">
-                          ${(item.price / 100).toFixed(2)}
-                        </span>
+                    <div className="flex flex-col gap-2">
+                      <span className="text-sm font-medium text-blue-600">
+                        ${(item.price / 100).toFixed(2)}
+                      </span>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => handleQuantityChange(item.id, (item.quantity || 1) - 1)}
+                            className="rounded-full p-1 hover:bg-gray-100"
+                          >
+                            <Minus className="h-3 w-3" />
+                          </button>
+                          <span className="text-sm font-medium w-8 text-center">
+                            {item.quantity || 1}
+                          </span>
+                          <button
+                            onClick={() => handleQuantityChange(item.id, (item.quantity || 1) + 1)}
+                            className="rounded-full p-1 hover:bg-gray-100"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </button>
+                        </div>
                         <button
                           onClick={() => removeFromCart(item.id)}
-                          className="rounded-full p-2 hover:bg-gray-100 text-red-500 transition-colors"
+                          className="rounded-full p-1 hover:bg-gray-100 text-red-500"
                         >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                      
-                      <div className="flex items-center justify-center bg-gray-50 rounded-lg p-2">
-                        <button
-                          onClick={() => handleQuantityChange(item.id, (item.quantity || 1) - 1)}
-                          className="rounded-full p-2 hover:bg-gray-200 transition-colors"
-                        >
-                          <Minus className="h-4 w-4" />
-                        </button>
-                        <span className="text-lg font-semibold mx-4 min-w-[2rem] text-center">
-                          {item.quantity || 1}
-                        </span>
-                        <button
-                          onClick={() => handleQuantityChange(item.id, (item.quantity || 1) + 1)}
-                          className="rounded-full p-2 hover:bg-gray-200 transition-colors"
-                        >
-                          <Plus className="h-4 w-4" />
+                          <Trash2 className="h-3 w-3" />
                         </button>
                       </div>
                     </div>
