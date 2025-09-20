@@ -148,7 +148,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
           shippingAddress,
           promoCode: appliedPromo?.code || null,
           discountPercentage: appliedPromo?.discount || 0,
-          cartItems: state.items,
+          cartItems: state.items, // Pass cart items for detailed order tracking
         },
       });
 
@@ -174,7 +174,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
     }
   };
 
-  // ----- NEW: lock body scroll & prevent layout shift when open -----
+  // Lock body scroll (prevents page scroll behind drawer)
   useEffect(() => {
     const html = document.documentElement;
     const body = document.body;
@@ -195,7 +195,6 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
       html.style.paddingRight = prevPaddingRight || '';
     };
   }, [isOpen]);
-  // ------------------------------------------------------------------
 
   if (!isOpen) return null;
 
@@ -204,21 +203,21 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
       {/* Backdrop */}
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
 
-      {/* Drawer: identical mobile/desktop behavior */}
+      {/* Drawer: grid layout so the middle row always gets space to show items */}
       <div
         className="
           fixed right-0 top-0
           w-full sm:w-[460px] lg:w-[500px]
           bg-white shadow-xl z-[10000]
-          flex flex-col min-h-0
-          h-[100svh] max-h-[100svh]
+          grid grid-rows-[auto_1fr_auto]
+          h-[100svh] md:h-[100dvh]  /* iPhone perfect (svh), desktop uses dvh */
           pt-[env(safe-area-inset-top)]
           pb-[env(safe-area-inset-bottom)]
           overflow-hidden
         "
       >
-        {/* Header (tighter) */}
-        <div className="flex items-center justify-between border-b px-3 py-2 flex-shrink-0">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b px-3 py-2">
           <div className="flex items-center space-x-2">
             <ShoppingBag className="h-5 w-5" />
             <h2 className="text-base font-semibold">Shopping Cart ({getTotalItems()})</h2>
@@ -232,8 +231,8 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
           </button>
         </div>
 
-        {/* Cart Items (scrollable) */}
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-3 pb-36">
+        {/* Cart Items — this row scrolls; add bottom padding so CTA/chat never cover items */}
+        <div className="overflow-y-auto overscroll-contain min-h-0 px-3 py-3 pb-28">
           {state.items.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
               <ShoppingBag className="h-12 w-12 text-gray-400 mb-3" />
@@ -257,7 +256,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
                       {item.name}
                     </h3>
 
-                    {/* Selected options (compact) */}
+                    {/* Selected options */}
                     <div className="text-[11px] text-gray-500 mb-2 space-x-2">
                       {item.selectedLength && <span>Length: {item.selectedLength}</span>}
                       {item.selectedSize && <span>Size: {item.selectedSize}</span>}
@@ -302,10 +301,10 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
           )}
         </div>
 
-        {/* Footer (sticky, compact) */}
+        {/* Footer (non-sticky; grid keeps it fixed at the bottom row) */}
         {state.items.length > 0 && (
-          <div className="border-t px-3 py-3 space-y-3 flex-shrink-0 sticky bottom-0 bg-white">
-            {/* Promo Code — compact */}
+          <div className="border-t px-3 py-3 space-y-3 bg-white">
+            {/* Promo Code */}
             <div className="space-y-2">
               {appliedPromo ? (
                 <div className="flex items-center justify-between bg-green-50 rounded-md px-2 py-1 text-sm">
@@ -342,7 +341,7 @@ const ShoppingCart = ({ isOpen, onClose }: ShoppingCartProps) => {
               )}
             </div>
 
-            {/* Order Summary — tight */}
+            {/* Order Summary */}
             <div className="space-y-1">
               <div className="flex items-center justify-between text-sm">
                 <span>Subtotal</span>
