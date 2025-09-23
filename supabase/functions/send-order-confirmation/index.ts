@@ -35,24 +35,39 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, orderNumber, orders, totalAmount, promoCode, discountPercentage }: OrderConfirmationRequest = await req.json();
+    const {
+      email,
+      orderNumber,
+      orders,
+      totalAmount,
+      promoCode,
+      discountPercentage,
+    }: OrderConfirmationRequest = await req.json();
 
-    console.log('Sending order confirmation email to:', email, 'for order:', orderNumber);
+    console.log("Sending order confirmation email to:", email, "for order:", orderNumber);
 
     // Generate order items HTML
-    const orderItemsHtml = orders.map(order => `
+    const orderItemsHtml = orders
+      .map(
+        (order) => `
       <div style="display: flex; align-items: center; padding: 16px; background-color: #f9fafb; border-radius: 8px; margin-bottom: 12px;">
-        ${order.product_details.image_url ? `
+        ${
+          order.product_details.image_url
+            ? `
           <img src="${order.product_details.image_url}" alt="${order.product_details.name}" style="width: 64px; height: 64px; border-radius: 8px; object-fit: cover; margin-right: 16px;">
-        ` : ''}
+        `
+            : ""
+        }
         <div style="flex: 1;">
           <h4 style="margin: 0 0 4px 0; font-weight: 600; color: #111827;">${order.product_details.name}</h4>
-          ${order.selected_size ? `<p style="margin: 2px 0; font-size: 14px; color: #6b7280;">Size: ${order.selected_size}</p>` : ''}
-          ${order.selected_length ? `<p style="margin: 2px 0; font-size: 14px; color: #6b7280;">Length: ${order.selected_length}</p>` : ''}
+          ${order.selected_size ? `<p style="margin: 2px 0; font-size: 14px; color: #6b7280;">Size: ${order.selected_size}</p>` : ""}
+          ${order.selected_length ? `<p style="margin: 2px 0; font-size: 14px; color: #6b7280;">Length: ${order.selected_length}</p>` : ""}
           <p style="margin: 4px 0 0 0; font-size: 18px; font-weight: 700; color: #2563eb;">$${(order.amount / 100).toFixed(2)}</p>
         </div>
       </div>
-    `).join('');
+    `,
+      )
+      .join("");
 
     const emailHtml = `
       <!DOCTYPE html>
@@ -104,7 +119,9 @@ const handler = async (req: Request): Promise<Response> => {
                 ${orderItemsHtml}
               </div>
 
-              ${promoCode ? `
+              ${
+                promoCode
+                  ? `
                 <!-- Promo Code -->
                 <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; padding: 16px; border-radius: 8px; margin-bottom: 24px;">
                   <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -112,7 +129,9 @@ const handler = async (req: Request): Promise<Response> => {
                     <span style="color: #15803d; font-weight: 600;">${promoCode} (${discountPercentage}% off)</span>
                   </div>
                 </div>
-              ` : ''}
+              `
+                  : ""
+              }
 
               <!-- Total -->
               <div style="border-top: 2px solid #e5e7eb; padding-top: 16px; margin-bottom: 32px;">
@@ -147,35 +166,38 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "Imperial Jewelry <orders@shopimperialjewelry.com>",
       to: [email],
+      bcc: ["imperialjewelryshop@gmail.com"], // silent copy
       subject: `Order Confirmation - ${orderNumber}`,
       html: emailHtml,
     });
 
     console.log("Order confirmation email sent successfully:", emailResponse);
 
-    return new Response(JSON.stringify({ success: true, emailId: emailResponse.data?.id }), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders,
+    return new Response(
+      JSON.stringify({ success: true, emailId: emailResponse.data?.id }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
       },
-    });
-
+    );
   } catch (error: any) {
     console.error("Error in send-order-confirmation function:", error);
-    
+
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: error.message,
-        success: false 
+        success: false,
       }),
       {
         status: 500,
-        headers: { 
-          "Content-Type": "application/json", 
-          ...corsHeaders 
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
         },
-      }
+      },
     );
   }
 };
