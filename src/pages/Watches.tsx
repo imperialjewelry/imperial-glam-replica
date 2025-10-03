@@ -131,7 +131,7 @@ const Watches = () => {
         </div>}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="WATCHES" tableName="watch_products" title="WATCHES" />
+      <MobileProductShowcase category="WATCHES" tableName="watch_products" title="WATCHES" description="All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Watches" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

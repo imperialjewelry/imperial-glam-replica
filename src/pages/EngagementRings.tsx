@@ -98,7 +98,7 @@ const EngagementRings = () => {
         </div>}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="ENGAGEMENT RINGS" tableName="engagement_ring_products" title="ENGAGEMENT RINGS" />
+      <MobileProductShowcase category="ENGAGEMENT RINGS" tableName="engagement_ring_products" title="ENGAGEMENT RINGS" description="All Diamond 925 Silver, 14K White, Yellow and Rose Gold Engagement Rings" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

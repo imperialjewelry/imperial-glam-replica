@@ -331,7 +331,7 @@ const Custom = () => {
       )}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="CUSTOM" tableName="custom_products" title="CUSTOM MOISSANITE JEWELRY" />
+      <MobileProductShowcase category="CUSTOM" tableName="custom_products" title="CUSTOM MOISSANITE JEWELRY" description="All Custom Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Jewelry" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

@@ -370,7 +370,7 @@ const Grillz = () => {
         </div>}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="GRILLZ" tableName="grillz_products" title="MOISSANITE DIAMOND GRILLZ" />
+      <MobileProductShowcase category="GRILLZ" tableName="grillz_products" title="MOISSANITE DIAMOND GRILLZ" description="All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Grillz" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

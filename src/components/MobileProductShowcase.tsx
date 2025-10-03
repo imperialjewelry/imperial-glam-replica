@@ -5,6 +5,7 @@ interface MobileProductShowcaseProps {
   category: string;
   tableName: string;
   title: string;
+  description: string;
 }
 interface ProductImage {
   id: string;
@@ -14,7 +15,8 @@ interface ProductImage {
 const MobileProductShowcase = ({
   category,
   tableName,
-  title
+  title,
+  description
 }: MobileProductShowcaseProps) => {
   const {
     data: products = []
@@ -57,7 +59,7 @@ const MobileProductShowcase = ({
 
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">{title}</h2>
-        <p className="text-sm text-gray-600">All Diamond Products</p>
+        <p className="text-sm text-gray-600">{description}</p>
       </div>
     </div>;
 };

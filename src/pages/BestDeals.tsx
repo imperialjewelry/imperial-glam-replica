@@ -254,7 +254,7 @@ const BestDeals = () => {
         
 
         {/* Mobile Product Showcase */}
-        <MobileProductShowcase category="DEALS" tableName="chain_products" title="ALL JEWELRY" />
+        <MobileProductShowcase category="DEALS" tableName="chain_products" title="ALL JEWELRY" description="Premium Jewelry Deals Across All Collections" />
 
         <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Filters */}

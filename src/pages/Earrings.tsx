@@ -149,7 +149,7 @@ const Earrings = () => {
       )}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="EARRINGS" tableName="earring_products" title="MOISSANITE DIAMOND EARRINGS" />
+      <MobileProductShowcase category="EARRINGS" tableName="earring_products" title="MOISSANITE DIAMOND EARRINGS" description="All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Earrings" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

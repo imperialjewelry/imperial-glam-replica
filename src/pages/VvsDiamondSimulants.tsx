@@ -368,7 +368,7 @@ const VvsDiamondSimulants = () => {
         </div>}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="VVS SIMULANTS" tableName="vvs_simulant_products" title="DIAMOND SIMULANTS" />
+      <MobileProductShowcase category="VVS SIMULANTS" tableName="vvs_simulant_products" title="DIAMOND SIMULANTS" description="All VVS Diamond Simulant Iced Out 925 Silver, 14K White, Yellow and Rose Gold Jewelry" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

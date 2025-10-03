@@ -101,7 +101,7 @@ const HipHopRings = () => {
         </div>}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="RINGS" tableName="hip_hop_ring_products" title="HIP HOP RINGS" />
+      <MobileProductShowcase category="RINGS" tableName="hip_hop_ring_products" title="HIP HOP RINGS" description="All Moissanite 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Rings" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

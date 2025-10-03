@@ -283,7 +283,7 @@ const Bracelets = () => {
       )}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="BRACELETS" tableName="bracelet_products" title="MOISSANITE DIAMOND BRACELETS" />
+      <MobileProductShowcase category="BRACELETS" tableName="bracelet_products" title="MOISSANITE DIAMOND BRACELETS" description="All Moissanite Iced Out 925 Silver, 14K White, Yellow and Rose Gold Hip Hop Bracelets" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>

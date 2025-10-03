@@ -106,7 +106,7 @@ const Diamond = () => {
         </div>}
 
       {/* Mobile Product Showcase */}
-      <MobileProductShowcase category="CHAINS" tableName="diamond_products" title="DIAMOND" />
+      <MobileProductShowcase category="CHAINS" tableName="diamond_products" title="DIAMOND" description="All Diamond Products" />
 
       {/* Main Content */}
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'}`}>
