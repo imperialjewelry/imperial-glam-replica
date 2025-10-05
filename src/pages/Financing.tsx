@@ -40,8 +40,8 @@ const Financing = () => {
     description: "Get that dream piece today and pay over time with 0% interest options"
   }, {
     icon: <Clock className="w-8 h-8 text-primary" />,
-    title: "Instant Approval",
-    description: "Get approved in seconds with soft credit checks that won't affect your score"
+    title: "Instant Decision",
+    description: "Get a decision in seconds with soft credit checks that won't affect your score"
   }, {
     icon: <Shield className="w-8 h-8 text-primary" />,
     title: "Secure & Protected",
