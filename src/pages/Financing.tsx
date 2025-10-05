@@ -30,7 +30,7 @@ const Financing = () => {
     description: "Monthly payment plans from 3,6, or 12 months with transparent rates",
     minPurchase: "$50",
     maxPurchase: "$20,000",
-    features: ["Choose 3, 6, 12 month plans", "Clear, upfront rates (0-36% APR)", "No hidden fees or compounding interest", "Prequalify without affecting credit", "Build credit with on-time payments"],
+    features: ["Choose 3, 6, 12 month plans", "Clear, upfront rates", "No hidden fees or compounding interest", "Prequalify without affecting credit", "Build credit with on-time payments"],
     color: "bg-blue-50 border-blue-200 hover:border-blue-300",
     website: "https://www.affirm.com/"
   }];
