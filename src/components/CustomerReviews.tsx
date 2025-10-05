@@ -97,7 +97,7 @@ const CustomerReviews = () => {
                 <img src="https://cdn-assets.affirm.com/images/black_logo-white_bg.svg" alt="Affirm" className="h-8" />
                 <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/klarnalogo.webp" alt="Klarna Pay Later" className="h-8" />
                 <span className="text-xs text-gray-600 whitespace-nowrap">
-                  Payment plans for 12–36 months
+                  Payment plans 3-36 months
                 </span>
                 <span className="text-xl font-bold text-black whitespace-nowrap">
                   BUY NOW PAY LATER
