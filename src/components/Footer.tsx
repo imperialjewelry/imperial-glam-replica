@@ -270,7 +270,7 @@ const Footer = () => {
               <div className="text-sm">
                 <p className="text-gray-400 font-semibold">LOCATIONS</p>
                 <a
-                  href="https://maps.google.com/?q=5085+Westheimer+Rd,+Houston,+TX"
+                  href="https://maps.app.goo.gl/grZBRJ4rSwVybsGP8"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-300 hover:text-white transition-colors"
