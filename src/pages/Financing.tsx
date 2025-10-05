@@ -1,82 +1,102 @@
-import { Check, DollarSign, Calendar, Shield, Star, Clock } from 'lucide-react';
+import { Check, DollarSign, Shield, Star, Clock } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PromoBar from '@/components/PromoBar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Helmet } from 'react-helmet-async';
+
 const Financing = () => {
-  const bnplProviders = [{
-    name: "Afterpay",
-    logo: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images//afterpaylogo.webp",
-    description: "Pay in 4 interest-free installments every 2 weeks",
-    minPurchase: "$35",
-    maxPurchase: "$1,000",
-    features: ["Split into 4 payments", "Pay every 2 weeks", "No interest or fees when paid on time", "Instant approval decision", "Available in-store and online"],
-    color: "bg-green-50 border-green-200 hover:border-green-300",
-    website: "https://www.afterpay.com/"
-  }, {
-    name: "Klarna",
-    logo: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/klarnalogo.webp",
-    description: "Flexible payment options - pay in 4 or pay in 30 days",
-    minPurchase: "$35",
-    maxPurchase: "$10,000",
-    features: ["Pay in 4 interest-free installments", "30-day payment option available", "No fees when paid on time", "Smoooth shopping experience", "App to manage payments"],
-    color: "bg-pink-50 border-pink-200 hover:border-pink-300",
-    website: "https://www.klarna.com/"
-  }, {
-    name: "Affirm",
-    logo: "https://cdn-assets.affirm.com/images/black_logo-white_bg.svg",
-    description: "Monthly payment plans from 3,6, or 12 months with transparent rates",
-    minPurchase: "$50",
-    maxPurchase: "$20,000",
-    features: ["Choose 3, 6, 12 month plans", "Clear, upfront rates", "No hidden fees or compounding interest", "Prequalify without affecting credit", "Build credit with on-time payments"],
-    color: "bg-blue-50 border-blue-200 hover:border-blue-300",
-    website: "https://www.affirm.com/"
-  }];
-  const benefits = [{
-    icon: <DollarSign className="w-8 h-8 text-primary" />,
-    title: "Make Luxury Affordable",
-    description: "Get that dream piece today and pay over time with 0% interest options"
-  }, {
-    icon: <Clock className="w-8 h-8 text-primary" />,
-    title: "Instant Decision",
-    description: "Get a decision in seconds with soft credit checks that won't affect your score"
-  }, {
-    icon: <Shield className="w-8 h-8 text-primary" />,
-    title: "Secure & Protected",
-    description: "All BNPL providers offer purchase protection and fraud monitoring"
-  }, {
-    icon: <Star className="w-8 h-8 text-primary" />,
-    title: "Build Credit History",
-    description: "Some providers help you build credit with responsible payment history"
-  }];
-  const howItWorks = [{
-    step: "1",
-    title: "Shop Your Style",
-    description: "Browse our premium jewelry collection and find your perfect piece"
-  }, {
-    step: "2",
-    title: "Choose BNPL at Checkout",
-    description: "Select Afterpay, Klarna, or Affirm as your payment method"
-  }, {
-    step: "3",
-    title: "Get Instant Approval",
-    description: "Complete a quick application - most approvals happen instantly"
-  }, {
-    step: "4",
-    title: "Wear Now, Pay Later",
-    description: "Get your jewelry shipped immediately and pay in installments"
-  }];
-  return <div className="min-h-screen bg-background">
+  const bnplProviders = [
+    {
+      name: "Afterpay",
+      logo: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images//afterpaylogo.webp",
+      description: "Pay in 4 interest-free installments every 2 weeks",
+      minPurchase: "$35",
+      maxPurchase: "$1,000",
+      features: [
+        "Split into 4 payments",
+        "Pay every 2 weeks",
+        "No interest or fees when paid on time",
+        "Instant approval decision",
+        "Available in-store and online"
+      ],
+      color: "bg-green-50 border-green-200 hover:border-green-300",
+      website: "https://www.afterpay.com/"
+    },
+    {
+      name: "Klarna",
+      logo: "https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/klarnalogo.webp",
+      description: "Flexible payment options - pay in 4 or pay in 30 days",
+      minPurchase: "$35",
+      maxPurchase: "$10,000",
+      features: [
+        "Pay in 4 interest-free installments",
+        "30-day payment option available",
+        "No fees when paid on time",
+        "Smoooth shopping experience",
+        "App to manage payments"
+      ],
+      color: "bg-pink-50 border-pink-200 hover:border-pink-300",
+      website: "https://www.klarna.com/"
+    },
+    {
+      name: "Affirm",
+      logo: "https://cdn-assets.affirm.com/images/black_logo-white_bg.svg",
+      description: "Monthly payment plans from 3,6, or 12 months with transparent rates",
+      minPurchase: "$50",
+      maxPurchase: "$20,000",
+      features: [
+        "Choose 3, 6, 12 month plans",
+        "Clear, upfront rates",
+        "No hidden fees or compounding interest",
+        "Prequalify without affecting credit",
+        "Build credit with on-time payments"
+      ],
+      color: "bg-blue-50 border-blue-200 hover:border-blue-300",
+      website: "https://www.affirm.com/"
+    }
+  ];
+
+  const benefits = [
+    {
+      icon: <DollarSign className="w-8 h-8 text-primary" />,
+      title: "Make Luxury Affordable",
+      description: "Get that dream piece today and pay over time with 0% interest options"
+    },
+    {
+      icon: <Clock className="w-8 h-8 text-primary" />,
+      title: "Instant Decision",
+      description: "Get a decision in seconds with soft credit checks that won't affect your score"
+    },
+    {
+      icon: <Shield className="w-8 h-8 text-primary" />,
+      title: "Secure & Protected",
+      description: "All BNPL providers offer purchase protection and fraud monitoring"
+    },
+    {
+      icon: <Star className="w-8 h-8 text-primary" />,
+      title: "Build Credit History",
+      description: "Some providers help you build credit with responsible payment history"
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-background">
       <Helmet>
         <title>Jewelry Financing | Buy Now Pay Later for Diamond & Hip Hop Jewelry - Imperial Jewelry</title>
-        <meta name="description" content="Finance your dream jewelry with Afterpay, Klarna, and Affirm. Buy now, pay later options for diamond jewelry, hip hop chains, engagement rings, and custom pieces at Imperial Jewelry." />
-        <meta name="keywords" content="jewelry financing, buy now pay later jewelry, diamond jewelry financing, hip hop jewelry financing, engagement ring financing, Afterpay jewelry, Klarna jewelry, Affirm jewelry" />
+        <meta
+          name="description"
+          content="Finance your dream jewelry with Afterpay, Klarna, and Affirm. Buy now, pay later options for diamond jewelry, hip hop chains, engagement rings, and custom pieces at Imperial Jewelry."
+        />
+        <meta
+          name="keywords"
+          content="jewelry financing, buy now pay later jewelry, diamond jewelry financing, hip hop jewelry financing, engagement ring financing, Afterpay jewelry, Klarna jewelry, Affirm jewelry"
+        />
       </Helmet>
       <PromoBar />
       <Header />
-      
+
       <div className="max-w-6xl mx-auto px-4 py-16">
         {/* Hero Section */}
         <div className="text-center mb-16">
@@ -88,7 +108,6 @@ const Financing = () => {
             you can get your Imperial Jewelry pieces today and pay over time with flexible, 
             interest-free options.
           </p>
-          
         </div>
 
         {/* BNPL Providers */}
@@ -97,39 +116,39 @@ const Financing = () => {
             Choose Your Payment Partner
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
-            {bnplProviders.map((provider, index) => <Card key={index} className={`${provider.color} transition-all duration-300 transform hover:scale-105`}>
+            {bnplProviders.map((provider, index) => (
+              <Card key={index} className={`${provider.color} transition-all duration-300 transform hover:scale-105`}>
                 <CardContent className="p-8">
                   <div className="text-center mb-6">
                     <div className="h-12 mb-4 flex items-center justify-center">
                       <img src={provider.logo} alt={provider.name} className="h-8 w-auto" />
                     </div>
-                    <h3 className="text-2xl font-bold text-foreground mb-3">
-                      {provider.name}
-                    </h3>
-                    <p className="text-muted-foreground mb-4 min-h-[48px]">
-                      {provider.description}
-                    </p>
+                    <h3 className="text-2xl font-bold text-foreground mb-3">{provider.name}</h3>
+                    <p className="text-muted-foreground mb-4 min-h-[48px]">{provider.description}</p>
                     <div className="text-sm text-muted-foreground mb-4">
                       <span className="font-semibold">Range:</span> {provider.minPurchase} - {provider.maxPurchase}
                     </div>
                   </div>
-                  
+
                   <ul className="space-y-3 mb-6">
-                    {provider.features.map((feature, idx) => <li key={idx} className="flex items-start">
+                    {provider.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-start">
                         <Check className="w-5 h-5 text-green-600 mr-3 flex-shrink-0 mt-0.5" />
                         <span className="text-foreground text-sm">{feature}</span>
-                      </li>)}
+                      </li>
+                    ))}
                   </ul>
-                  
-                  <Button 
-                    variant="outline" 
+
+                  <Button
+                    variant="outline"
                     className="w-full"
                     onClick={() => window.open(provider.website, '_blank')}
                   >
                     Learn More About {provider.name}
                   </Button>
                 </CardContent>
-              </Card>)}
+              </Card>
+            ))}
           </div>
         </div>
 
@@ -139,21 +158,17 @@ const Financing = () => {
             Why Choose Buy Now, Pay Later for Jewelry?
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {benefits.map((benefit, index) => <div key={index} className="text-center">
+            {benefits.map((benefit, index) => (
+              <div key={index} className="text-center">
                 <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   {benefit.icon}
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-foreground">{benefit.title}</h3>
                 <p className="text-muted-foreground text-sm">{benefit.description}</p>
-              </div>)}
+              </div>
+            ))}
           </div>
         </div>
-
-        {/* How It Works */}
-        
-
-        {/* Popular Items */}
-        
 
         {/* FAQ */}
         <div className="mb-20">
@@ -199,12 +214,11 @@ const Financing = () => {
             </div>
           </div>
         </div>
-
-        {/* CTA */}
-        
       </div>
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default Financing;
