@@ -8,6 +8,7 @@ import ChainsSection from '../components/ChainsSection';
 import MoissaniteGrillzSection from '../components/MoissaniteGrillzSection';
 import MoissaniteWatchesSection from '../components/MoissaniteWatchesSection';
 import MoissanitePendantsSection from '../components/MoissanitePendantsSection';
+import VideoSection from '../components/VideoSection';
 import PromoBar from '../components/PromoBar';
 import Footer from '../components/Footer';
 import CategoryNavigation from '../components/CategoryNavigation';
@@ -123,6 +124,10 @@ const Index = () => {
           
           <LazySection fallback={<Skeleton className="w-full h-80" />}>
             <MoissanitePendantsSection />
+          </LazySection>
+          
+          <LazySection fallback={<Skeleton className="w-full h-[600px]" />}>
+            <VideoSection />
           </LazySection>
           
           {/* Google Maps Section */}
