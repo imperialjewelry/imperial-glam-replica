@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Instagram, Send } from "lucide-react";
+import { FaTiktok } from "react-icons/fa"; // ✅ TikTok icon import
 
 const BecomeAffiliate = () => {
   const [formData, setFormData] = useState({
@@ -35,7 +36,6 @@ const BecomeAffiliate = () => {
 
     try {
       const { error } = await supabase.from("affiliate_applications").insert([formData]);
-
       if (error) throw error;
 
       toast({
@@ -82,7 +82,7 @@ const BecomeAffiliate = () => {
               <div className="w-24 h-1 bg-primary mx-auto mb-6"></div>
             </div>
 
-            {/* Intro Text */}
+            {/* Intro */}
             <div className="prose prose-lg max-w-none mb-12 text-foreground/90">
               <p className="text-lg leading-relaxed mb-6">
                 For over ten years, Imperial has been a trusted name in fine and fashion jewelry. We've collaborated
@@ -98,26 +98,18 @@ const BecomeAffiliate = () => {
             {/* What We Look For */}
             <section className="mb-12">
               <h2 className="text-2xl md:text-3xl font-bold mb-6">What We Look For</h2>
-              <p className="text-lg mb-6 text-foreground/90">
-                We partner with individuals who share our commitment to quality, authenticity, and style. Ideal
-                candidates include:
-              </p>
               <ul className="space-y-3 text-lg text-foreground/90 mb-6">
                 <li className="flex items-start">
-                  <span className="text-primary mr-3">•</span>
-                  <span>Influencers with a strong social media presence</span>
+                  <span className="text-primary mr-3">•</span>Influencers with a strong social media presence
                 </li>
                 <li className="flex items-start">
-                  <span className="text-primary mr-3">•</span>
-                  <span>College athletes (NIL partnerships welcome)</span>
+                  <span className="text-primary mr-3">•</span>College athletes (NIL partnerships welcome)
                 </li>
                 <li className="flex items-start">
-                  <span className="text-primary mr-3">•</span>
-                  <span>NBA and NFL players</span>
+                  <span className="text-primary mr-3">•</span>NBA and NFL players
                 </li>
                 <li className="flex items-start">
-                  <span className="text-primary mr-3">•</span>
-                  <span>Models, actors, and television personalities</span>
+                  <span className="text-primary mr-3">•</span>Models, actors, and television personalities
                 </li>
               </ul>
               <p className="text-lg text-foreground/90">
@@ -161,6 +153,7 @@ const BecomeAffiliate = () => {
               <p className="text-foreground/90 mb-6">To apply, please provide the following information:</p>
 
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Instagram */}
                 <div>
                   <Label htmlFor="instagram_handle" className="text-base">
                     Instagram Handle <span className="text-destructive">*</span>
@@ -179,20 +172,25 @@ const BecomeAffiliate = () => {
                   </div>
                 </div>
 
+                {/* TikTok */}
                 <div>
                   <Label htmlFor="tiktok_handle" className="text-base">
                     TikTok Handle
                   </Label>
-                  <Input
-                    id="tiktok_handle"
-                    type="text"
-                    placeholder="@yourusername"
-                    value={formData.tiktok_handle}
-                    onChange={(e) => setFormData({ ...formData, tiktok_handle: e.target.value })}
-                    className="mt-2"
-                  />
+                  <div className="relative mt-2">
+                    <FaTiktok className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      id="tiktok_handle"
+                      type="text"
+                      placeholder="@yourusername"
+                      value={formData.tiktok_handle}
+                      onChange={(e) => setFormData({ ...formData, tiktok_handle: e.target.value })}
+                      className="pl-10"
+                    />
+                  </div>
                 </div>
 
+                {/* Phone */}
                 <div>
                   <Label htmlFor="phone_number" className="text-base">
                     Phone Number <span className="text-destructive">*</span>
@@ -208,6 +206,7 @@ const BecomeAffiliate = () => {
                   />
                 </div>
 
+                {/* Email */}
                 <div>
                   <Label htmlFor="email" className="text-base">
                     Email Address <span className="text-destructive">*</span>
