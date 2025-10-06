@@ -14,7 +14,7 @@ const MoissaniteGrillzSection = () => {
       const { data, error } = await supabase
         .from('grillz_products')
         .select('*')
-        .limit(5);
+        .limit(6);
       
       if (error) {
         console.error('Error fetching grillz products:', error);

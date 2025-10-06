@@ -23,7 +23,7 @@ const ProductShowcase = () => {
       const {
         data,
         error
-      } = await supabase.from('diamond_products').select('*').limit(3);
+      } = await supabase.from('diamond_products').select('*').limit(6);
       if (error) {
         console.error('Error fetching diamond products:', error);
         throw error;
@@ -107,7 +107,7 @@ const ProductShowcase = () => {
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-gray-900 mb-8">MEN'S DIAMOND JEWELRY</h2>
           <div className="grid grid-cols-3 gap-2 md:gap-6">
-            {[...Array(3)].map((_, i) => <div key={i} className="bg-gray-200 animate-pulse rounded-lg h-96"></div>)}
+            {[...Array(6)].map((_, i) => <div key={i} className="bg-gray-200 animate-pulse rounded-lg h-96"></div>)}
           </div>
         </div>
       </section>;

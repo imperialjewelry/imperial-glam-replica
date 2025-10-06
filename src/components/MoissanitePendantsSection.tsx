@@ -14,7 +14,7 @@ const MoissanitePendantsSection = () => {
       const { data, error } = await supabase
         .from('pendant_products')
         .select('*')
-        .limit(5);
+        .limit(6);
       
       if (error) {
         console.error('Error fetching pendant products:', error);

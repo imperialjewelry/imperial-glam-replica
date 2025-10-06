@@ -14,7 +14,7 @@ const MoissaniteWatchesSection = () => {
       const { data, error } = await supabase
         .from('watch_products')
         .select('*')
-        .limit(5);
+        .limit(6);
       
       if (error) {
         console.error('Error fetching watch products:', error);

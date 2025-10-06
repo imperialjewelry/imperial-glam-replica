@@ -14,7 +14,7 @@ const ChainsSection = () => {
       const { data, error } = await supabase
         .from('chain_products')
         .select('*')
-        .limit(5);
+        .limit(6);
       
       if (error) {
         console.error('Error fetching chain products:', error);

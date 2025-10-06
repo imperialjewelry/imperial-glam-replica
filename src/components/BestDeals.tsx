@@ -23,9 +23,9 @@ const BestDeals = () => {
         throw error;
       }
       
-      // Shuffle and pick 5 random products for variety
+      // Shuffle and pick 6 random products for variety
       const shuffled = data?.sort(() => 0.5 - Math.random()) || [];
-      const selectedProducts = shuffled.slice(0, 5);
+      const selectedProducts = shuffled.slice(0, 6);
       
       
       return selectedProducts;
