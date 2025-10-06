@@ -1,5 +1,3 @@
-// Hero.tsx
-
 const Hero = () => {
   return (
     <section
@@ -21,8 +19,7 @@ const Hero = () => {
         />
       </div>
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+      {/* Removed black overlay */}
 
       {/* SEO Content - Hidden but accessible */}
       <div className="sr-only">
