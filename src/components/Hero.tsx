@@ -3,8 +3,8 @@ const Hero = () => {
   return (
     <section
       className="
-        relative block w-screen max-w-none left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]
-        h-[380px] md:h-[480px] overflow-hidden
+        relative block w-screen max-w-none left-1/2 right-1/2 
+        -ml-[50vw] -mr-[50vw] h-[380px] md:h-[480px] overflow-hidden
       "
     >
       <video
@@ -17,7 +17,7 @@ const Hero = () => {
         preload="auto"
       />
 
-      {/* SEO-only content */}
+      {/* SEO content (hidden visually) */}
       <div className="sr-only">
         <h1>Diamond Jewelry &amp; Custom Engagement Rings</h1>
         <p>Hip Hop Chains, Moissanite Jewelry &amp; Premium Diamond Collections in Houston</p>
@@ -25,5 +25,4 @@ const Hero = () => {
     </section>
   );
 };
-
 export default Hero;
