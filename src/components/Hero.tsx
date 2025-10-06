@@ -1,13 +1,17 @@
 const Hero = () => {
   return (
     <section className="relative h-[380px] md:h-[480px] overflow-hidden">
-      {/* Background Image */}
-      <img
-        src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/Untitled%20-%202025-09-08T112955.263.png"
-        alt="Premium diamond and hip hop jewelry collection at Imperial Jewelry"
-        className="absolute inset-0 w-full h-full object-cover scale-110 md:scale-100"
-        fetchPriority="high"
-      />
+      {/* Background Video */}
+      <div className="absolute inset-0 w-full h-full">
+        <iframe
+          src="https://customer-91ky5325cuy51tup.cloudflarestream.com/b40231438cda3173c9789099271ec0c3/iframe?autoplay=true&muted=true&loop=true&controls=false&poster=https%3A%2F%2Fcustomer-91ky5325cuy51tup.cloudflarestream.com%2Fb40231438cda3173c9789099271ec0c3%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D%26height%3D600"
+          className="absolute inset-0 w-full h-full border-0"
+          style={{ objectFit: 'cover' }}
+          allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+          allowFullScreen
+          title="Imperial Jewelry showcase video"
+        />
+      </div>
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-40" />
