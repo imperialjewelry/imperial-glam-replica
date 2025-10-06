@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_applications: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          instagram_handle: string
+          phone_number: string
+          tiktok_handle: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          instagram_handle: string
+          phone_number: string
+          tiktok_handle?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          instagram_handle?: string
+          phone_number?: string
+          tiktok_handle?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bracelet_products: {
         Row: {
           category: string

@@ -90,6 +90,7 @@ const Footer = () => {
     links: [
       { name: 'About Imperial Jewelry', path: '/about' },
       { name: 'Reviews', path: 'https://www.google.com/search?sca_esv=2865fea3d3342d0d&rlz=1C1RXQR_enUS1052US1052&sxsrf=AE3TifOUZL5OV6WN8EqmKmhMB0RljvVKWQ%3A1757353950550&q=Imperial%20Jewelry&stick=H4sIAAAAAAAAAONgU1I1qLAwMzFINrSwTExNSkxMNEmzMqiwNEhNtEhJtbQEChiYJ5suYhXwzC1ILcpMzFHwSi1PzSmqBADfbvuoPAAAAA&mat=CY_svSsdWuxl&ved=2ahUKEwiWkt7P3cmPAxXGnWoFHZU9NaUQrMcEegQIThAC#lrd=', external: true },
+      { name: 'Become an Affiliate', path: '/become-affiliate' },
       { name: 'Financing', path: '/financing' },
       { name: 'Contact', path: '/contact' },
     ]

@@ -23,7 +23,7 @@ import Product from "./pages/Product";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import SearchResults from "./pages/SearchResults";
 import About from "./pages/About";
-
+import BecomeAffiliate from "./pages/BecomeAffiliate";
 import Financing from "./pages/Financing";
 import Contact from "./pages/Contact";
 import Shipping from "./pages/Shipping";
@@ -68,7 +68,7 @@ const AppContent = () => {
         
         {/* Company Pages */}
         <Route path="/about" element={<About />} />
-        
+        <Route path="/become-affiliate" element={<BecomeAffiliate />} />
         <Route path="/financing" element={<Financing />} />
         <Route path="/contact" element={<Contact />} />
         
