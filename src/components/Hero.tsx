@@ -1,5 +1,33 @@
-// Hero.tsx
+"use client";
+import { useEffect, useRef } from "react";
+
 const Hero = () => {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    let hls: any;
+    const setup = async () => {
+      const video = videoRef.current;
+      if (!video) return;
+
+      const HLS_URL =
+        "https://customer-91ky5325cuy51tup.cloudflarestream.com/b40231438cda3173c9789099271ec0c3/manifest/video.m3u8";
+
+      if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = HLS_URL; // native Safari support
+      } else {
+        const { default: Hls } = await import("hls.js");
+        if (Hls.isSupported()) {
+          hls = new Hls();
+          hls.loadSource(HLS_URL);
+          hls.attachMedia(video);
+        }
+      }
+    };
+    setup();
+    return () => hls?.destroy();
+  }, []);
+
   return (
     <section
       className="
@@ -8,20 +36,14 @@ const Hero = () => {
       "
     >
       <video
+        ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"
-        src="https://customer-91ky5325cuy51tup.cloudflarestream.com/b40231438cda3173c9789099271ec0c3/downloads/default.mp4"
         autoPlay
         muted
         loop
         playsInline
         preload="auto"
       />
-
-      {/* SEO content (hidden visually) */}
-      <div className="sr-only">
-        <h1>Diamond Jewelry &amp; Custom Engagement Rings</h1>
-        <p>Hip Hop Chains, Moissanite Jewelry &amp; Premium Diamond Collections in Houston</p>
-      </div>
     </section>
   );
 };
