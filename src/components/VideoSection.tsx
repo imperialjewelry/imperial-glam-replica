@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 const VideoSection = () => {
   // One unique value per page load. In prod, replace with your deploy/commit hash.
-  const v = useMemo(() => Date.now(), []);
+  const v = process.env.COMMIT_REF || "v1.0.0";
 
   return (
     <section className="py-16 bg-background">
