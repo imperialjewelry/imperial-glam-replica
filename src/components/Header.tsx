@@ -296,10 +296,7 @@ const Header = () => {
 
               {/* Bottom section */}
               <div className="border-t border-gray-200 pt-4 space-y-3">
-                <div className="flex items-center space-x-2">
-                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm text-gray-600">2,000+ Reviews</span>
-                </div>
+                
                 <div className="flex items-center space-x-2">
                   <Truck className="w-4 h-4 text-gray-600" />
                   <span className="text-sm text-gray-600">1-Day Shipping</span>
