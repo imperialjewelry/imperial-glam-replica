@@ -42,9 +42,26 @@ serve(async (req) => {
     console.log(`Processing webhook event: ${event.type}`);
 
     switch (event.type) {
-      case "checkout.session.completed":
-        const session = event.data.object as Stripe.Checkout.Session;
+      case "payment_intent.succeeded":
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
         
+        console.log("Payment succeeded:", paymentIntent.id);
+        
+        // Retrieve the checkout session from the payment intent
+        const sessions = await stripe.checkout.sessions.list({
+          payment_intent: paymentIntent.id,
+          limit: 1
+        });
+        
+        if (!sessions.data || sessions.data.length === 0) {
+          console.error("No checkout session found for payment intent:", paymentIntent.id);
+          return new Response(JSON.stringify({ received: true, message: "No session found" }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 200,
+          });
+        }
+        
+        const session = sessions.data[0];
         console.log("Processing successful checkout session:", session.id);
         console.log("Session metadata:", JSON.stringify(session.metadata, null, 2));
 
@@ -247,6 +264,37 @@ serve(async (req) => {
         }
 
         console.log(`Successfully created ${cartItems.length} orders for session:`, session.id);
+        
+        // Send order confirmation email
+        try {
+          const { error: emailError } = await supabaseClient.functions.invoke(
+            'send-order-confirmation',
+            {
+              body: {
+                customerEmail: session.customer_details?.email || session.customer_email,
+                orderNumber: session.id,
+                items: cartItems,
+                subtotal: subtotalAmount,
+                discount: discountAmount,
+                total: subtotalAmount - discountAmount,
+                promoCode: promoCode
+              }
+            }
+          );
+          
+          if (emailError) {
+            console.error('Error sending confirmation email:', emailError);
+          } else {
+            console.log('Order confirmation email sent successfully');
+          }
+        } catch (emailError) {
+          console.error('Failed to send confirmation email:', emailError);
+        }
+        break;
+
+      case "checkout.session.completed":
+        // Legacy support for checkout.session.completed events
+        console.log("Received checkout.session.completed event - use payment_intent.succeeded instead");
         break;
 
       default:
