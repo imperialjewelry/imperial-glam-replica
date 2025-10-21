@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/((?!.*\\..*).*)",
+      "source": "/:path*",
       "destination": "/index.html"
     }
   ],
@@ -17,14 +17,16 @@
       ]
     },
     {
-      "source": "/static/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
     },
     {
-      "source": "/(.*)\\.(?:jpg|jpeg|png|gif|webp|svg|ico|js|css)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "source": "/(.*)\\.(?:jpg|jpeg|png|gif|webp|svg|ico|js|css|woff|woff2|ttf|eot)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
     }
-  ],
-  "trailingSlash": false,
-  "cleanUrls": true
+  ]
 }
