@@ -102,54 +102,63 @@ const CustomerReviews = () => {
             {/* Reviews Carousel */}
             <div className="mb-12">
               <Carousel
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-                plugins={[
-                  Autoplay({
-                    delay: 5000,
-                  }),
-                ]}
-                className="w-full"
-              >
-                <CarouselContent className="-ml-4">
-                  {reviewsData.reviews.map((review, index) => (
-                    <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/4">
-                      <div className="h-full">
-                        <div className="bg-white text-gray-900 rounded-lg p-6 border border-gray-200 h-full flex flex-col items-center text-center">
-                          <img
-                            src={review.avatar || "https://via.placeholder.com/64"}
-                            alt={review.author}
-                            className="w-12 h-12 rounded-full object-cover border border-gray-200 mb-3"
-                            loading="lazy"
-                          />
-                          
-                          <h3 className="font-semibold text-base mb-1">{review.author}</h3>
-                          <p className="text-xs text-gray-600 mb-3">{review.time}</p>
-                          
-                          <div className="text-yellow-400 text-base tracking-wider mb-3">
-                            {renderStars(review.rating)}
-                          </div>
-                          
-                          <p className="text-sm text-gray-900 leading-relaxed mb-4 flex-grow line-clamp-4 max-w-[260px]">
-                            {review.text}
-                          </p>
-                          
-                          <img
-                            src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_74x24dp.png"
-                            alt="Google"
-                            className="h-5 object-contain"
-                            loading="lazy"
-                          />
-                        </div>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="left-2 md:-left-12" />
-                <CarouselNext className="right-2 md:-right-12" />
-              </Carousel>
+  opts={{
+    align: "start",
+    loop: true,
+  }}
+  plugins={[
+    Autoplay({
+      delay: 5000,
+    }),
+  ]}
+  className="w-full"
+>
+  <CarouselContent className="-ml-4">
+    {reviewsData.reviews.map((review, index) => (
+      <CarouselItem
+        key={index}
+        className="pl-4 md:basis-1/2 lg:basis-1/4"
+      >
+        <div className="h-full">
+          <div className="bg-white text-gray-900 rounded-lg p-6 border border-gray-200 h-full flex flex-col items-center text-center">
+            <img
+              src={review.avatar || "https://via.placeholder.com/64"}
+              alt={review.author}
+              className="w-12 h-12 rounded-full object-cover border border-gray-200 mb-3"
+              loading="lazy"
+            />
+
+            <h3 className="font-semibold text-base mb-1">{review.author}</h3>
+            <p className="text-xs text-gray-600 mb-3">{review.time}</p>
+
+            <div className="text-yellow-400 text-base tracking-wider mb-3">
+              {renderStars(review.rating)}
+            </div>
+
+            <p className="text-sm text-gray-900 leading-relaxed mb-4 flex-grow line-clamp-4 max-w-[260px]">
+              {review.text}
+            </p>
+
+            <img
+              src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_74x24dp.png"
+              alt="Google"
+              className="h-5 object-contain"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </CarouselItem>
+    ))}
+  </CarouselContent>
+
+  <CarouselPrevious
+    className="left-2 md:-left-12 bg-white text-black border border-white shadow-xl hover:bg-white hover:text-black hover:shadow-2xl w-10 h-10 rounded-full flex items-center justify-center"
+  />
+  <CarouselNext
+    className="right-2 md:-right-12 bg-white text-black border border-white shadow-xl hover:bg-white hover:text-black hover:shadow-2xl w-10 h-10 rounded-full flex items-center justify-center"
+  />
+</Carousel>
+
             </div>
           </>
         )}
