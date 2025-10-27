@@ -1,8 +1,10 @@
-
 project_id = "xdidixccpcgzbqqawywf"
 
 [functions.create-checkout]
 verify_jwt = false
 
 [functions.stripe-webhook]
+verify_jwt = false
+
+[functions.reviews]
 verify_jwt = false
