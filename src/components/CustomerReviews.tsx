@@ -75,7 +75,7 @@ const CustomerReviews = () => {
               <div className="flex flex-wrap items-center gap-3"></div>
 
               <a
-                href="https://share.google/MBa9B5qeemkgooYJj"
+                href="https://www.google.com/search?kgmid=/g/11yjybfvj3&hl=en-US&q=Imperial+Jewelry&shndl=30&shem=lcuae,lscta2,shrtsdl&source=sh/x/loc/osrp/m5/1&kgs=dbb9ede13aeb3619&utm_source=lcuae,lscta2,shrtsdl,sh/x/loc/osrp/m5/1"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-6 py-3 rounded transition-all hover:shadow-lg inline-block"
