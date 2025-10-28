@@ -104,9 +104,11 @@ const BestDeals = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortBy, setSortBy] = useState<"price-low" | "price-high" | "rating">("rating");
 
-  // Lazy-load tables in small batches
-  const TABLE_BATCH_SIZE = 4;
-  const PER_TABLE_LIMIT = 12;
+  // Progressive loading config
+  const TABLE_BATCH_SIZE = 4; // how many tables per step
+  const PER_TABLE_LIMIT = 24; // rows per table per step (increase if you want more)
+
+  // Start with first batch, then auto-increase until all tables are loaded
   const [tablesCount, setTablesCount] = useState(Math.min(TABLE_BATCH_SIZE, TABLES.length));
 
   // ---- Fetch from a SLICE of sub-tables + de-dupe ----
@@ -137,7 +139,7 @@ const BestDeals = () => {
               source_table: tableName,
               source_id: p.id,
 
-              // core (guard every access)
+              // core
               name: clean(p.name),
               price: Number(p.price ?? 0),
               original_price: p.original_price ?? undefined,
@@ -156,7 +158,7 @@ const BestDeals = () => {
               stripe_product_id: p.stripe_product_id || "",
               stripe_price_id: p.stripe_price_id || undefined,
 
-              // variants / optional
+              // optional fields (guarded)
               sizes: p.sizes || [],
               lengths_and_prices: p.lengths_and_prices || [],
               gemstone: p.gemstone || "",
@@ -207,12 +209,17 @@ const BestDeals = () => {
     },
   });
 
-  // ---- Auto-load more tables if current slice produces zero products ----
+  // ---- Auto-load more tables UNTIL ALL TABLES ARE LOADED ----
+  // After each fetch finishes (isLoading -> false), bump tablesCount by a batch
+  // This will progressively pull 0..N, N..2N, ... until TABLES.length is reached.
   useEffect(() => {
-    if (!isLoading && products.length === 0 && tablesCount < TABLES.length) {
-      setTablesCount((c) => Math.min(c + TABLE_BATCH_SIZE, TABLES.length));
+    if (!isLoading && tablesCount < TABLES.length) {
+      const id = setTimeout(() => {
+        setTablesCount((c) => Math.min(c + TABLE_BATCH_SIZE, TABLES.length));
+      }, 0);
+      return () => clearTimeout(id);
     }
-  }, [isLoading, products.length, tablesCount]);
+  }, [isLoading, tablesCount]);
 
   // ---- Filter + sort ----
   const filteredProducts = useMemo(() => {
@@ -248,17 +255,13 @@ const BestDeals = () => {
     setFullProductData(product);
   };
 
-  // ---- Dynamic modal selection (category OR product_type) ----
   const renderProductModal = () => {
     if (!selectedProduct || !fullProductData) return null;
-
     const cat = (selectedProduct.category || selectedProduct.product_type || "").toLowerCase();
-
     const close = () => {
       setSelectedProduct(null);
       setFullProductData(null);
     };
-
     if (cat.includes("chain")) return <ChainProductModal product={fullProductData as any} onClose={close} />;
     if (cat.includes("bracelet")) return <BraceletProductModal product={fullProductData as any} onClose={close} />;
     if (cat.includes("earring")) return <EarringProductModal product={fullProductData as any} onClose={close} />;
@@ -270,8 +273,7 @@ const BestDeals = () => {
     if (cat.includes("ring")) return <HipHopRingProductModal product={fullProductData as any} onClose={close} />;
     if (cat.includes("glass")) return <GlassesProductModal product={fullProductData as any} onClose={close} />;
     if (cat.includes("custom")) return <CustomProductModal product={fullProductData as any} onClose={close} />;
-
-    return null; // fallback
+    return null;
   };
 
   if (isLoading && products.length === 0) {
@@ -340,6 +342,7 @@ const BestDeals = () => {
             <p className="text-gray-600">
               Showing {filteredProducts.length} products
               {categoryFilter !== "all" && ` in ${categoryFilter.toUpperCase()}`}
+              {` • Loaded ${tablesCount}/${TABLES.length} collections`}
             </p>
           </div>
 
@@ -364,7 +367,6 @@ const BestDeals = () => {
                         decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-
                       <div className="absolute top-3 left-3 flex flex-col gap-2">
                         {product.featured && (
                           <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">FEATURED</Badge>
@@ -413,6 +415,7 @@ const BestDeals = () => {
                 ))}
               </div>
 
+              {/* Manual boost in case you want it too */}
               {tablesCount < TABLES.length && (
                 <div className="flex justify-center mt-10">
                   <Button
@@ -442,7 +445,6 @@ const BestDeals = () => {
                 >
                   Clear Filters
                 </Button>
-
                 {tablesCount < TABLES.length && (
                   <Button
                     onClick={() => setTablesCount((c) => Math.min(c + TABLE_BATCH_SIZE, TABLES.length))}
