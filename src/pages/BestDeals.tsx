@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -245,6 +245,13 @@ const BestDeals = () => {
     },
   });
 
+  // ---- Auto-load more tables if current slice produces zero products ----
+  useEffect(() => {
+    if (!isLoading && products.length === 0 && tablesCount < TABLES.length) {
+      setTablesCount((c) => Math.min(c + TABLE_BATCH_SIZE, TABLES.length));
+    }
+  }, [isLoading, products.length, tablesCount]);
+
   // ---- Filter + sort ----
   const filteredProducts = useMemo(() => {
     const filtered = products.filter((product) => {
@@ -466,15 +473,27 @@ const BestDeals = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-700 mb-2">No products found</h3>
               <p className="text-gray-500 mb-6">Try adjusting your filters to see more results</p>
-              <Button
-                onClick={() => {
-                  setCategoryFilter("all");
-                  setSortBy("rating");
-                }}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                Clear Filters
-              </Button>
+              <div className="flex gap-3 justify-center">
+                <Button
+                  onClick={() => {
+                    setCategoryFilter("all");
+                    setSortBy("rating");
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  Clear Filters
+                </Button>
+
+                {tablesCount < TABLES.length && (
+                  <Button
+                    onClick={() => setTablesCount((c) => Math.min(c + TABLE_BATCH_SIZE, TABLES.length))}
+                    variant="default"
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    {isLoading ? "Loading more..." : "Load more collections"}
+                  </Button>
+                )}
+              </div>
             </div>
           )}
         </div>
