@@ -32,7 +32,6 @@ interface ProductData {
   image_url: string;
   rating?: number;
   review_count?: number;
-  discount_percentage?: number;
   in_stock?: boolean;
   ships_today?: boolean;
   featured?: boolean;
@@ -105,7 +104,7 @@ const BestDeals = () => {
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
   const [fullProductData, setFullProductData] = useState<ProductData | null>(null);
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [sortBy, setSortBy] = useState<"discount" | "price-low" | "price-high" | "rating">("discount");
+  const [sortBy, setSortBy] = useState<"price-low" | "price-high" | "rating">("price-low");
 
   // ---- Fetch from ALL sub-tables (not `products`) + de-dupe ----
   const { data: products = [], isLoading } = useQuery({
@@ -164,10 +163,9 @@ const BestDeals = () => {
               clarity_grade: p.clarity_grade || "",
               customizable: !!p.customizable,
 
-              // merch
+              // merch (exclude discount_percentage entirely)
               rating: Number(p.rating ?? 5),
               review_count: Number(p.review_count ?? 0),
-              discount_percentage: Number(p.discount_percentage ?? 0),
               in_stock: p.in_stock !== undefined ? !!p.in_stock : true,
               ships_today: !!p.ships_today,
               featured: !!p.featured,
@@ -213,8 +211,6 @@ const BestDeals = () => {
 
     return filtered.sort((a, b) => {
       switch (sortBy) {
-        case "discount":
-          return (b.discount_percentage || 0) - (a.discount_percentage || 0);
         case "price-low":
           return (a.price || 0) - (b.price || 0);
         case "price-high":
@@ -320,7 +316,6 @@ const BestDeals = () => {
                   <SelectValue placeholder="Sort By" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="discount">Highest Discount</SelectItem>
                   <SelectItem value="price-low">Price: Low to High</SelectItem>
                   <SelectItem value="price-high">Price: High to Low</SelectItem>
                   <SelectItem value="rating">Highest Rated</SelectItem>
@@ -356,13 +351,8 @@ const BestDeals = () => {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
 
-                    {/* Badges */}
+                    {/* Badges (discount removed) */}
                     <div className="absolute top-3 left-3 flex flex-col gap-2">
-                      {(product.discount_percentage || 0) > 0 && (
-                        <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
-                          {product.discount_percentage}% OFF
-                        </Badge>
-                      )}
                       {product.featured && (
                         <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">FEATURED</Badge>
                       )}
@@ -417,7 +407,7 @@ const BestDeals = () => {
               <Button
                 onClick={() => {
                   setCategoryFilter("all");
-                  setSortBy("discount");
+                  setSortBy("price-low");
                 }}
                 className="bg-blue-600 hover:bg-blue-700"
               >
