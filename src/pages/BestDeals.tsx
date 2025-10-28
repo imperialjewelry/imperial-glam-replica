@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -113,7 +113,7 @@ const BestDeals = () => {
   // ---- Fetch from a SLICE of sub-tables + de-dupe ----
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["all-products-from-subtables", tablesCount, PER_TABLE_LIMIT],
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     queryFn: async () => {
       const all: ProductData[] = [];
 
