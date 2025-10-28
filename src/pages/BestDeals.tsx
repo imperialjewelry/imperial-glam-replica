@@ -27,7 +27,8 @@ interface ProductData {
   name: string;
   price: number;
   original_price?: number;
-  category: string;
+  category: string; // raw category from DB
+  norm_category?: string; // normalized category for filtering
   material: string;
   image_url: string;
   rating?: number;
@@ -98,20 +99,38 @@ const clean = (s?: string) =>
     .replace(/\s+/g, " ")
     .trim();
 
+// Map raw DB category/product_type to one of the navbar buckets
+const normalizeCategory = (rawCategory?: string, rawType?: string) => {
+  const c = (rawCategory || rawType || "").toLowerCase();
+  if (!c) return "all";
+
+  if (c.startsWith("chain")) return "chains";
+  if (c.startsWith("bracelet")) return "bracelets";
+  if (c.startsWith("watch")) return "watches";
+  if (c.includes("pendant")) return "pendants";
+  if (c.startsWith("earring")) return "earrings";
+  if (c.includes("grill")) return "grillz";
+  if (c.includes("glass")) return "glasses";
+  if (c.includes("engagement")) return "engagement rings";
+  if (c.includes("ring")) return "rings";
+  if (c.includes("simulant") || c.includes("moissanite")) return "diamond simulants";
+  if (c.includes("diamond")) return "diamond";
+  if (c.includes("custom")) return "custom";
+
+  return c; // fall back to raw lower-case
+};
+
 const BestDeals = () => {
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
   const [fullProductData, setFullProductData] = useState<ProductData | null>(null);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortBy, setSortBy] = useState<"price-low" | "price-high" | "rating">("rating");
 
-  // Progressive loading config
-  const TABLE_BATCH_SIZE = 4; // how many tables per step
-  const PER_TABLE_LIMIT = 24; // rows per table per step (increase if you want more)
-
-  // Start with first batch, then auto-increase until all tables are loaded
+  // Progressive loading
+  const TABLE_BATCH_SIZE = 4;
+  const PER_TABLE_LIMIT = 50; // pull more per table to surface depth
   const [tablesCount, setTablesCount] = useState(Math.min(TABLE_BATCH_SIZE, TABLES.length));
 
-  // ---- Fetch from a SLICE of sub-tables + de-dupe ----
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["all-products-from-subtables", tablesCount, PER_TABLE_LIMIT],
     placeholderData: keepPreviousData,
@@ -119,10 +138,10 @@ const BestDeals = () => {
       const all: ProductData[] = [];
 
       for (const tableName of TABLES.slice(0, tablesCount)) {
-        // Select * to avoid 400s when a column doesn't exist on a given table
         const { data, error } = await supabase
           .from(tableName as any)
           .select("*")
+          .order("created_at", { ascending: false })
           .range(0, PER_TABLE_LIMIT - 1);
 
         if (error) {
@@ -133,32 +152,33 @@ const BestDeals = () => {
 
         const rows = data
           .filter((x: any) => x && typeof x === "object" && typeof x.id === "string" && x.id.trim() !== "")
-          .map(
-            (p: any): ProductData => ({
+          .map((p: any): ProductData => {
+            const rawCategory = clean(p.category);
+            const productType = clean(p.product_type);
+            const norm = normalizeCategory(rawCategory, productType);
+
+            return {
               id: p.id,
               source_table: tableName,
               source_id: p.id,
 
-              // core
               name: clean(p.name),
               price: Number(p.price ?? 0),
               original_price: p.original_price ?? undefined,
-              category: clean(p.category),
+              category: rawCategory,
+              norm_category: norm,
               material: clean(p.material),
               color: clean(p.color),
-              product_type: clean(p.product_type),
+              product_type: productType,
               image_url: p.image_url || "",
               description: p.description || "",
 
-              // meta
               created_at: p.created_at || new Date().toISOString(),
               updated_at: p.updated_at || new Date().toISOString(),
 
-              // commerce
               stripe_product_id: p.stripe_product_id || "",
               stripe_price_id: p.stripe_price_id || undefined,
 
-              // optional fields (guarded)
               sizes: p.sizes || [],
               lengths_and_prices: p.lengths_and_prices || [],
               gemstone: p.gemstone || "",
@@ -174,23 +194,26 @@ const BestDeals = () => {
               clarity_grade: p.clarity_grade || "",
               customizable: !!p.customizable,
 
-              // merch
               rating: Number(p.rating ?? 5),
               review_count: Number(p.review_count ?? 0),
               in_stock: p.in_stock !== undefined ? !!p.in_stock : true,
               ships_today: !!p.ships_today,
               featured: !!p.featured,
-            }),
-          );
+            };
+          });
 
         all.push(...rows);
       }
 
-      // --- de-dupe across tables ---
-      const keyOf = (p: ProductData) =>
-        p.stripe_product_id?.toLowerCase() ||
-        p.stripe_price_id?.toLowerCase() ||
-        `${p.name.toLowerCase()}|${(p.material || "").toLowerCase()}`;
+      // --- robust de-dupe ---
+      const keyOf = (p: ProductData) => {
+        const sp = p.stripe_product_id?.toLowerCase();
+        const spp = p.stripe_price_id?.toLowerCase();
+        if (sp) return `sp:${sp}`;
+        if (spp) return `spp:${spp}`;
+        // fallback: unique per table row (prevents cross-table collisions)
+        return `${p.source_table}:${p.source_id}`;
+      };
 
       const byKey = new Map<string, ProductData>();
       for (const p of all) {
@@ -209,9 +232,7 @@ const BestDeals = () => {
     },
   });
 
-  // ---- Auto-load more tables UNTIL ALL TABLES ARE LOADED ----
-  // After each fetch finishes (isLoading -> false), bump tablesCount by a batch
-  // This will progressively pull 0..N, N..2N, ... until TABLES.length is reached.
+  // keep loading until all tables are fetched
   useEffect(() => {
     if (!isLoading && tablesCount < TABLES.length) {
       const id = setTimeout(() => {
@@ -221,11 +242,11 @@ const BestDeals = () => {
     }
   }, [isLoading, tablesCount]);
 
-  // ---- Filter + sort ----
+  // Filter + sort using normalized categories
   const filteredProducts = useMemo(() => {
     const filtered = products.filter((product) => {
       if (categoryFilter === "all") return true;
-      return product.category && product.category.toLowerCase() === categoryFilter;
+      return (product.norm_category || "all") === categoryFilter;
     });
 
     return filtered.sort((a, b) => {
@@ -242,9 +263,9 @@ const BestDeals = () => {
     });
   }, [products, categoryFilter, sortBy]);
 
-  // ---- navbar-only categories present in the data, in navbar order ----
+  // navbar categories present (based on normalized categories)
   const categories = useMemo(() => {
-    const present = new Set(products.map((p) => (p.category || "").toLowerCase()).filter((c) => !!c));
+    const present = new Set(products.map((p) => (p.norm_category || "").toLowerCase()).filter(Boolean));
     return NAVBAR_CATEGORIES.filter((c) => c === "all" || present.has(c));
   }, [products]);
 
@@ -257,7 +278,12 @@ const BestDeals = () => {
 
   const renderProductModal = () => {
     if (!selectedProduct || !fullProductData) return null;
-    const cat = (selectedProduct.category || selectedProduct.product_type || "").toLowerCase();
+    const cat = (
+      selectedProduct.norm_category ||
+      selectedProduct.category ||
+      selectedProduct.product_type ||
+      ""
+    ).toLowerCase();
     const close = () => {
       setSelectedProduct(null);
       setFullProductData(null);
@@ -379,7 +405,8 @@ const BestDeals = () => {
 
                     <CardContent className="p-4">
                       <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
-                        {product.category || "UNCATEGORIZED"} • {product.material || "N/A"}
+                        {(product.norm_category || product.category || "UNCATEGORIZED").toUpperCase()} •{" "}
+                        {product.material || "N/A"}
                       </div>
 
                       <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 text-sm">{product.name}</h3>
@@ -415,7 +442,7 @@ const BestDeals = () => {
                 ))}
               </div>
 
-              {/* Manual boost in case you want it too */}
+              {/* Optional manual trigger */}
               {tablesCount < TABLES.length && (
                 <div className="flex justify-center mt-10">
                   <Button
