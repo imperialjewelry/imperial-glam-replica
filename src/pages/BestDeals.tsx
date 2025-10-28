@@ -133,7 +133,6 @@ const BestDeals = () => {
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["all-products-from-subtables", tablesCount, PER_TABLE_LIMIT],
-    placeholderData: keepPreviousData,
     queryFn: async () => {
       const all: ProductData[] = [];
 
@@ -205,6 +204,12 @@ const BestDeals = () => {
         all.push(...rows);
       }
 
+      // Filter out products with problematic test Stripe price IDs
+      const filteredAll = all.filter(p => {
+        // Exclude the specific product with test price ID
+        return p.id !== "aebcbfff-69a6-4ea7-9f43-40a7d072d2dd";
+      });
+
       // --- robust de-dupe ---
       const keyOf = (p: ProductData) => {
         const sp = p.stripe_product_id?.toLowerCase();
@@ -216,7 +221,7 @@ const BestDeals = () => {
       };
 
       const byKey = new Map<string, ProductData>();
-      for (const p of all) {
+      for (const p of filteredAll) {
         const k = keyOf(p);
         const prev = byKey.get(k);
         if (!prev) {
