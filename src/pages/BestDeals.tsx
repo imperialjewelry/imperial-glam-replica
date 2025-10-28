@@ -61,7 +61,6 @@ interface ProductData {
   [key: string]: any;
 }
 
-// --- tables to query (no unified `products` table here) ---
 const TABLES = [
   "chain_products",
   "bracelet_products",
@@ -77,7 +76,6 @@ const TABLES = [
   "custom_products",
 ] as const;
 
-// --- restrict dropdown to navbar categories only ---
 const NAVBAR_CATEGORIES = [
   "all",
   "chains",
@@ -104,16 +102,62 @@ const BestDeals = () => {
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
   const [fullProductData, setFullProductData] = useState<ProductData | null>(null);
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [sortBy, setSortBy] = useState<"price-low" | "price-high" | "rating">("price-low");
+  // Default to Highest Rated
+  const [sortBy, setSortBy] = useState<"price-low" | "price-high" | "rating">("rating");
 
-  // ---- Fetch from ALL sub-tables (not `products`) + de-dupe ----
+  // Lazy-load tables in small batches
+  const TABLE_BATCH_SIZE = 4; // how many tables to fetch per step
+  const PER_TABLE_LIMIT = 12; // how many rows per table per step
+  const [tablesCount, setTablesCount] = useState(Math.min(TABLE_BATCH_SIZE, TABLES.length));
+
+  // ---- Fetch from a SLICE of sub-tables + de-dupe ----
   const { data: products = [], isLoading } = useQuery({
-    queryKey: ["all-products-from-subtables"],
+    queryKey: ["all-products-from-subtables", tablesCount, PER_TABLE_LIMIT],
+    keepPreviousData: true,
     queryFn: async () => {
       const all: ProductData[] = [];
 
-      for (const tableName of TABLES) {
-        const { data, error } = await supabase.from(tableName as any).select("*");
+      const columns = [
+        "id",
+        "name",
+        "price",
+        "original_price",
+        "category",
+        "material",
+        "image_url",
+        "rating",
+        "review_count",
+        "in_stock",
+        "ships_today",
+        "featured",
+        "description",
+        "color",
+        "product_type",
+        "created_at",
+        "updated_at",
+        "stripe_product_id",
+        "stripe_price_id",
+        "sizes",
+        "lengths_and_prices",
+        "gemstone",
+        "diamond_cut",
+        "chain_type",
+        "frame_style",
+        "lens_color",
+        "style",
+        "teeth_count",
+        "shape",
+        "carat_weight",
+        "cut_quality",
+        "clarity_grade",
+        "customizable",
+      ].join(",");
+
+      for (const tableName of TABLES.slice(0, tablesCount)) {
+        const { data, error } = await supabase
+          .from(tableName as any)
+          .select(columns)
+          .range(0, PER_TABLE_LIMIT - 1);
         if (error) {
           console.error(`Error fetching from ${tableName}:`, error);
           continue;
@@ -163,7 +207,7 @@ const BestDeals = () => {
               clarity_grade: p.clarity_grade || "",
               customizable: !!p.customizable,
 
-              // merch (exclude discount_percentage entirely)
+              // merch (no discount field)
               rating: Number(p.rating ?? 5),
               review_count: Number(p.review_count ?? 0),
               in_stock: p.in_stock !== undefined ? !!p.in_stock : true,
@@ -197,7 +241,6 @@ const BestDeals = () => {
       }
 
       const deduped = Array.from(byKey.values());
-      console.log({ fetched: all.length, deduped: deduped.length });
       return deduped;
     },
   });
@@ -262,7 +305,7 @@ const BestDeals = () => {
     return null; // fallback
   };
 
-  if (isLoading) {
+  if (isLoading && products.length === 0) {
     return (
       <>
         <Header />
@@ -334,69 +377,88 @@ const BestDeals = () => {
 
           {/* Products Grid */}
           {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {filteredProducts.map((product) => (
-                <Card
-                  key={`${product.source_table}-${product.id}`}
-                  className="group cursor-pointer hover:shadow-lg transition-all duration-300 bg-white border-gray-200"
-                  onClick={() => handleProductClick(product)}
-                >
-                  <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100">
-                    <img
-                      src={
-                        product.image_url ||
-                        "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80"
-                      }
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {filteredProducts.map((product) => (
+                  <Card
+                    key={`${product.source_table}-${product.id}`}
+                    className="group cursor-pointer hover:shadow-lg transition-all duration-300 bg-white border-gray-200"
+                    onClick={() => handleProductClick(product)}
+                  >
+                    <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100">
+                      <img
+                        src={
+                          product.image_url ||
+                          "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80"
+                        }
+                        alt={product.name}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
 
-                    {/* Badges (discount removed) */}
-                    <div className="absolute top-3 left-3 flex flex-col gap-2">
-                      {product.featured && (
-                        <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">FEATURED</Badge>
-                      )}
-                      {product.ships_today && (
-                        <Badge className="bg-green-500 text-white text-xs font-semibold px-2 py-1">SHIPS TODAY</Badge>
-                      )}
-                    </div>
-                  </div>
-
-                  <CardContent className="p-4">
-                    <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
-                      {product.category || "UNCATEGORIZED"} • {product.material || "N/A"}
-                    </div>
-
-                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 text-sm">{product.name}</h3>
-
-                    <div className="flex items-center space-x-1 mb-2">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-3 h-3 ${
-                              i < Math.floor(product.rating || 5) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-xs text-gray-500">({product.review_count || 0})</span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-lg font-bold text-blue-600">{formatPrice(product.price)}</span>
-                        {product.original_price && product.original_price > product.price && (
-                          <span className="text-sm text-gray-400 line-through">
-                            {formatPrice(product.original_price)}
-                          </span>
+                      {/* Badges (discount removed) */}
+                      <div className="absolute top-3 left-3 flex flex-col gap-2">
+                        {product.featured && (
+                          <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">FEATURED</Badge>
+                        )}
+                        {product.ships_today && (
+                          <Badge className="bg-green-500 text-white text-xs font-semibold px-2 py-1">SHIPS TODAY</Badge>
                         )}
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+
+                    <CardContent className="p-4">
+                      <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
+                        {product.category || "UNCATEGORIZED"} • {product.material || "N/A"}
+                      </div>
+
+                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 text-sm">{product.name}</h3>
+
+                      <div className="flex items-center space-x-1 mb-2">
+                        <div className="flex">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-3 h-3 ${
+                                i < Math.floor(product.rating || 5)
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-xs text-gray-500">({product.review_count || 0})</span>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-lg font-bold text-blue-600">{formatPrice(product.price)}</span>
+                          {product.original_price && product.original_price > product.price && (
+                            <span className="text-sm text-gray-400 line-through">
+                              {formatPrice(product.original_price)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Load more tables */}
+              {tablesCount < TABLES.length && (
+                <div className="flex justify-center mt-10">
+                  <Button
+                    onClick={() => setTablesCount((c) => Math.min(c + TABLE_BATCH_SIZE, TABLES.length))}
+                    variant="default"
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    {isLoading ? "Loading more..." : "Load more collections"}
+                  </Button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-12">
               <div className="text-gray-400 mb-4">
@@ -407,7 +469,7 @@ const BestDeals = () => {
               <Button
                 onClick={() => {
                   setCategoryFilter("all");
-                  setSortBy("price-low");
+                  setSortBy("rating");
                 }}
                 className="bg-blue-600 hover:bg-blue-700"
               >
