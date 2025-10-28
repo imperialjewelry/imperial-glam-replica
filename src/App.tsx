@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider, useCart } from "@/contexts/CartContext";
 import { HelmetProvider } from 'react-helmet-async';
+import ScrollToTop from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import BestDeals from "./pages/BestDeals";
 import Chains from "./pages/Chains";
@@ -46,6 +47,7 @@ const AppContent = () => {
 
   return (
     <>
+      <ScrollToTop />
       <ShoppingCart isOpen={state.isOpen} onClose={handleCloseCart} />
       <Routes>
         <Route path="/" element={<Index />} />
