@@ -102,12 +102,11 @@ const BestDeals = () => {
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
   const [fullProductData, setFullProductData] = useState<ProductData | null>(null);
   const [categoryFilter, setCategoryFilter] = useState("all");
-  // Default to Highest Rated
   const [sortBy, setSortBy] = useState<"price-low" | "price-high" | "rating">("rating");
 
   // Lazy-load tables in small batches
-  const TABLE_BATCH_SIZE = 4; // how many tables to fetch per step
-  const PER_TABLE_LIMIT = 12; // how many rows per table per step
+  const TABLE_BATCH_SIZE = 4;
+  const PER_TABLE_LIMIT = 12;
   const [tablesCount, setTablesCount] = useState(Math.min(TABLE_BATCH_SIZE, TABLES.length));
 
   // ---- Fetch from a SLICE of sub-tables + de-dupe ----
@@ -117,47 +116,13 @@ const BestDeals = () => {
     queryFn: async () => {
       const all: ProductData[] = [];
 
-      const columns = [
-        "id",
-        "name",
-        "price",
-        "original_price",
-        "category",
-        "material",
-        "image_url",
-        "rating",
-        "review_count",
-        "in_stock",
-        "ships_today",
-        "featured",
-        "description",
-        "color",
-        "product_type",
-        "created_at",
-        "updated_at",
-        "stripe_product_id",
-        "stripe_price_id",
-        "sizes",
-        "lengths_and_prices",
-        "gemstone",
-        "diamond_cut",
-        "chain_type",
-        "frame_style",
-        "lens_color",
-        "style",
-        "teeth_count",
-        "shape",
-        "carat_weight",
-        "cut_quality",
-        "clarity_grade",
-        "customizable",
-      ].join(",");
-
       for (const tableName of TABLES.slice(0, tablesCount)) {
+        // Select * to avoid 400s when a column doesn't exist on a given table
         const { data, error } = await supabase
           .from(tableName as any)
-          .select(columns)
+          .select("*")
           .range(0, PER_TABLE_LIMIT - 1);
+
         if (error) {
           console.error(`Error fetching from ${tableName}:`, error);
           continue;
@@ -172,7 +137,7 @@ const BestDeals = () => {
               source_table: tableName,
               source_id: p.id,
 
-              // core
+              // core (guard every access)
               name: clean(p.name),
               price: Number(p.price ?? 0),
               original_price: p.original_price ?? undefined,
@@ -191,7 +156,7 @@ const BestDeals = () => {
               stripe_product_id: p.stripe_product_id || "",
               stripe_price_id: p.stripe_price_id || undefined,
 
-              // variants (keep as-is so modals can render variant pickers)
+              // variants / optional
               sizes: p.sizes || [],
               lengths_and_prices: p.lengths_and_prices || [],
               gemstone: p.gemstone || "",
@@ -207,7 +172,7 @@ const BestDeals = () => {
               clarity_grade: p.clarity_grade || "",
               customizable: !!p.customizable,
 
-              // merch (no discount field)
+              // merch
               rating: Number(p.rating ?? 5),
               review_count: Number(p.review_count ?? 0),
               in_stock: p.in_stock !== undefined ? !!p.in_stock : true,
@@ -220,7 +185,6 @@ const BestDeals = () => {
       }
 
       // --- de-dupe across tables ---
-      // preference: stripe_product_id -> stripe_price_id -> normalized (name|material)
       const keyOf = (p: ProductData) =>
         p.stripe_product_id?.toLowerCase() ||
         p.stripe_price_id?.toLowerCase() ||
@@ -233,15 +197,13 @@ const BestDeals = () => {
         if (!prev) {
           byKey.set(k, p);
         } else {
-          // keep the newest
           const prevTime = new Date(prev.updated_at || 0).getTime();
           const currTime = new Date(p.updated_at || 0).getTime();
           if (currTime >= prevTime) byKey.set(k, p);
         }
       }
 
-      const deduped = Array.from(byKey.values());
-      return deduped;
+      return Array.from(byKey.values());
     },
   });
 
@@ -331,10 +293,9 @@ const BestDeals = () => {
     <>
       <Header />
       <div className="min-h-screen bg-gray-50">
-        {/* Mobile Product Showcase */}
         <MobileProductShowcase
           category="DEALS"
-          tableName="chain_products" // any subtable is fine for the showcase
+          tableName="chain_products"
           title="ALL JEWELRY"
           description="Premium Jewelry Deals Across All Collections"
         />
@@ -404,7 +365,6 @@ const BestDeals = () => {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
 
-                      {/* Badges (discount removed) */}
                       <div className="absolute top-3 left-3 flex flex-col gap-2">
                         {product.featured && (
                           <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">FEATURED</Badge>
@@ -453,7 +413,6 @@ const BestDeals = () => {
                 ))}
               </div>
 
-              {/* Load more tables */}
               {tablesCount < TABLES.length && (
                 <div className="flex justify-center mt-10">
                   <Button
@@ -499,7 +458,6 @@ const BestDeals = () => {
         </div>
       </div>
 
-      {/* Product Detail Modal */}
       {renderProductModal()}
 
       <Footer />
