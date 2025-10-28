@@ -102,10 +102,6 @@ const Index = () => {
             <CategorySection />
           </LazySection>
           
-          <LazySection fallback={<Skeleton className="w-full h-96" />}>
-            <CustomerReviews />
-          </LazySection>
-          
           <LazySection fallback={<Skeleton className="w-full h-80" />}>
             <BestDeals />
           </LazySection>
@@ -124,6 +120,10 @@ const Index = () => {
           
           <LazySection fallback={<Skeleton className="w-full h-80" />}>
             <MoissanitePendantsSection />
+          </LazySection>
+          
+          <LazySection fallback={<Skeleton className="w-full h-96" />}>
+            <CustomerReviews />
           </LazySection>
           
           <LazySection fallback={<Skeleton className="w-full h-[600px]" />}>
