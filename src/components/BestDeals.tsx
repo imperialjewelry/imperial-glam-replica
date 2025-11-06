@@ -40,11 +40,8 @@ const DealSkeleton = memo(() => (
 ));
 
 // Memoized product card
-const DealCard = memo(({ product, onClick }: { product: any; onClick: () => void }) => (
-  <div 
-    className="w-64 group bg-white overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg flex-shrink-0 cursor-pointer"
-    onClick={onClick}
-  >
+const DealCard = memo(({ product }: { product: any }) => (
+  <div className="w-64 group bg-white overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg flex-shrink-0">
     <div className="relative aspect-square overflow-hidden bg-gray-100">
       <img
         src={thumb(product.image_url)}
@@ -177,13 +174,7 @@ const BestDeals = () => {
                   <DealSkeleton />
                 </>
               ) : dealProducts.length > 0 ? (
-                dealProducts.map((product) => (
-                  <DealCard 
-                    key={product.id} 
-                    product={product} 
-                    onClick={() => window.location.href = `/best-deals`}
-                  />
-                ))
+                dealProducts.map((product) => <DealCard key={product.id} product={product} />)
               ) : (
                 <div className="text-gray-500 text-center w-full py-8">No products available at the moment</div>
               )}

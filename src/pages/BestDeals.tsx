@@ -103,27 +103,23 @@ const clean = (s?: string) =>
     .trim();
 
 const normalizeCategory = (rawCategory?: string, rawType?: string) => {
-  const cat = (rawCategory || "").toLowerCase();
-  const type = (rawType || "").toLowerCase();
-  const combined = `${cat} ${type}`.trim();
-  
-  if (!combined) return "all";
+  const c = (rawCategory || rawType || "").toLowerCase();
+  if (!c) return "all";
 
-  // Check both category and product_type for better matching
-  if (combined.includes("chain")) return "chains";
-  if (combined.includes("bracelet")) return "bracelets";
-  if (combined.includes("watch")) return "watches";
-  if (combined.includes("pendant")) return "pendants";
-  if (combined.includes("earring")) return "earrings";
-  if (combined.includes("grill")) return "grillz";
-  if (combined.includes("glass")) return "glasses";
-  if (combined.includes("engagement")) return "engagement rings";
-  if (combined.includes("ring")) return "rings";
-  if (combined.includes("simulant") || combined.includes("moissanite")) return "diamond simulants";
-  if (combined.includes("diamond")) return "diamond";
-  if (combined.includes("custom")) return "custom";
+  if (c.startsWith("chain")) return "chains";
+  if (c.startsWith("bracelet")) return "bracelets";
+  if (c.startsWith("watch")) return "watches";
+  if (c.includes("pendant")) return "pendants";
+  if (c.startsWith("earring")) return "earrings";
+  if (c.includes("grill")) return "grillz";
+  if (c.includes("glass")) return "glasses";
+  if (c.includes("engagement")) return "engagement rings";
+  if (c.includes("ring")) return "rings";
+  if (c.includes("simulant") || c.includes("moissanite")) return "diamond simulants";
+  if (c.includes("diamond")) return "diamond";
+  if (c.includes("custom")) return "custom";
 
-  return cat || "all";
+  return c;
 };
 
 const BestDeals = () => {
