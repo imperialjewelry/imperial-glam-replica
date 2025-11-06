@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -27,8 +27,8 @@ interface ProductData {
   name: string;
   price: number;
   original_price?: number;
-  category: string; // raw category from DB
-  norm_category?: string; // normalized category for filtering
+  category: string;
+  norm_category?: string;
   material: string;
   image_url: string;
   rating?: number;
@@ -93,13 +93,15 @@ const NAVBAR_CATEGORIES = [
   "diamond simulants",
 ] as const;
 
+const ITEMS_PER_PAGE = 24;
+const PER_TABLE_LIMIT = 20;
+
 const clean = (s?: string) =>
   (s || "")
     .replace(/[\r\n\t]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 
-// Map raw DB category/product_type to one of the navbar buckets
 const normalizeCategory = (rawCategory?: string, rawType?: string) => {
   const c = (rawCategory || rawType || "").toLowerCase();
   if (!c) return "all";
@@ -117,7 +119,7 @@ const normalizeCategory = (rawCategory?: string, rawType?: string) => {
   if (c.includes("diamond")) return "diamond";
   if (c.includes("custom")) return "custom";
 
-  return c; // fall back to raw lower-case
+  return c;
 };
 
 const BestDeals = () => {
@@ -125,98 +127,96 @@ const BestDeals = () => {
   const [fullProductData, setFullProductData] = useState<ProductData | null>(null);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortBy, setSortBy] = useState<"price-low" | "price-high" | "rating">("rating");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [tablesLoaded, setTablesLoaded] = useState(4);
 
-  // Progressive loading
-  const TABLE_BATCH_SIZE = 4;
-  const PER_TABLE_LIMIT = 50; // pull more per table to surface depth
-  const [tablesCount, setTablesCount] = useState(Math.min(TABLE_BATCH_SIZE, TABLES.length));
-
-  const { data: products = [], isLoading } = useQuery({
-    queryKey: ["all-products-from-subtables", tablesCount, PER_TABLE_LIMIT],
+  const {
+    data: products = [],
+    isLoading,
+    isFetching,
+  } = useQuery({
+    queryKey: ["all-products-optimized", tablesLoaded],
     queryFn: async () => {
       const all: ProductData[] = [];
 
-      for (const tableName of TABLES.slice(0, tablesCount)) {
-        const { data, error } = await supabase
-          .from(tableName as any)
-          .select("*")
-          .order("created_at", { ascending: false })
-          .range(0, PER_TABLE_LIMIT - 1);
+      const tablesToLoad = TABLES.slice(0, tablesLoaded);
 
-        if (error) {
-          console.error(`Error fetching from ${tableName}:`, error);
-          continue;
-        }
-        if (!Array.isArray(data)) continue;
+      await Promise.all(
+        tablesToLoad.map(async (tableName) => {
+          try {
+            const { data, error } = await supabase
+              .from(tableName as any)
+              .select("*")
+              .order("created_at", { ascending: false })
+              .limit(PER_TABLE_LIMIT);
 
-        const rows = data
-          .filter((x: any) => x && typeof x === "object" && typeof x.id === "string" && x.id.trim() !== "")
-          .map((p: any): ProductData => {
-            const rawCategory = clean(p.category);
-            const productType = clean(p.product_type);
-            const norm = normalizeCategory(rawCategory, productType);
+            if (error) {
+              console.error(`Error fetching from ${tableName}:`, error);
+              return;
+            }
+            if (!Array.isArray(data)) return;
 
-            return {
-              id: p.id,
-              source_table: tableName,
-              source_id: p.id,
+            const rows = data
+              .filter((x: any) => x && typeof x === "object" && typeof x.id === "string" && x.id.trim() !== "")
+              .map((p: any): ProductData => {
+                const rawCategory = clean(p.category);
+                const productType = clean(p.product_type);
+                const norm = normalizeCategory(rawCategory, productType);
 
-              name: clean(p.name),
-              price: Number(p.price ?? 0),
-              original_price: p.original_price ?? undefined,
-              category: rawCategory,
-              norm_category: norm,
-              material: clean(p.material),
-              color: clean(p.color),
-              product_type: productType,
-              image_url: p.image_url || "",
-              description: p.description || "",
+                return {
+                  id: p.id,
+                  source_table: tableName,
+                  source_id: p.id,
+                  name: clean(p.name),
+                  price: Number(p.price ?? 0),
+                  original_price: p.original_price ?? undefined,
+                  category: rawCategory,
+                  norm_category: norm,
+                  material: clean(p.material),
+                  color: clean(p.color),
+                  product_type: productType,
+                  image_url: p.image_url || "",
+                  description: p.description || "",
+                  created_at: p.created_at || new Date().toISOString(),
+                  updated_at: p.updated_at || new Date().toISOString(),
+                  stripe_product_id: p.stripe_product_id || "",
+                  stripe_price_id: p.stripe_price_id || undefined,
+                  sizes: p.sizes || [],
+                  lengths_and_prices: p.lengths_and_prices || [],
+                  gemstone: p.gemstone || "",
+                  diamond_cut: p.diamond_cut || "",
+                  chain_type: p.chain_type || "",
+                  frame_style: p.frame_style || "",
+                  lens_color: p.lens_color || "",
+                  style: p.style || "",
+                  teeth_count: p.teeth_count || "",
+                  shape: p.shape || "",
+                  carat_weight: p.carat_weight || "",
+                  cut_quality: p.cut_quality || "",
+                  clarity_grade: p.clarity_grade || "",
+                  customizable: !!p.customizable,
+                  rating: Number(p.rating ?? 5),
+                  review_count: Number(p.review_count ?? 0),
+                  in_stock: p.in_stock !== undefined ? !!p.in_stock : true,
+                  ships_today: !!p.ships_today,
+                  featured: !!p.featured,
+                };
+              });
 
-              created_at: p.created_at || new Date().toISOString(),
-              updated_at: p.updated_at || new Date().toISOString(),
+            all.push(...rows);
+          } catch (err) {
+            console.error(`Failed to load ${tableName}:`, err);
+          }
+        }),
+      );
 
-              stripe_product_id: p.stripe_product_id || "",
-              stripe_price_id: p.stripe_price_id || undefined,
+      const filteredAll = all.filter((p) => p.id !== "aebcbfff-69a6-4ea7-9f43-40a7d072d2dd");
 
-              sizes: p.sizes || [],
-              lengths_and_prices: p.lengths_and_prices || [],
-              gemstone: p.gemstone || "",
-              diamond_cut: p.diamond_cut || "",
-              chain_type: p.chain_type || "",
-              frame_style: p.frame_style || "",
-              lens_color: p.lens_color || "",
-              style: p.style || "",
-              teeth_count: p.teeth_count || "",
-              shape: p.shape || "",
-              carat_weight: p.carat_weight || "",
-              cut_quality: p.cut_quality || "",
-              clarity_grade: p.clarity_grade || "",
-              customizable: !!p.customizable,
-
-              rating: Number(p.rating ?? 5),
-              review_count: Number(p.review_count ?? 0),
-              in_stock: p.in_stock !== undefined ? !!p.in_stock : true,
-              ships_today: !!p.ships_today,
-              featured: !!p.featured,
-            };
-          });
-
-        all.push(...rows);
-      }
-
-      // Filter out products with problematic test Stripe price IDs
-      const filteredAll = all.filter(p => {
-        // Exclude the specific product with test price ID
-        return p.id !== "aebcbfff-69a6-4ea7-9f43-40a7d072d2dd";
-      });
-
-      // --- robust de-dupe ---
       const keyOf = (p: ProductData) => {
         const sp = p.stripe_product_id?.toLowerCase();
         const spp = p.stripe_price_id?.toLowerCase();
         if (sp) return `sp:${sp}`;
         if (spp) return `spp:${spp}`;
-        // fallback: unique per table row (prevents cross-table collisions)
         return `${p.source_table}:${p.source_id}`;
       };
 
@@ -235,19 +235,9 @@ const BestDeals = () => {
 
       return Array.from(byKey.values());
     },
+    staleTime: 5 * 60 * 1000,
   });
 
-  // keep loading until all tables are fetched
-  useEffect(() => {
-    if (!isLoading && tablesCount < TABLES.length) {
-      const id = setTimeout(() => {
-        setTablesCount((c) => Math.min(c + TABLE_BATCH_SIZE, TABLES.length));
-      }, 0);
-      return () => clearTimeout(id);
-    }
-  }, [isLoading, tablesCount]);
-
-  // Filter + sort using normalized categories
   const filteredProducts = useMemo(() => {
     const filtered = products.filter((product) => {
       if (categoryFilter === "all") return true;
@@ -268,17 +258,34 @@ const BestDeals = () => {
     });
   }, [products, categoryFilter, sortBy]);
 
-  // navbar categories present (based on normalized categories)
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return filteredProducts.slice(startIndex, endIndex);
+  }, [filteredProducts, currentPage]);
+
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+
   const categories = useMemo(() => {
     const present = new Set(products.map((p) => (p.norm_category || "").toLowerCase()).filter(Boolean));
     return NAVBAR_CATEGORIES.filter((c) => c === "all" || present.has(c));
   }, [products]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [categoryFilter, sortBy]);
 
   const formatPrice = (price: number) => `$${(price / 100).toLocaleString()}`;
 
   const handleProductClick = async (product: ProductData) => {
     setSelectedProduct(product);
     setFullProductData(product);
+  };
+
+  const handleLoadMore = () => {
+    if (tablesLoaded < TABLES.length) {
+      setTablesLoaded((prev) => Math.min(prev + 4, TABLES.length));
+    }
   };
 
   const renderProductModal = () => {
@@ -334,7 +341,6 @@ const BestDeals = () => {
         />
 
         <div className="max-w-7xl mx-auto px-4 py-8">
-          {/* Filters */}
           <div className="flex flex-col md:flex-row gap-4 mb-8 items-start md:items-center justify-between">
             <div className="flex items-center gap-2">
               <Filter className="w-5 h-5 text-gray-600" />
@@ -368,36 +374,42 @@ const BestDeals = () => {
             </div>
           </div>
 
-          {/* Results count */}
-          <div className="mb-6">
+          <div className="mb-6 flex justify-between items-center">
             <p className="text-gray-600">
-              Showing {filteredProducts.length} products
+              Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} -{" "}
+              {Math.min(currentPage * ITEMS_PER_PAGE, filteredProducts.length)} of {filteredProducts.length} products
               {categoryFilter !== "all" && ` in ${categoryFilter.toUpperCase()}`}
-              {` • Loaded ${tablesCount}/${TABLES.length} collections`}
             </p>
+            {tablesLoaded < TABLES.length && (
+              <Button onClick={handleLoadMore} variant="outline" size="sm" disabled={isFetching}>
+                {isFetching ? "Loading..." : `Load ${TABLES.length - tablesLoaded} more collections`}
+              </Button>
+            )}
           </div>
 
-          {/* Products Grid */}
-          {filteredProducts.length > 0 ? (
+          {paginatedProducts.length > 0 ? (
             <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {filteredProducts.map((product) => (
+                {paginatedProducts.map((product) => (
                   <Card
                     key={`${product.source_table}-${product.id}`}
                     className="group cursor-pointer hover:shadow-lg transition-all duration-300 bg-white border-gray-200"
                     onClick={() => handleProductClick(product)}
                   >
                     <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100">
-                      <img
-                        src={
-                          product.image_url ||
-                          "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=800&q=80"
-                        }
-                        alt={product.name}
-                        loading="lazy"
-                        decoding="async"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
+                      {product.image_url ? (
+                        <img
+                          src={product.image_url}
+                          alt={product.name}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+                          No Image
+                        </div>
+                      )}
                       <div className="absolute top-3 left-3 flex flex-col gap-2">
                         {product.featured && (
                           <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">FEATURED</Badge>
@@ -447,15 +459,24 @@ const BestDeals = () => {
                 ))}
               </div>
 
-              {/* Optional manual trigger */}
-              {tablesCount < TABLES.length && (
-                <div className="flex justify-center mt-10">
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-4 mt-10">
                   <Button
-                    onClick={() => setTablesCount((c) => Math.min(c + TABLE_BATCH_SIZE, TABLES.length))}
-                    variant="default"
-                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    variant="outline"
                   >
-                    {isLoading ? "Loading more..." : "Load more collections"}
+                    Previous
+                  </Button>
+                  <span className="text-gray-600">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <Button
+                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    variant="outline"
+                  >
+                    Next
                   </Button>
                 </div>
               )}
@@ -477,13 +498,14 @@ const BestDeals = () => {
                 >
                   Clear Filters
                 </Button>
-                {tablesCount < TABLES.length && (
+                {tablesLoaded < TABLES.length && (
                   <Button
-                    onClick={() => setTablesCount((c) => Math.min(c + TABLE_BATCH_SIZE, TABLES.length))}
+                    onClick={handleLoadMore}
                     variant="default"
                     className="bg-blue-600 hover:bg-blue-700"
+                    disabled={isFetching}
                   >
-                    {isLoading ? "Loading more..." : "Load more collections"}
+                    {isFetching ? "Loading..." : "Load More Collections"}
                   </Button>
                 )}
               </div>
