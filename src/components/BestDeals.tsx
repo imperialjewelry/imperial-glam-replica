@@ -25,7 +25,7 @@ function thumb(url?: string | null) {
 
 // Minimal skeleton
 const DealSkeleton = memo(() => (
-  <div className="w-72 bg-white border border-gray-200 rounded-lg overflow-hidden">
+  <div className="w-80 bg-white border border-gray-200 rounded-lg overflow-hidden flex-shrink-0">
     <div className="aspect-square bg-gray-100" />
     <div className="p-4 space-y-2">
       <div className="h-3 w-28 bg-gray-200 rounded" />
@@ -41,7 +41,7 @@ const DealSkeleton = memo(() => (
 
 // Memoized product card
 const DealCard = memo(({ product }: { product: any }) => (
-  <div className="w-72 group bg-white overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg">
+  <div className="w-80 group bg-white overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg flex-shrink-0">
     <div className="relative aspect-square overflow-hidden bg-gray-100">
       <img
         src={thumb(product.image_url)}
