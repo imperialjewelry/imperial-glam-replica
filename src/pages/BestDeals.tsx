@@ -389,86 +389,74 @@ const BestDeals = () => {
 
           {paginatedProducts.length > 0 ? (
             <>
-              {/* HORIZONTAL RAIL */}
-              <div className="relative">
-                <div
-                  className="flex gap-6 overflow-x-auto snap-x snap-mandatory flex-nowrap -mx-4 px-4 scrollbar-hide"
-                  style={{ scrollbarWidth: "none" }} // Firefox; optional global CSS to fully hide
-                >
-                  {paginatedProducts.map((product) => (
-                    <Card
-                      key={`${product.source_table}-${product.id}`}
-                      className="w-72 flex-none snap-start group cursor-pointer hover:shadow-lg transition-all duration-300 bg-white border-gray-200"
-                      onClick={() => handleProductClick(product)}
-                    >
-                      <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100">
-                        {product.image_url ? (
-                          <img
-                            src={product.image_url}
-                            alt={product.name}
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
-                            No Image
-                          </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {paginatedProducts.map((product) => (
+                  <Card
+                    key={`${product.source_table}-${product.id}`}
+                    className="group cursor-pointer hover:shadow-lg transition-all duration-300 bg-white border-gray-200"
+                    onClick={() => handleProductClick(product)}
+                  >
+                    <div className="relative aspect-square overflow-hidden rounded-t-lg bg-gray-100">
+                      {product.image_url ? (
+                        <img
+                          src={product.image_url}
+                          alt={product.name}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+                          No Image
+                        </div>
+                      )}
+                      <div className="absolute top-3 left-3 flex flex-col gap-2">
+                        {product.featured && (
+                          <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">FEATURED</Badge>
                         )}
-                        <div className="absolute top-3 left-3 flex flex-col gap-2">
-                          {product.featured && (
-                            <Badge className="bg-blue-500 text-white text-xs font-semibold px-2 py-1">FEATURED</Badge>
-                          )}
-                          {product.ships_today && (
-                            <Badge className="bg-green-500 text-white text-xs font-semibold px-2 py-1">
-                              SHIPS TODAY
-                            </Badge>
+                        {product.ships_today && (
+                          <Badge className="bg-green-500 text-white text-xs font-semibold px-2 py-1">SHIPS TODAY</Badge>
+                        )}
+                      </div>
+                    </div>
+
+                    <CardContent className="p-4">
+                      <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
+                        {(product.norm_category || product.category || "UNCATEGORIZED").toUpperCase()} •{" "}
+                        {product.material || "N/A"}
+                      </div>
+
+                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 text-sm">{product.name}</h3>
+
+                      <div className="flex items-center space-x-1 mb-2">
+                        <div className="flex">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-3 h-3 ${
+                                i < Math.floor(product.rating || 5)
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-xs text-gray-500">({product.review_count || 0})</span>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-lg font-bold text-blue-600">{formatPrice(product.price)}</span>
+                          {product.original_price && product.original_price > product.price && (
+                            <span className="text-sm text-gray-400 line-through">
+                              {formatPrice(product.original_price)}
+                            </span>
                           )}
                         </div>
                       </div>
-
-                      <CardContent className="p-4">
-                        <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
-                          {(product.norm_category || product.category || "UNCATEGORIZED").toUpperCase()} •{" "}
-                          {product.material || "N/A"}
-                        </div>
-
-                        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 text-sm">{product.name}</h3>
-
-                        <div className="flex items-center space-x-1 mb-2">
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-3 h-3 ${
-                                  i < Math.floor(product.rating || 5)
-                                    ? "fill-yellow-400 text-yellow-400"
-                                    : "text-gray-300"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                          <span className="text-xs text-gray-500">({product.review_count || 0})</span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-lg font-bold text-blue-600">{formatPrice(product.price)}</span>
-                            {product.original_price && product.original_price > product.price && (
-                              <span className="text-sm text-gray-400 line-through">
-                                {formatPrice(product.original_price)}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-
-                {/* Optional edge fades */}
-                <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-gray-50 to-transparent" />
-                <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-50 to-transparent" />
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
 
               {totalPages > 1 && (
