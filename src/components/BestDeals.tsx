@@ -4,17 +4,11 @@ import { Star, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useRef, useMemo, useCallback } from "react";
+import { useEffect, useMemo, useRef, useCallback } from "react";
 
 const PAGE_SIZE = 24;
-
-// Small helper to serve lighter thumbnails (works with Supabase public storage URLs)
-function getThumb(url?: string | null) {
-  if (!url) return "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=600&q=70";
-  // Append safe defaults if no query string present; if present, leave as-is.
-  if (url.includes("?")) return url;
-  return `${url}?width=512&quality=70`;
-}
+// Hard cap for homepage; prevents loading the entire catalog.
+const MAX_PAGES = 3; // => 24 * 3 = 72 max items on the strip
 
 const FIELDS = `
   id, name, price, original_price, discount_percentage,
@@ -22,13 +16,25 @@ const FIELDS = `
   sizes, in_stock, created_at
 `;
 
+// Small helper to request a lighter thumbnail
+function getThumb(url?: string | null) {
+  if (!url) {
+    return "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=600&q=70";
+  }
+  return url.includes("?") ? url : `${url}?width=512&quality=70`;
+}
+
 const BestDeals = () => {
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ["best-deals-homepage"],
+    queryKey: ["best-deals-homepage", PAGE_SIZE, MAX_PAGES],
     queryFn: async ({ pageParam = 0 }) => {
+      // Enforce cap here as well—no accidental extra fetches
+      if (pageParam >= MAX_PAGES) return [];
+
       const from = pageParam * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
@@ -43,45 +49,80 @@ const BestDeals = () => {
         console.error("Error fetching products:", error);
         throw error;
       }
-
       return data || [];
     },
-    getNextPageParam: (lastPage, allPages) => (lastPage.length === PAGE_SIZE ? allPages.length : undefined),
+    getNextPageParam: (lastPage, allPages) => {
+      // Stop if page shorter than PAGE_SIZE or we hit MAX_PAGES
+      if (!lastPage || lastPage.length < PAGE_SIZE) return undefined;
+      if (allPages.length >= MAX_PAGES) return undefined;
+      return allPages.length;
+    },
     initialPageParam: 0,
-    // Faster back/forward and prevents refetch storms
+
+    // Kill noisy refetches that look like “page loads several times”
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+
+    // Smooth back/forward performance
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
+    retry: 1,
   });
 
   const dealProducts = useMemo(() => (data?.pages ?? []).flat(), [data]);
 
-  // Intersection observer for infinite scroll (with the HORIZONTAL scroller as root)
   const onIntersect = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       const first = entries[0];
-      if (first?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+      if (!first) return;
+      if (first.isIntersecting && hasNextPage && !isFetchingNextPage) {
         fetchNextPage();
       }
     },
     [fetchNextPage, hasNextPage, isFetchingNextPage],
   );
 
+  // Stable observer that doesn't re-create on each data change.
   useEffect(() => {
-    const sentinel = loadMoreRef.current;
-    const rootEl = scrollerRef.current; // <-- key: use horizontal scroller as root
+    const rootEl = scrollerRef.current;
+    if (!rootEl) return;
 
-    if (!sentinel || !rootEl) return;
+    // Clean any old observer
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
 
-    const observer = new IntersectionObserver(onIntersect, {
-      root: rootEl,
-      // rootMargin left adds a bit of prefetch as you near the end of the row
-      rootMargin: "0px 0px 0px 0px",
+    observerRef.current = new IntersectionObserver(onIntersect, {
+      root: rootEl, // HORIZONTAL scroller is the root
+      rootMargin: "0px 200px 0px 0px", // prefetch slightly before end
       threshold: 0.1,
     });
 
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [onIntersect, data]); // rebind if pages change (sentinel moves)
+    // If sentinel already mounted, observe it
+    if (sentinelRef.current) {
+      observerRef.current.observe(sentinelRef.current);
+    }
+
+    return () => {
+      observerRef.current?.disconnect();
+      observerRef.current = null;
+    };
+  }, [onIntersect]); // no dependency on data/pages
+
+  // Ref callback to (re)attach observing when sentinel node changes
+  const setSentinel = useCallback((node: HTMLDivElement | null) => {
+    // Unobserve old
+    if (sentinelRef.current && observerRef.current) {
+      observerRef.current.unobserve(sentinelRef.current);
+    }
+    sentinelRef.current = node;
+    // Observe new
+    if (node && observerRef.current) {
+      observerRef.current.observe(node);
+    }
+  }, []);
 
   if (isLoading) {
     return (
@@ -140,7 +181,7 @@ const BestDeals = () => {
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           onError={(e) => {
-                            e.currentTarget.src =
+                            (e.currentTarget as HTMLImageElement).src =
                               "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=600&q=70";
                           }}
                           loading="lazy"
@@ -210,10 +251,10 @@ const BestDeals = () => {
                     </div>
                   ))}
 
-                  {/* Sentinel for infinite scroll – MUST sit inside the horizontal row */}
+                  {/* Sentinel for infinite scroll – sits at end of row */}
                   {hasNextPage && (
                     <div
-                      ref={loadMoreRef}
+                      ref={setSentinel}
                       className="flex-shrink-0 w-8 h-64 grid place-items-center text-xs text-gray-400"
                       aria-hidden
                     >
