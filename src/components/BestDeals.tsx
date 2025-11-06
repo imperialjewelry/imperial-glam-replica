@@ -4,9 +4,9 @@ import { Star, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-const LIMIT = 2; // only two products now
+const LIMIT = 2;
 
 const FIELDS = `
   id, name, price, original_price, discount_percentage,
@@ -14,6 +14,7 @@ const FIELDS = `
   sizes, in_stock, created_at
 `;
 
+// Lightweight thumbnail URL helper
 function thumb(url?: string | null, width = 512, quality = 70) {
   if (!url) {
     return `https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=${width}&q=${quality}`;
@@ -22,8 +23,36 @@ function thumb(url?: string | null, width = 512, quality = 70) {
   return `${url}?width=${width}&quality=${quality}`;
 }
 
+// Small card skeleton (same dimensions as real card)
+function DealSkeleton() {
+  return (
+    <div className="w-72 relative bg-white overflow-hidden border border-gray-200 rounded-lg">
+      <div className="relative aspect-square bg-gray-100 animate-pulse" />
+      <div className="p-4 space-y-2">
+        <div className="h-3 w-28 bg-gray-200 rounded animate-pulse" />
+        <div className="h-4 w-44 bg-gray-200 rounded animate-pulse" />
+        <div className="flex items-center gap-2">
+          <div className="h-3 w-20 bg-gray-200 rounded animate-pulse" />
+          <div className="h-3 w-8 bg-gray-200 rounded animate-pulse" />
+        </div>
+        <div className="h-5 w-24 bg-gray-200 rounded animate-pulse" />
+      </div>
+    </div>
+  );
+}
+
 const BestDeals = () => {
-  const { data, isLoading, error } = useQuery({
+  // Track per-image load to fade them in smoothly
+  const [loadedMap, setLoadedMap] = useState<Record<string, boolean>>({});
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // ensures CSS transitions run after first paint (prevents flash)
+    const t = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(t);
+  }, []);
+
+  const { data, error } = useQuery({
     queryKey: ["best-deals-homepage", LIMIT],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -37,24 +66,16 @@ const BestDeals = () => {
       if (error) throw error;
       return data ?? [];
     },
+    // Eliminate refetch flicker/noise
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
     staleTime: 10 * 60 * 1000,
     gcTime: 60 * 60 * 1000,
+    retry: 1,
   });
 
   const dealProducts = useMemo(() => data ?? [], [data]);
-
-  if (isLoading) {
-    return (
-      <section className="py-16 bg-white">
-        <div className="flex items-center justify-center">
-          <div className="text-lg">Loading best deals...</div>
-        </div>
-      </section>
-    );
-  }
 
   if (error) {
     console.error("Best deals products error:", error);
@@ -67,10 +88,13 @@ const BestDeals = () => {
     );
   }
 
+  // Cross-fade control: show skeletons until we have data
+  const showSkeletons = !dealProducts || dealProducts.length === 0;
+
   return (
     <section className="py-16 bg-white">
       <div className="flex flex-col md:flex-row">
-        {/* Title section */}
+        {/* Title section with background image - smaller on mobile */}
         <div className="w-full md:w-64 h-32 md:h-auto bg-gradient-to-br from-red-500 to-red-600 relative overflow-hidden flex items-center justify-center">
           <div
             className="absolute inset-0 bg-cover bg-center opacity-30"
@@ -85,28 +109,51 @@ const BestDeals = () => {
           </div>
         </div>
 
-        {/* Product cards */}
+        {/* Content stack: skeleton layer and content layer overlap, cross-fade */}
         <div className="flex-1 overflow-hidden">
-          <div className="flex flex-wrap justify-center md:justify-start gap-4 px-4 pb-4">
-            {dealProducts.length > 0 ? (
-              dealProducts.map((product) => (
+          <div className="relative px-4 pb-4">
+            {/* Skeleton layer (kept in DOM to avoid layout jump) */}
+            <div
+              className={`flex flex-wrap justify-center md:justify-start gap-4 transition-opacity duration-300 ${
+                showSkeletons ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+              aria-hidden={!showSkeletons}
+            >
+              <DealSkeleton />
+              <DealSkeleton />
+            </div>
+
+            {/* Content layer */}
+            <div
+              className={`flex flex-wrap justify-center md:justify-start gap-4 absolute inset-x-4 top-0 transition-opacity duration-300 ${
+                showSkeletons ? "opacity-0" : "opacity-100"
+              }`}
+              style={{ willChange: "opacity" }}
+            >
+              {dealProducts.map((product) => (
                 <div
                   key={product.id}
                   className="w-72 group relative bg-white overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg"
                 >
+                  {/* Product image */}
                   <div className="relative aspect-square overflow-hidden bg-gray-100">
                     <img
                       src={thumb(product.image_url)}
                       alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className={`w-full h-full object-cover transform transition duration-300 ${
+                        mounted && loadedMap[product.id] ? "opacity-100 scale-100" : "opacity-0 scale-[1.01]"
+                      }`}
                       onError={(e) => {
                         (e.currentTarget as HTMLImageElement).src = thumb(undefined);
                       }}
+                      onLoad={() => setLoadedMap((m) => ({ ...m, [product.id]: true }))}
                       loading="lazy"
                       decoding="async"
                       width={512}
                       height={512}
                     />
+
+                    {/* Discount badge - positioned on left side */}
                     {product.discount_percentage > 0 && (
                       <div className="absolute top-3 left-3">
                         <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
@@ -114,15 +161,29 @@ const BestDeals = () => {
                         </Badge>
                       </div>
                     )}
+
+                    {/* Size options */}
+                    {product.sizes && product.sizes.length > 0 && (
+                      <div className="absolute bottom-3 left-3 flex flex-wrap gap-1">
+                        {product.sizes.slice(0, 2).map((size: string, index: number) => (
+                          <Badge key={index} className="bg-gray-800 text-white text-xs px-1 py-0.5">
+                            {size}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
+                  {/* Product info */}
                   <div className="p-4">
                     <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
                       {product.category || "JEWELRY"} • {product.material || "MOISSANITE"}
                     </div>
+
                     <h3 className="font-medium text-gray-900 mb-2 text-sm leading-tight line-clamp-2">
                       {product.name}
                     </h3>
+
                     <div className="flex items-center space-x-1 mb-2">
                       <div className="flex">
                         {[...Array(5)].map((_, i) => (
@@ -136,6 +197,7 @@ const BestDeals = () => {
                       </div>
                       <span className="text-xs text-gray-500">({product.review_count || 0})</span>
                     </div>
+
                     <div className="flex items-center space-x-2">
                       <span className="text-lg font-bold text-blue-600">
                         ${((product.price ?? 0) / 100).toFixed(2)}
@@ -148,10 +210,13 @@ const BestDeals = () => {
                     </div>
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="text-gray-500 text-center w-full py-8">No products available at the moment</div>
-            )}
+              ))}
+
+              {/* No products fallback (still keeps layout stable) */}
+              {dealProducts.length === 0 && (
+                <div className="text-gray-500 text-center w-full py-8">No products available at the moment</div>
+              )}
+            </div>
           </div>
         </div>
       </div>
