@@ -1,10 +1,25 @@
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
 import { Star, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useMemo, useState } from "react";
+
+type DealProduct = {
+  id: string;
+  name: string;
+  price: number;
+  original_price: number | null;
+  discount_percentage: number | null;
+  image_url: string | null;
+  category: string | null;
+  material: string | null;
+  rating: number | null;
+  review_count: number | null;
+  sizes: string[] | null;
+  in_stock: boolean;
+  created_at: string;
+};
 
 const LIMIT = 2;
 
@@ -13,13 +28,6 @@ const FIELDS = `
   image_url, category, material, rating, review_count,
   sizes, in_stock, created_at
 `;
-
-// Aggressive thumbnail downscale for speed (no external fallbacks)
-function thumb(url?: string | null, width = 320, quality = 60) {
-  if (!url) return "";
-  if (url.includes("?")) return url;
-  return `${url}?width=${width}&quality=${quality}`;
-}
 
 function DealSkeleton() {
   return (
@@ -39,52 +47,80 @@ function DealSkeleton() {
 }
 
 const BestDeals = () => {
-  const [loadedMap, setLoadedMap] = useState<Record<string, boolean>>({});
-  const [showContent, setShowContent] = useState(false);
+  const [deals, setDeals] = useState<DealProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  const { data, error } = useQuery({
-    queryKey: ["best-deals-homepage", LIMIT],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select(FIELDS)
-        .eq("in_stock", true)
-        .order("discount_percentage", { ascending: false })
-        .order("created_at", { ascending: false })
-        .limit(LIMIT);
-
-      if (error) throw error;
-      return data ?? [];
-    },
-
-    // Prevent refetch flicker
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-
-    // Cache to keep UI snappy on return
-    staleTime: 10 * 60 * 1000,
-    gcTime: 60 * 60 * 1000,
-    retry: 1,
-
-    // NOTE: Removed keepPreviousData (not in v5).
-    // If you want to preserve previous data strictly, use:
-    // placeholderData: (prev) => prev as any
-  });
-
-  const dealProducts = useMemo(() => data ?? [], [data]);
-
-  // Reveal real content only after all images have decoded once
   useEffect(() => {
-    if (!dealProducts.length) return;
-    const allLoaded = dealProducts.every((p) => loadedMap[p.id]);
-    if (allLoaded && !showContent) {
-      setShowContent(true);
-    }
-  }, [dealProducts, loadedMap, showContent]);
+    let alive = true;
 
-  if (error) {
-    console.error("Best deals products error:", error);
+    (async () => {
+      try {
+        // Single, tiny query — same idea as Chains
+        const { data, error } = await supabase
+          .from("products")
+          .select(FIELDS)
+          .eq("in_stock", true)
+          .order("discount_percentage", { ascending: false })
+          .order("created_at", { ascending: false })
+          .limit(LIMIT);
+
+        if (error) throw error;
+        if (!alive) return;
+
+        setDeals((data as DealProduct[]) ?? []);
+      } catch (err: any) {
+        if (!alive) return;
+        setLoadError(err?.message ?? "Failed to load deals");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // Same simple conditional rendering style as Chains
+  if (loading) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="flex flex-col md:flex-row">
+          {/* Title block matches your existing UI */}
+          <div className="w-full md:w-64 h-32 md:h-auto bg-gradient-to-br from-red-500 to-red-600 relative overflow-hidden flex items-center justify-center">
+            <div
+              className="absolute inset-0 bg-cover bg-center opacity-30"
+              style={{
+                backgroundImage:
+                  "url('https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/bestdeals.webp')",
+              }}
+            />
+            <div className="relative z-10 text-center text-white p-4 md:p-8">
+              <h2 className="text-lg md:text-xl font-bold mb-1 md:mb-2">BEST</h2>
+              <h2 className="text-xl md:text-2xl font-bold mb-2 md:mb-4">DEALS</h2>
+              <ArrowRight className="w-6 h-6 md:w-8 md:h-8 mx-auto text-white" />
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-hidden">
+            <div className="px-4 pb-4 flex flex-wrap justify-center md:justify-start gap-4">
+              <DealSkeleton />
+              <DealSkeleton />
+            </div>
+          </div>
+        </div>
+
+        <div className="text-center mt-8 px-4">
+          <Link to="/best-deals">
+            <Button className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 font-medium">SHOP ALL DEALS →</Button>
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
+  if (loadError) {
     return (
       <section className="py-16 bg-white">
         <div className="flex items-center justify-center">
@@ -94,17 +130,16 @@ const BestDeals = () => {
     );
   }
 
-  const initialSkeletons = !dealProducts || dealProducts.length === 0;
-
   return (
     <section className="py-16 bg-white">
       <div className="flex flex-col md:flex-row">
-        {/* Title section with background image - smaller on mobile */}
+        {/* Title section */}
         <div className="w-full md:w-64 h-32 md:h-auto bg-gradient-to-br from-red-500 to-red-600 relative overflow-hidden flex items-center justify-center">
           <div
             className="absolute inset-0 bg-cover bg-center opacity-30"
             style={{
-              backgroundImage: `url('https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/bestdeals.webp')`,
+              backgroundImage:
+                "url('https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/bestdeals.webp')",
             }}
           />
           <div className="relative z-10 text-center text-white p-4 md:p-8">
@@ -114,117 +149,85 @@ const BestDeals = () => {
           </div>
         </div>
 
-        {/* Product cards */}
+        {/* Two simple cards, like Chains grid cards */}
         <div className="flex-1 overflow-hidden">
-          <div className="relative px-4 pb-4">
-            {(!showContent || initialSkeletons) && (
-              <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                <DealSkeleton />
-                <DealSkeleton />
-              </div>
-            )}
+          <div className="px-4 pb-4 flex flex-wrap justify-center md:justify-start gap-4">
+            {deals.length > 0 ? (
+              deals.map((product) => (
+                <div
+                  key={product.id}
+                  className="w-72 group relative bg-white overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg"
+                >
+                  <div className="relative aspect-square overflow-hidden bg-gray-100">
+                    {product.image_url ? (
+                      <img
+                        src={
+                          product.image_url.includes("?")
+                            ? product.image_url
+                            : `${product.image_url}?width=320&quality=60`
+                        }
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).style.display = "none";
+                        }}
+                        loading="eager"
+                        fetchPriority="high"
+                        decoding="async"
+                        width={320}
+                        height={320}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
+                        No Image
+                      </div>
+                    )}
 
-            {showContent && !initialSkeletons && (
-              <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                {dealProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    className="w-72 group relative bg-white overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg"
-                  >
-                    <div className="relative aspect-square overflow-hidden bg-gray-100">
-                      {product.image_url ? (
-                        <img
-                          src={thumb(product.image_url)}
-                          alt={product.name}
-                          className="w-full h-full object-cover"
-                          onLoad={async (e) => {
-                            const el = e.currentTarget as HTMLImageElement;
-                            // decode() ensures no pop-in before we flip showContent
-                            if ("decode" in el) {
-                              try {
-                                // @ts-ignore decode exists in modern browsers
-                                await el.decode();
-                              } catch {
-                                // ignore decode errors; mark as loaded anyway
-                              }
-                            }
-                            setLoadedMap((m) => ({ ...m, [product.id]: true }));
-                          }}
-                          onError={(e) => {
-                            // Hide broken images, but mark as loaded to avoid blocking
-                            (e.currentTarget as HTMLImageElement).style.display = "none";
-                            setLoadedMap((m) => ({ ...m, [product.id]: true }));
-                          }}
-                          loading="eager" // only two images; eager is fine
-                          fetchPriority="high" // correct camelCase prop
-                          decoding="async"
-                          width={320}
-                          height={320}
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
-                          No Image
-                        </div>
-                      )}
+                    {product.discount_percentage && product.discount_percentage > 0 && (
+                      <div className="absolute top-3 left-3">
+                        <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                          {product.discount_percentage}% OFF
+                        </Badge>
+                      </div>
+                    )}
+                  </div>
 
-                      {product.discount_percentage > 0 && (
-                        <div className="absolute top-3 left-3">
-                          <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
-                            {product.discount_percentage}% OFF
-                          </Badge>
-                        </div>
-                      )}
-
-                      {product.sizes && product.sizes.length > 0 && (
-                        <div className="absolute bottom-3 left-3 flex flex-wrap gap-1">
-                          {product.sizes.slice(0, 2).map((size: string, index: number) => (
-                            <Badge key={index} className="bg-gray-800 text-white text-xs px-1 py-0.5">
-                              {size}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
+                  <div className="p-4 space-y-2">
+                    <div className="text-xs text-gray-500 uppercase font-medium">
+                      {product.category || "JEWELRY"} • {product.material || "MOISSANITE"}
                     </div>
 
-                    <div className="p-4">
-                      <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
-                        {product.category || "JEWELRY"} • {product.material || "MOISSANITE"}
+                    <h3 className="font-medium text-gray-900 line-clamp-2 leading-tight text-sm">{product.name}</h3>
+
+                    <div className="flex items-center space-x-1">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`${
+                              i < Math.floor(product.rating || 5) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                            } w-3 h-3`}
+                          />
+                        ))}
                       </div>
+                      <span className="text-gray-500 text-xs">({product.review_count || 0})</span>
+                    </div>
 
-                      <h3 className="font-medium text-gray-900 mb-2 text-sm leading-tight line-clamp-2">
-                        {product.name}
-                      </h3>
-
-                      <div className="flex items-center space-x-1 mb-2">
-                        <div className="flex">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-3 h-3 ${
-                                i < Math.floor(product.rating || 5)
-                                  ? "fill-yellow-400 text-yellow-400"
-                                  : "text-gray-300"
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-xs text-gray-500">({product.review_count || 0})</span>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <span className="text-lg font-bold text-blue-600">
-                          ${((product.price ?? 0) / 100).toFixed(2)}
+                    <div className="flex items-center space-x-1.5">
+                      <span className="font-bold text-blue-600 text-lg">
+                        ${((product.price ?? 0) / 100).toFixed(2)}
+                      </span>
+                      {product.original_price && product.original_price > product.price && (
+                        <span className="text-gray-500 line-through text-sm">
+                          ${((product.original_price ?? 0) / 100).toFixed(2)}
                         </span>
-                        {product.original_price && product.original_price > product.price && (
-                          <span className="text-sm text-gray-400 line-through">
-                            ${((product.original_price ?? 0) / 100).toFixed(2)}
-                          </span>
-                        )}
-                      </div>
+                      )}
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-gray-500 text-center w-full py-8">No deals available at the moment</div>
             )}
           </div>
         </div>
