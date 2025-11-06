@@ -2,13 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useMemo, useRef, useCallback } from "react";
+import { useMemo } from "react";
 
-const PAGE_SIZE = 24;
-// Hard cap for homepage; prevents loading the entire catalog.
-const MAX_PAGES = 3; // => 24 * 3 = 72 max items on the strip
+const LIMIT = 16;
 
 const FIELDS = `
   id, name, price, original_price, discount_percentage,
@@ -16,113 +14,46 @@ const FIELDS = `
   sizes, in_stock, created_at
 `;
 
-// Small helper to request a lighter thumbnail
-function getThumb(url?: string | null) {
+// Build a light thumbnail URL (works with Supabase public storage or any CDN)
+function thumb(url?: string | null, width = 512, quality = 70) {
   if (!url) {
-    return "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=600&q=70";
+    return `https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=${width}&q=${quality}`;
   }
-  return url.includes("?") ? url : `${url}?width=512&quality=70`;
+  // If the URL already has params, keep it; otherwise add basic transforms
+  if (url.includes("?")) return url;
+  return `${url}?width=${width}&quality=${quality}`;
 }
 
 const BestDeals = () => {
-  const scrollerRef = useRef<HTMLDivElement | null>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-
-  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ["best-deals-homepage", PAGE_SIZE, MAX_PAGES],
-    queryFn: async ({ pageParam = 0 }) => {
-      // Enforce cap here as well—no accidental extra fetches
-      if (pageParam >= MAX_PAGES) return [];
-
-      const from = pageParam * PAGE_SIZE;
-      const to = from + PAGE_SIZE - 1;
-
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["best-deals-homepage", LIMIT],
+    queryFn: async () => {
+      // Single, small, deterministic query:
+      // in_stock -> highest discount first -> newest tie-breaker -> LIMIT
       const { data, error } = await supabase
         .from("products")
         .select(FIELDS)
         .eq("in_stock", true)
+        .order("discount_percentage", { ascending: false, nullsFirst: false })
         .order("created_at", { ascending: false })
-        .range(from, to);
+        .limit(LIMIT);
 
       if (error) {
         console.error("Error fetching products:", error);
         throw error;
       }
-      return data || [];
+      return data ?? [];
     },
-    getNextPageParam: (lastPage, allPages) => {
-      // Stop if page shorter than PAGE_SIZE or we hit MAX_PAGES
-      if (!lastPage || lastPage.length < PAGE_SIZE) return undefined;
-      if (allPages.length >= MAX_PAGES) return undefined;
-      return allPages.length;
-    },
-    initialPageParam: 0,
-
-    // Kill noisy refetches that look like “page loads several times”
+    // Make it calm & instant on return visits
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: false,
-
-    // Smooth back/forward performance
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 60 * 60 * 1000, // 60 minutes
     retry: 1,
   });
 
-  const dealProducts = useMemo(() => (data?.pages ?? []).flat(), [data]);
-
-  const onIntersect = useCallback(
-    (entries: IntersectionObserverEntry[]) => {
-      const first = entries[0];
-      if (!first) return;
-      if (first.isIntersecting && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
-      }
-    },
-    [fetchNextPage, hasNextPage, isFetchingNextPage],
-  );
-
-  // Stable observer that doesn't re-create on each data change.
-  useEffect(() => {
-    const rootEl = scrollerRef.current;
-    if (!rootEl) return;
-
-    // Clean any old observer
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-      observerRef.current = null;
-    }
-
-    observerRef.current = new IntersectionObserver(onIntersect, {
-      root: rootEl, // HORIZONTAL scroller is the root
-      rootMargin: "0px 200px 0px 0px", // prefetch slightly before end
-      threshold: 0.1,
-    });
-
-    // If sentinel already mounted, observe it
-    if (sentinelRef.current) {
-      observerRef.current.observe(sentinelRef.current);
-    }
-
-    return () => {
-      observerRef.current?.disconnect();
-      observerRef.current = null;
-    };
-  }, [onIntersect]); // no dependency on data/pages
-
-  // Ref callback to (re)attach observing when sentinel node changes
-  const setSentinel = useCallback((node: HTMLDivElement | null) => {
-    // Unobserve old
-    if (sentinelRef.current && observerRef.current) {
-      observerRef.current.unobserve(sentinelRef.current);
-    }
-    sentinelRef.current = node;
-    // Observe new
-    if (node && observerRef.current) {
-      observerRef.current.observe(node);
-    }
-  }, []);
+  const dealProducts = useMemo(() => data ?? [], [data]);
 
   if (isLoading) {
     return (
@@ -165,103 +96,94 @@ const BestDeals = () => {
 
         {/* Products horizontal scroll */}
         <div className="flex-1 overflow-hidden">
-          <div className="overflow-x-auto" ref={scrollerRef} aria-label="Best Deals">
+          <div className="overflow-x-auto" aria-label="Best Deals">
             <div className="flex space-x-4 px-4 pb-4 items-stretch">
               {dealProducts.length > 0 ? (
-                <>
-                  {dealProducts.map((product) => (
-                    <div
-                      key={product.id}
-                      className="flex-shrink-0 w-64 group relative bg-white overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg"
-                    >
-                      {/* Product image */}
-                      <div className="relative aspect-square overflow-hidden bg-gray-100">
+                dealProducts.map((product) => (
+                  <div
+                    key={product.id}
+                    className="flex-shrink-0 w-64 group relative bg-white overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg"
+                  >
+                    {/* Product image */}
+                    <div className="relative aspect-square overflow-hidden bg-gray-100">
+                      <picture>
+                        {/* smaller source for narrow devices */}
+                        <source media="(max-width: 640px)" srcSet={thumb(product.image_url, 384, 70)} />
+                        {/* default */}
                         <img
-                          src={getThumb(product.image_url)}
+                          src={thumb(product.image_url, 512, 70)}
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           onError={(e) => {
-                            (e.currentTarget as HTMLImageElement).src =
-                              "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=600&q=70";
+                            (e.currentTarget as HTMLImageElement).src = thumb(undefined, 512, 70);
                           }}
                           loading="lazy"
                           decoding="async"
                           width={512}
                           height={512}
                         />
+                      </picture>
 
-                        {/* Discount badge - positioned on left side */}
-                        {product.discount_percentage > 0 && (
-                          <div className="absolute top-3 left-3">
-                            <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
-                              {product.discount_percentage}% OFF
+                      {/* Discount badge - positioned on left side */}
+                      {product.discount_percentage > 0 && (
+                        <div className="absolute top-3 left-3">
+                          <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                            {product.discount_percentage}% OFF
+                          </Badge>
+                        </div>
+                      )}
+
+                      {/* Size options */}
+                      {product.sizes && product.sizes.length > 0 && (
+                        <div className="absolute bottom-3 left-3 flex flex-wrap gap-1">
+                          {product.sizes.slice(0, 2).map((size: string, index: number) => (
+                            <Badge key={index} className="bg-gray-800 text-white text-xs px-1 py-0.5">
+                              {size}
                             </Badge>
-                          </div>
-                        )}
+                          ))}
+                        </div>
+                      )}
+                    </div>
 
-                        {/* Size options */}
-                        {product.sizes && product.sizes.length > 0 && (
-                          <div className="absolute bottom-3 left-3 flex flex-wrap gap-1">
-                            {product.sizes.slice(0, 2).map((size: string, index: number) => (
-                              <Badge key={index} className="bg-gray-800 text-white text-xs px-1 py-0.5">
-                                {size}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
+                    {/* Product info */}
+                    <div className="p-4">
+                      <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
+                        {product.category || "JEWELRY"} • {product.material || "MOISSANITE"}
                       </div>
 
-                      {/* Product info */}
-                      <div className="p-4">
-                        <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
-                          {product.category || "JEWELRY"} • {product.material || "MOISSANITE"}
+                      <h3 className="font-medium text-gray-900 mb-2 text-sm leading-tight line-clamp-2">
+                        {product.name}
+                      </h3>
+
+                      <div className="flex items-center space-x-1 mb-2">
+                        <div className="flex">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-3 h-3 ${
+                                i < Math.floor(product.rating || 5)
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
                         </div>
+                        <span className="text-xs text-gray-500">({product.review_count || 0})</span>
+                      </div>
 
-                        <h3 className="font-medium text-gray-900 mb-2 text-sm leading-tight line-clamp-2">
-                          {product.name}
-                        </h3>
-
-                        <div className="flex items-center space-x-1 mb-2">
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-3 h-3 ${
-                                  i < Math.floor(product.rating || 5)
-                                    ? "fill-yellow-400 text-yellow-400"
-                                    : "text-gray-300"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                          <span className="text-xs text-gray-500">({product.review_count || 0})</span>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                          <span className="text-lg font-bold text-blue-600">
-                            ${((product.price ?? 0) / 100).toFixed(2)}
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg font-bold text-blue-600">
+                          ${((product.price ?? 0) / 100).toFixed(2)}
+                        </span>
+                        {product.original_price && product.original_price > product.price && (
+                          <span className="text-sm text-gray-400 line-through">
+                            ${((product.original_price ?? 0) / 100).toFixed(2)}
                           </span>
-                          {product.original_price && product.original_price > product.price && (
-                            <span className="text-sm text-gray-400 line-through">
-                              ${((product.original_price ?? 0) / 100).toFixed(2)}
-                            </span>
-                          )}
-                        </div>
+                        )}
                       </div>
                     </div>
-                  ))}
-
-                  {/* Sentinel for infinite scroll – sits at end of row */}
-                  {hasNextPage && (
-                    <div
-                      ref={setSentinel}
-                      className="flex-shrink-0 w-8 h-64 grid place-items-center text-xs text-gray-400"
-                      aria-hidden
-                    >
-                      {isFetchingNextPage ? "Loading…" : "…"}
-                    </div>
-                  )}
-                </>
+                  </div>
+                ))
               ) : (
                 <div className="flex items-center justify-center w-full py-8">
                   <div className="text-gray-500">No products available at the moment</div>
