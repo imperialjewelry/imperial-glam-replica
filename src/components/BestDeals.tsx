@@ -3,34 +3,70 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useEffect, useRef } from 'react';
+
+const PAGE_SIZE = 24;
 
 const BestDeals = () => {
-  const { data: dealProducts = [], isLoading, error } = useQuery({
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  const { 
+    data, 
+    isLoading, 
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  } = useInfiniteQuery({
     queryKey: ['best-deals-homepage'],
-    queryFn: async () => {
+    queryFn: async ({ pageParam = 0 }) => {
+      const from = pageParam * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
       
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select(`
+          id, name, price, original_price, discount_percentage,
+          image_url, category, material, rating, review_count,
+          sizes, in_stock, created_at
+        `)
         .eq('in_stock', true)
         .order('created_at', { ascending: false })
-        .limit(10);
+        .range(from, to);
       
       if (error) {
         console.error('Error fetching products:', error);
         throw error;
       }
       
-      // Shuffle and pick 6 random products for variety
-      const shuffled = data?.sort(() => 0.5 - Math.random()) || [];
-      const selectedProducts = shuffled.slice(0, 6);
-      
-      
-      return selectedProducts;
-    }
+      return data || [];
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === PAGE_SIZE ? allPages.length : undefined;
+    },
+    initialPageParam: 0,
   });
+
+  const dealProducts = data?.pages.flat() || [];
+
+  // Intersection observer for infinite scroll
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasNextPage || isFetchingNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (isLoading) {
     return (
@@ -76,7 +112,8 @@ const BestDeals = () => {
           <div className="overflow-x-auto">
             <div className="flex space-x-4 px-4 pb-4">
               {dealProducts.length > 0 ? (
-                dealProducts.map((product) => (
+                <>
+                  {dealProducts.map((product) => (
                   <div
                     key={product.id}
                     className="flex-shrink-0 w-64 group relative bg-white overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 rounded-lg"
@@ -143,7 +180,20 @@ const BestDeals = () => {
                       </div>
                     </div>
                   </div>
-                ))
+                  ))}
+                  
+                  {/* Sentinel for infinite scroll */}
+                  {hasNextPage && (
+                    <div 
+                      ref={loadMoreRef} 
+                      className="flex-shrink-0 w-64 flex items-center justify-center"
+                    >
+                      {isFetchingNextPage && (
+                        <div className="text-gray-500">Loading more...</div>
+                      )}
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="flex items-center justify-center w-full py-8">
                   <div className="text-gray-500">No products available at the moment</div>
