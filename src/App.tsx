@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider, useCart } from "@/contexts/CartContext";
 import { HelmetProvider } from 'react-helmet-async';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import ScrollToTop from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import BestDeals from "./pages/BestDeals";
@@ -98,6 +100,8 @@ const App = () => (
         <CartProvider>
           <Toaster />
           <Sonner />
+          <Analytics />
+          <SpeedInsights />
           <BrowserRouter>
             <AppContent />
           </BrowserRouter>
