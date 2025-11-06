@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { memo } from "react";
 
-const LIMIT = 2;
+const LIMIT = 6;
 
 const FIELDS = `
   id, name, price, original_price, discount_percentage,
