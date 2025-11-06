@@ -165,8 +165,8 @@ const BestDeals = () => {
         </div>
 
         {/* Products grid */}
-        <div className="flex-1 px-4 pb-4">
-          <div className="flex flex-wrap justify-center md:justify-start gap-4">
+        <div className="flex-1 px-4 pb-4 overflow-x-auto">
+          <div className="flex gap-4">
             {isLoading ? (
               <>
                 <DealSkeleton />
