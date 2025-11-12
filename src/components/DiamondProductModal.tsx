@@ -91,14 +91,6 @@ const DiamondProductModal = ({ product, onClose }: DiamondProductModalProps) => 
     onClose();
   };
 
-  const qualityFeatures = [
-    { text: "Premium", subtext: "Quality" },
-    { text: "Lab Certified", subtext: "authenticity" },
-    { text: "Brilliant Cut", subtext: "maximum sparkle" },
-    { text: "Conflict Free", subtext: "ethically sourced" },
-    { text: "Lifetime", subtext: "warranty" },
-    { text: "Imperial Jewelry", subtext: "guarantee" }
-  ];
 
   const getDisplayLabel = () => {
     return 'Length/Size';
@@ -177,21 +169,6 @@ const DiamondProductModal = ({ product, onClose }: DiamondProductModalProps) => 
                 {product.description && (
                   <p className="text-gray-600 mb-6">{product.description}</p>
                 )}
-              </div>
-
-              {/* Quality Features */}
-              <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                <div className="grid grid-cols-3 gap-4">
-                  {qualityFeatures.map((feature, index) => (
-                    <div key={index} className="flex items-start space-x-2">
-                      <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <div className="text-sm">
-                        <div className="font-medium text-gray-900">{feature.text}</div>
-                        <div className="text-gray-600">{feature.subtext}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </div>
 
               {/* Product Info Display */}

@@ -46,14 +46,6 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
     product.image_url
   ];
 
-  const features = [
-    { text: "Doesn't fade", subtext: "or tarnish" },
-    { text: "Passes the", subtext: "diamond tester" },
-    { text: "Shines better", subtext: "than diamonds" },
-    { text: "GRA Certificate", subtext: "included" },
-    { text: "10x cheaper", subtext: "than real diamond jewelry" },
-    { text: "IceCartel", subtext: "Warranty" }
-  ];
 
   const paymentLogos = [
     "PayPal", "Affirm", "Afterpay", "Visa", "Mastercard", "American Express", "Apple Pay", "Venmo", "Discover", "Bitcoin"
@@ -139,21 +131,6 @@ const ProductDetailModal = ({ product, isOpen, onClose }: ProductDetailModalProp
             
             <div className="text-sm text-gray-600">
               As low as $87/mo or 0% APR with <span className="font-semibold">Affirm</span>
-            </div>
-
-            {/* Features grid */}
-            <div className="grid grid-cols-2 gap-4">
-              {features.map((feature, index) => (
-                <div key={index} className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <div className="font-medium text-sm">{feature.text}</div>
-                    {feature.subtext && (
-                      <div className="text-xs text-gray-600">{feature.subtext}</div>
-                    )}
-                  </div>
-                </div>
-              ))}
             </div>
 
             {/* Color selection */}
