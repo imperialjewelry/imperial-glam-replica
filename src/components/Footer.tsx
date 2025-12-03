@@ -5,21 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-
 const Footer = () => {
   const [openSections, setOpenSections] = useState<string[]>([]);
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const toggleSection = (section: string) => {
-    setOpenSections(prev =>
-      prev.includes(section)
-        ? prev.filter(s => s !== section)
-        : [...prev, section]
-    );
+    setOpenSections(prev => prev.includes(section) ? prev.filter(s => s !== section) : [...prev, section]);
   };
-
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) {
@@ -32,8 +27,13 @@ const Footer = () => {
     }
     setIsSubmitting(true);
     try {
-      const { data, error } = await supabase.functions.invoke('newsletter-signup', {
-        body: { email: email.trim() }
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('newsletter-signup', {
+        body: {
+          email: email.trim()
+        }
       });
       if (error) {
         console.error('Newsletter signup error:', error);
@@ -60,56 +60,87 @@ const Footer = () => {
       setIsSubmitting(false);
     }
   };
-
   const footerSections = [{
     title: 'SHOP',
-    links: [
-      { name: 'All Jewelry', path: '/best-deals' },
-      { name: 'Custom', path: '/custom' },
-      { name: 'Engagement Rings', path: '/rings/engagement' },
-      { name: 'Rings', path: '/rings/hip-hop' },
-      { name: 'Chains', path: '/chains' },
-      { name: 'Bracelets', path: '/bracelets' },
-      { name: 'Pendants', path: '/pendants' },
-      { name: 'Earrings', path: '/earrings' },
-      { name: 'Watches', path: '/watches' },
-      { name: 'Grillz', path: '/grillz' },
-      { name: 'Diamond', path: '/diamond' },
-      { name: 'Diamond Simulants', path: '/vvs-diamond-simulants' },
-    ]
+    links: [{
+      name: 'All Jewelry',
+      path: '/best-deals'
+    }, {
+      name: 'Custom',
+      path: '/custom'
+    }, {
+      name: 'Engagement Rings',
+      path: '/rings/engagement'
+    }, {
+      name: 'Rings',
+      path: '/rings/hip-hop'
+    }, {
+      name: 'Chains',
+      path: '/chains'
+    }, {
+      name: 'Bracelets',
+      path: '/bracelets'
+    }, {
+      name: 'Pendants',
+      path: '/pendants'
+    }, {
+      name: 'Earrings',
+      path: '/earrings'
+    }, {
+      name: 'Watches',
+      path: '/watches'
+    }, {
+      name: 'Grillz',
+      path: '/grillz'
+    }, {
+      name: 'Diamond',
+      path: '/diamond'
+    }, {
+      name: 'Diamond Simulants',
+      path: '/vvs-diamond-simulants'
+    }]
   }, {
     title: 'HELP',
-    links: [
-      { name: 'Shipping & Delivery', path: '/policies/shipping' },
-      { name: 'Returns & Refunds', path: '/policies/returns' },
-      { name: 'Size Guides', path: '/size-guides' },
-      { name: 'FAQs', path: '/faqs' },
-    ]
+    links: [{
+      name: 'Shipping & Delivery',
+      path: '/policies/shipping'
+    }, {
+      name: 'Returns & Refunds',
+      path: '/policies/returns'
+    }, {
+      name: 'Size Guides',
+      path: '/size-guides'
+    }, {
+      name: 'FAQs',
+      path: '/faqs'
+    }]
   }, {
     title: 'COMPANY',
-    links: [
-      { name: 'About Imperial Jewelry', path: '/about' },
-      { name: 'Reviews', path: 'https://www.google.com/search?sca_esv=2865fea3d3342d0d&rlz=1C1RXQR_enUS1052US1052&sxsrf=AE3TifOUZL5OV6WN8EqmKmhMB0RljvVKWQ%3A1757353950550&q=Imperial%20Jewelry&stick=H4sIAAAAAAAAAONgU1I1qLAwMzFINrSwTExNSkxMNEmzMqiwNEhNtEhJtbQEChiYJ5suYhXwzC1ILcpMzFHwSi1PzSmqBADfbvuoPAAAAA&mat=CY_svSsdWuxl&ved=2ahUKEwiWkt7P3cmPAxXGnWoFHZU9NaUQrMcEegQIThAC#lrd=', external: true },
-      { name: 'Become an Affiliate', path: '/become-affiliate' },
-      { name: 'Financing', path: '/financing' },
-      { name: 'Contact', path: '/contact' },
-    ]
+    links: [{
+      name: 'About Imperial Jewelry',
+      path: '/about'
+    }, {
+      name: 'Reviews',
+      path: 'https://www.google.com/search?sca_esv=2865fea3d3342d0d&rlz=1C1RXQR_enUS1052US1052&sxsrf=AE3TifOUZL5OV6WN8EqmKmhMB0RljvVKWQ%3A1757353950550&q=Imperial%20Jewelry&stick=H4sIAAAAAAAAAONgU1I1qLAwMzFINrSwTExNSkxMNEmzMqiwNEhNtEhJtbQEChiYJ5suYhXwzC1ILcpMzFHwSi1PzSmqBADfbvuoPAAAAA&mat=CY_svSsdWuxl&ved=2ahUKEwiWkt7P3cmPAxXGnWoFHZU9NaUQrMcEegQIThAC#lrd=',
+      external: true
+    }, {
+      name: 'Become an Affiliate',
+      path: '/become-affiliate'
+    }, {
+      name: 'Financing',
+      path: '/financing'
+    }, {
+      name: 'Contact',
+      path: '/contact'
+    }]
   }];
-
-  return (
-    <footer className="bg-black text-white">
+  return <footer className="bg-black text-white">
       {/* Main black section */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Brand */}
         <div className="mb-8">
           <div className="flex items-center mb-4">
-            <img
-              src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/imperialjewelrylogo.webp"
-              alt="Imperial Jewelry logo"
-              className="h-10 w-auto mr-3 select-none"
-              loading="lazy"
-              decoding="async"
-            />
+            <img src="https://xdidixccpcgzbqqawywf.supabase.co/storage/v1/object/public/images/imperialjewelrylogo.webp" alt="Imperial Jewelry logo" className="h-10 w-auto mr-3 select-none" loading="lazy" decoding="async" />
             <div className="text-2xl font-bold mr-4">IMPERIAL JEWELRY</div>
           </div>
         </div>
@@ -145,26 +176,18 @@ const Footer = () => {
             </div>
           </div>
 
-          {footerSections.map(section => (
-            <div key={section.title}>
+          {footerSections.map(section => <div key={section.title}>
               <h3 className="text-sm font-semibold mb-4">{section.title}</h3>
               <ul className="space-y-2">
-                {section.links.map(link => (
-                  <li key={link.name}>
-                    {link.external ? (
-                      <a href={link.path} target="_blank" rel="noopener noreferrer" className="text-sm text-gray-300 hover:text-white transition-colors">
+                {section.links.map(link => <li key={link.name}>
+                    {link.external ? <a href={link.path} target="_blank" rel="noopener noreferrer" className="text-sm text-gray-300 hover:text-white transition-colors">
                         {link.name}
-                      </a>
-                    ) : (
-                      <Link to={link.path} className="text-sm text-gray-300 hover:text-white transition-colors">
+                      </a> : <Link to={link.path} className="text-sm text-gray-300 hover:text-white transition-colors">
                         {link.name}
-                      </Link>
-                    )}
-                  </li>
-                ))}
+                      </Link>}
+                  </li>)}
               </ul>
-            </div>
-          ))}
+            </div>)}
         </div>
 
         {/* Mobile accordions */}
@@ -196,38 +219,21 @@ const Footer = () => {
             </div>
           </div>
 
-          {footerSections.map(section => (
-            <div key={section.title} className="border-b border-gray-700 pb-4">
-              <button
-                onClick={() => toggleSection(section.title)}
-                className="flex items-center justify-between w-full text-left"
-              >
+          {footerSections.map(section => <div key={section.title} className="border-b border-gray-700 pb-4">
+              <button onClick={() => toggleSection(section.title)} className="flex items-center justify-between w-full text-left">
                 <h3 className="text-sm font-semibold">{section.title}</h3>
-                {openSections.includes(section.title) ? (
-                  <ChevronUp className="w-4 h-4" />
-                ) : (
-                  <ChevronDown className="w-4 h-4" />
-                )}
+                {openSections.includes(section.title) ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </button>
-              {openSections.includes(section.title) && (
-                <ul className="mt-4 space-y-2">
-                  {section.links.map(link => (
-                    <li key={link.name}>
-                      {link.external ? (
-                        <a href={link.path} target="_blank" rel="noopener noreferrer" className="text-sm text-gray-300 hover:text-white transition-colors">
+              {openSections.includes(section.title) && <ul className="mt-4 space-y-2">
+                  {section.links.map(link => <li key={link.name}>
+                      {link.external ? <a href={link.path} target="_blank" rel="noopener noreferrer" className="text-sm text-gray-300 hover:text-white transition-colors">
                           {link.name}
-                        </a>
-                      ) : (
-                        <Link to={link.path} className="text-sm text-gray-300 hover:text-white transition-colors">
+                        </a> : <Link to={link.path} className="text-sm text-gray-300 hover:text-white transition-colors">
                           {link.name}
-                        </Link>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
+                        </Link>}
+                    </li>)}
+                </ul>}
+            </div>)}
         </div>
 
         {/* Newsletter & social */}
@@ -236,20 +242,8 @@ const Footer = () => {
             <div className="flex-1 max-w-md">
               <h3 className="text-sm font-semibold mb-4">SIGN UP FOR PROMOTIONAL OFFERS</h3>
               <form onSubmit={handleEmailSubmit} className="flex">
-                <input
-                  type="email"
-                  placeholder="Email address"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  disabled={isSubmitting}
-                  className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-l-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-50"
-                  required
-                />
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="bg-white hover:bg-gray-200 text-black px-6 py-2 rounded-r-md disabled:opacity-50"
-                >
+                <input type="email" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} disabled={isSubmitting} className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-l-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-50" required />
+                <Button type="submit" disabled={isSubmitting} className="bg-white hover:bg-gray-200 text-black px-6 py-2 rounded-r-md disabled:opacity-50">
                   {isSubmitting ? '...' : '→'}
                 </Button>
               </form>
@@ -257,25 +251,14 @@ const Footer = () => {
 
             <div className="flex flex-col items-start md:items-end space-y-4">
               <div className="flex space-x-3">
-                <a
-                  href="https://www.instagram.com/shopimperialjewelry"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Instagram"
-                  className="inline-flex"
-                >
+                <a href="https://www.instagram.com/shopimperialjewelry" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="inline-flex">
                   <FaInstagram className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer" />
                 </a>
               </div>
 
               <div className="text-sm">
                 <p className="text-gray-400 font-semibold">LOCATIONS</p>
-                <a
-                  href="https://maps.app.goo.gl/grZBRJ4rSwVybsGP8"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-white transition-colors"
-                >
+                <a href="https://maps.app.goo.gl/grZBRJ4rSwVybsGP8" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors">
                   5085 Westheimer Rd, Houston, TX
                 </a>
               </div>
@@ -307,14 +290,10 @@ const Footer = () => {
             <Link to="/legal/terms" className="hover:text-white ml-1">Terms</Link>
           </div>
           <div className="text-sm text-gray-400">
-            <a href="https://marketintegrators.com" target="_blank" rel="noopener" className="hover:text-white transition-colors">
-              Website by Market Integrator
-            </a>
+            <a href="https://marketintegrators.com" target="_blank" rel="noopener" className="hover:text-white transition-colors">Website by Market Integrators</a>
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
