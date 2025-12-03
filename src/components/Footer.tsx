@@ -300,11 +300,16 @@ const Footer = () => {
 
       {/* Utility Strip (back to black) */}
       <div className="max-w-7xl mx-auto px-4 pb-10 md:pb-8">
-        <div className="mt-8 pt-4 border-t border-gray-800 text-center">
+        <div className="mt-8 pt-4 border-t border-gray-800 text-center space-y-2">
           <div className="text-xs text-gray-400">
             © 2025 Imperial Jewelry ·
             <Link to="/legal/privacy" className="hover:text-white ml-1">Privacy</Link>{' '}·
             <Link to="/legal/terms" className="hover:text-white ml-1">Terms</Link>
+          </div>
+          <div className="text-sm text-gray-400">
+            <a href="https://marketintegrators.com" target="_blank" rel="noopener" className="hover:text-white transition-colors">
+              Website by Market Integrator
+            </a>
           </div>
         </div>
       </div>
